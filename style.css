@@ -21,6 +21,7 @@
     --purple: #a144d7;
     --yellow: #d7d744;
     --orange: #d77f44;
+    --teal: #44d7b2;
 }
 
 /*Globals*/
@@ -135,6 +136,8 @@ div .flexRow button, div .flexRow a {
 .orangeButton:hover { border-color:var(--orange); background-color: var(--orange); color: var(--bg-color);}
 .orangeButton-active { border-color:var(--orange); background-color: var(--orange); color: var(--bg-color);}
 .orangeButton-active:hover { border-color:var(--orange); background-color: var(--orange); color: var(--bg-color);}
+.tealButton {border-color:var(--teal); background-color: var(--bg-color); color: var(--teal);}
+.tealButton:hover { border-color:var(--teal); background-color: var(--teal); color: var(--bg-color);}
 
 .purpleButtonHeader {border-color:var(--purple); background-color: var(--header-color); color: var(--purple);}
 .purpleButtonHeader:hover { border-color:var(--purple); background-color: var(--purple); color: var(--header-color);}

@@ -1,8 +1,8 @@
 let diff = 0;
 const eggImgPath = 'Images/Eggs/'
 
-const subAmts = [4,4]
-const subIDs = ['set','asc']
+const subAmts = [4,4,3]
+const subIDs = ['set','asc','evt']
 
 function generateHTMLAndHandlers() {
     for(let i = 0; i < tabIDs.length; i++) {
@@ -260,7 +260,7 @@ function mainLoop() {
         DOMCacheGetOrSet('faviconLink').href = `${eggImgPath}${eggData[data.currentEgg].id}.png`
     data.time = Date.now()
 }
-const tabIDs = ['egg','research','contracts','settings','prestige','eggpedition','achievement','ascension']
+const tabIDs = ['egg','research','contracts','settings','prestige','eggpedition','achievement','ascension','events']
 function changeTab(i) {
     data.currentTab = i
     for(let i = 0; i < tabIDs.length; i++) {
