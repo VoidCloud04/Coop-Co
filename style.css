@@ -450,6 +450,32 @@ div .flexRow button, div .flexRow a {
 .achLock {height: 2em; width: 2em; margin: .25em; padding: 2px; border: 2px solid var(--white); border-radius: 5px; background-color: var(--red);}
 .achPlaceholder {height: 2em; width: 2em; margin: .25em; padding: 2px; border: 2px solid var(--white); border-radius: 5px; background-color: var(--gray);}
 
+.vaultUpgradeHolder {
+    margin-right: 1vw;
+    border: 2px solid var(--teal);
+    border-radius: 5px;
+    padding: 0.5em;
+    width: 20vw;
+}
+
+#weeklyEventProgressBar{
+  --x: 0%;
+  background: linear-gradient(
+    90deg,
+    var(--green) 0%,
+    var(--green) var(--x)
+  );
+}
+
+#seasonalEventProgressBar{
+  --x: 0%;
+  background: linear-gradient(
+    90deg,
+    var(--green) 0%,
+    var(--green) var(--x)
+  );
+}
+
 /*
 <div class="notifyjs-wrapper notifyjs-hidable">
 	<div class="notifyjs-arrow"></div>
