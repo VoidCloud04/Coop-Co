@@ -82,7 +82,8 @@ function generateHTMLAndHandlers() {
     DOMCacheGetOrSet(`harvesterUpgradeButton`).addEventListener('click', () => upgradeHarvester())
     DOMCacheGetOrSet('runAllHarvestersButton').addEventListener('click', () => {
         for(let i = 0; i < data.harvesters.length; i++)
-            startHarvester(i)
+            if(data.harvesters[i].level != 0)
+                startHarvester(i)
     })
     
     for(let i = 0; i < data.harvesters.length; i++) {
