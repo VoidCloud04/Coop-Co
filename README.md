@@ -1,3 +1,4 @@
-# Coop Co
-An idle game made in HTML, JS & CSS by VoidCloud.<br>
-To contribute I recommend using the Live Server extension & VSCode, please verify your code you submit fully works before making a Pull Request.
+# Coop Co - v3.0
+- Full rebuild and design of Legacy Coop Co 2.0 systems (The codebase was never refactored)
+- Mostly under the hood changes with Svelte 5 and Sass
+- Use `pnpm run dev` to run the dev server to test changes
