@@ -28,21 +28,7 @@ body {
     background-color: var(--bg-color);
     touch-action: pan-x pan-y;
 }
-button {
-    user-select: none;
-    background-color: var(--bg-color);
-    border-width: 2px;
-    border-color: whitesmoke;
-    border-style: solid;
-    border-radius: 5px;
-    transition-duration: 0.5s;
-}
-button:hover {
-    background-color: whitesmoke;
-    color: var(--bg-color);
-    
-    transition-duration: 0.5s;
-}
+
 img {height: 3.25em; width: 3.25em;}
 h1,h2,h3,h4 { margin-bottom: 1vh;}
 /*Classes*/
@@ -114,21 +100,6 @@ div .flexRow button, div .flexRow a {
     padding: .25em;
     text-align: center;
 }
-
-.blueButton {border-color:var(--blue); background-color: var(--bg-color); color: var(--blue);}
-.blueButton:hover { border-color:var(--blue); background-color: var(--blue); color: var(--bg-color);}
-.redButton {border-color:var(--red); background-color: var(--bg-color); color: var(--red);}
-.redButton:hover { border-color:var(--red); background-color: var(--red); color: var(--bg-color);}
-.greenButton {border-color:var(--green); background-color: var(--bg-color); color: var(--green);}
-.greenButton:hover { border-color:var(--green); background-color: var(--green); color: var(--bg-color);}
-.purpleButton {border-color:var(--purple); background-color: var(--bg-color); color: var(--purple);}
-.purpleButton:hover { border-color:var(--purple); background-color: var(--purple); color: var(--bg-color);}
-.yellowButton {border-color:var(--yellow); background-color: var(--bg-color); color: var(--yellow);}
-.yellowButton:hover { border-color:var(--yellow); background-color: var(--yellow); color: var(--bg-color);}
-.orangeButton {border-color:var(--orange); background-color: var(--bg-color); color: var(--orange);}
-.orangeButton:hover { border-color:var(--orange); background-color: var(--orange); color: var(--bg-color);}
-.orangeButton-active { border-color:var(--orange); background-color: var(--orange); color: var(--bg-color);}
-.orangeButton-active:hover { border-color:var(--orange); background-color: var(--orange); color: var(--bg-color);}
 
 .purpleButtonHeader {border-color:var(--purple); background-color: var(--header-color); color: var(--purple);}
 .purpleButtonHeader:hover { border-color:var(--purple); background-color: var(--purple); color: var(--header-color);}

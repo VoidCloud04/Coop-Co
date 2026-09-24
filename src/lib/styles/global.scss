@@ -1,0 +1,76 @@
+
+@font-face {
+    font-family: 'Martian Mono';
+    src: url('../fonts/MartianMono-Medium.ttf');
+}
+
+// Major Color Variables
+
+$bg-color: #171b1b;
+$header-color: lightgrey;
+$gray: #999999;
+$darkgray: #444444;
+$white: #e7e7e7;
+$green: #65be67;
+$red: #d74444;
+$blue: #4481d7;
+$purple: #a144d7;
+$yellow: #d7d744;
+$orange: #d77f44;
+
+$majorColors: (
+    "green": $green,
+    "red": $red,
+    "blue": $blue,
+    "purple": $purple,
+    "yellow": $yellow,
+    "orange": $orange
+);
+
+// Major Extra Variables
+$borderRadius: 5px;
+$borderWidth: 2px;
+$buttonTransitionDuration: 0.5s;
+
+// HTML Tag Global Styles
+
+* {
+    background-color: $bg-color;
+    user-select: none;
+    margin: 0%;
+}
+
+h1, h2, h3, h4, h5, h6, p {
+    font-family: 'Martian Mono';
+    color: $white;
+}
+
+button {
+    border: $borderWidth solid $white;
+    border-radius: $borderRadius;
+    color: $white;
+    background-color: inherit;
+    font-family: 'Martian Mono';
+
+    &:hover {
+        background-color: $white;
+        color: $bg-color;
+        transition-duration: $buttonTransitionDuration;
+    }
+
+    transition-duration: $buttonTransitionDuration;
+}
+
+
+// Global Classes
+
+@each $name, $color in $majorColors {
+    .button-#{$name} {
+        border-color: $color;
+        color: $color;
+
+        &:hover {
+            background-color: $color;
+        }
+    }
+} 
