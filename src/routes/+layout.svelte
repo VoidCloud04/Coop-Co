@@ -5,7 +5,7 @@
 </script>
 
 <svelte:head>
-	<link rel="icon" href={favicon} />
+	<link rel="icon" href="/Images/favicon.ico" />
 </svelte:head>
 
 {@render children()}
