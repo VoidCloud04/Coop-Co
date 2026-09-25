@@ -1,0 +1,26 @@
+// Color Variable
+$bg-color: #171b1b;
+$header-color: lightgrey;
+$gray: #999999;
+$darkgray: #444444;
+$white: #e7e7e7;
+$green: #65be67;
+$red: #d74444;
+$blue: #4481d7;
+$purple: #a144d7;
+$yellow: #d7d744;
+$orange: #d77f44;
+
+$majorColors: (
+    "green": $green,
+    "red": $red,
+    "blue": $blue,
+    "purple": $purple,
+    "yellow": $yellow,
+    "orange": $orange
+);
+
+// Extra Variables
+$borderRadius: 5px;
+$borderWidth: 2px;
+$buttonTransitionDuration: 0.5s;

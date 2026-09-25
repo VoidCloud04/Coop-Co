@@ -16,10 +16,13 @@
 
     // Variable Definitions
     let tabIndex = $state(-1)
+    let showNewsTicker = $state(true)
 </script>
 
 <Header />
-<Newsticker />
+{#if showNewsTicker}
+    <Newsticker />
+{/if}
 <ButtonGroup />
 
 {#if tabIndex === 0}
