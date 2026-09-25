@@ -4,7 +4,11 @@
 
 <div>
     <img src="/Images/Gilded.png" alt="Your Current Egg">
-    <button id="promotionButton">Promote to Next Egg!</button>
+    <button id="promotion-button" class="button-header">Promote to Next Egg!</button>
+    <h2>1000 $</h2>
+    <p>Chickens: 1000</p>
+    <button id="prestige-button" class="button-purple-header">Prestige</button>
+    <button id="ascension-button" class="button-orange-header">Ascend</button>
 </div>
 
 <style lang="scss">
@@ -13,24 +17,24 @@
     div {
         display: flex;
         flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
         background-color: $header-color;
         color: black;
         width: 100%;
-    }
-
-    button {
-        border-color: black;
-        color: inherit;
-        background-color: inhert;
-
-        &:hover {
-            background-color: black;
-            color: $header-color;
+        padding-top: 0.5vh;
+        padding-bottom: 0.5vh;
+        * {
+            color: inherit;
+            background-color: inherit;
+            margin-left: 0.25vw;
+            margin-right: 0.25vw;
+            margin-top: 0.5vh;
+            margin-bottom: 0.5vh;
         }
     }
 
-    img {
-        background-color: inherit;
-    }
+
 
 </style>

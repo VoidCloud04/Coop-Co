@@ -52,11 +52,22 @@ body {
 }
 
 img {
-    height: 32px;
-    width: 32px;
+    height: 3.25em;
+    width: 3.25em;
 }
 
 // Global Classes
+
+.button-header {
+    border-color: black;
+    color: black;
+    background-color: $header-color;
+
+    &:hover {
+        background-color: black;
+        color: $header-color;
+    }
+}
 
 @each $name, $color in $majorColors {
     .button-#{$name} {
