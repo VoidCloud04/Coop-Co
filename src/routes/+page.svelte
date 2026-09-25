@@ -17,13 +17,17 @@
     // Variable Definitions
     let tabIndex = $state(-1)
     let showNewsTicker = $state(true)
+    let tabs = $state([
+        {title: "Eggs", class: ""},
+        {title: "Research", class: "button-blue"}
+    ])
 </script>
 
 <Header />
 {#if showNewsTicker}
     <Newsticker />
 {/if}
-<ButtonGroup />
+<ButtonGroup buttonArr={tabs} baseId="tab-button"/>
 
 {#if tabIndex === 0}
     <Egg />

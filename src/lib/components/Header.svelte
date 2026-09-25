@@ -26,12 +26,15 @@
         padding-top: 0.5vh;
         padding-bottom: 0.5vh;
         * {
-            color: inherit;
-            background-color: inherit;
-            margin-left: 0.25vw;
-            margin-right: 0.25vw;
+            margin-left: 0.5vw;
+            margin-right: 0.5vw;
             margin-top: 0.5vh;
             margin-bottom: 0.5vh;
+        }
+
+        img, p, h2 {
+            color: inherit;
+            background-color: inherit;
         }
     }
 
