@@ -1,10 +1,14 @@
 <script>
-    let {buttonArr, baseId} = $props()
+    let {buttonArr, baseId, onclick = null} = $props()
 </script>
 
 <div>
     {#each buttonArr as button, i}
-        <button id="{baseId}-{i}" class={button.class} title={button.title}>{button.title}</button>
+        {#if onclick === null}
+            <button id="{baseId}-{i}" class={button.class} title={button.title}>{button.title}</button>
+        {:else}
+            <button id="{baseId}-{i}" class={button.class} title={button.title} onclick={() => onclick(i)}>{button.title}</button>
+        {/if}
     {/each}
 </div>
 

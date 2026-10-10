@@ -19,15 +19,25 @@
     let showNewsTicker = $state(true)
     let tabs = $state([
         {title: "Eggs", class: ""},
-        {title: "Research", class: "button-blue"}
+        {title: "Research"},
+        {title: "Contracts"},
+        {title: "Eggspeditions", class: "button-blue"},
+        {title: "Prestige", class: "button-purple"},
+        {title: "Ascension", class: "button-orange"},
+        {title: "Achievements"},
+        {title: "Settings"}
     ])
+
+    function changeTab(i) {
+        tabIndex = i
+    }
 </script>
 
 <Header />
 {#if showNewsTicker}
     <Newsticker />
 {/if}
-<ButtonGroup buttonArr={tabs} baseId="tab-button"/>
+<ButtonGroup buttonArr={tabs} onclick={changeTab} baseId="tab-button"/>
 
 {#if tabIndex === 0}
     <Egg />

@@ -36,6 +36,7 @@
             color: inherit;
             background-color: inherit;
         }
+        margin: 0;
     }
 
 
