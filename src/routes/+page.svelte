@@ -2,6 +2,7 @@
     import ButtonGroup from "$lib/components/ButtonGroup.svelte";
     import Header from "$lib/components/Header.svelte";
     import Newsticker from "$lib/components/Newsticker.svelte";
+    import { data } from "$lib/scripts/DataManager.svelte"; // The global data object for all of the UI updates (& logic handled in the JavaScript Functions)
     import Ascension from "./Ascension.svelte";
 
     import Contracts from "./Contracts.svelte";

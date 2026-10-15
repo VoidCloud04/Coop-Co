@@ -1,4 +1,5 @@
 import Decimal from "break_eternity.js"
+import { commonResearch, epicResearch, legendaryResearch } from "./ResearchManager"
 
 function DefaultDataObject() {
     return {
@@ -10,9 +11,9 @@ function DefaultDataObject() {
             knowleggs: Decimal.dZero
         },
         research: {
-            commonResearch: new Array(),
-            epicResearch: new Array(),
-            legendaryResearch: new Array()
+            commonResearch: new Array(commonResearch.length),
+            epicResearch: new Array(epicResearch.length),
+            legendaryResearch: new Array(legendaryResearch.length)
         },
         progression: {
             achievements: new Array(),
@@ -62,6 +63,7 @@ function DefaultDataObject() {
 }
 
 const gameKey = 'coopCo-Revised'
+export let data = $state(DefaultDataObject())
 
 export function Load() {
 

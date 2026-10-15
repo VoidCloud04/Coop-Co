@@ -19,8 +19,8 @@
         flex-wrap: wrap;
         
         button {
-            margin-left: 0.25vw;
-            margin-right: 0.25vw;
+            margin-left: 0.5vw;
+            margin-right: 0.5vw;
         }
     }
 </style>
