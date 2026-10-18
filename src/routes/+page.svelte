@@ -16,7 +16,7 @@
     // Imports
 
     // Variable Definitions
-    let tabIndex = $state(-1)
+    let tabIndex = $state(0)
     let showNewsTicker = $state(true)
     let tabs = $state([
         {title: "Eggs", class: ""},
