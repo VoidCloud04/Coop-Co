@@ -1,8 +1,9 @@
 <script>
     import { data } from "$lib/scripts/DataManager.svelte";
     import { format } from "$lib/scripts/Utilities";
-    import { eggs } from "$lib/scripts/EggManager";
+    import { eggs, regularEggImgIds } from "$lib/scripts/EggManager";
     import Decimal from "break_eternity.js";
+    import Chip from "$lib/components/Chip.svelte";
 
     const currentEgg = $derived(eggs[data.indexValues.currentEgg])
     const nextEgg = $derived(eggs[data.indexValues.currentEgg+1])
@@ -25,7 +26,13 @@
 
 <div class="flexCol holder">
     <div>Promotion Ticker</div>
-    <p>Regular {"-->"} Superfood {"-->"} Medical</p>
+    <div class="flexRow">
+        <button>{"<<<"}</button>
+        <Chip imgSrc={`Images/Eggs/${regularEggImgIds[data.indexValues.currentEgg]}.png`} content={currentEgg.name} color={"blue"}></Chip>
+        {"=>"}
+        <Chip imgSrc={`Images/Eggs/${regularEggImgIds[data.indexValues.currentEgg+1]}.png`}  content={nextEgg.name} color={"green"}></Chip>
+        <button>{">>>"}</button>
+    </div>
     <div class="flexCol holder">
         {#if data.indexValues.currentEgg < eggs.length-1}
             <p>Next: {data.indexValues.currentEgg < eggs.length-1 && data.progression.unlockedEgg[data.indexValues.currentEgg+1] ? `${nextEgg.name} Egg` : '???'}</p>
