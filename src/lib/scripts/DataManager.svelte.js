@@ -1,5 +1,6 @@
 import Decimal from "break_eternity.js"
 import { commonResearch, epicResearch, legendaryResearch } from "./ResearchManager"
+import { eggs } from "./EggManager"
 
 function DefaultDataObject() {
     return {
@@ -21,7 +22,7 @@ function DefaultDataObject() {
             hasAscended: false,
             unlockedContracts: false,
             unlockedEggspeditions: false,
-            unlockedEgg: new Array(),
+            unlockedEgg: new Array(eggs.length),
             planets: new Array(), // Not Decided new Structure Yet Likely change from this to fit a different style for each planet
         },
         contracts: {

@@ -1,10 +1,15 @@
 <script>
+    import { data } from "$lib/scripts/DataManager.svelte";
+    import { eggs } from "$lib/scripts/EggManager";
+
 
 </script>
 
 <div>
     <img src="/Images/Gilded.png" alt="Your Current Egg">
-    <button id="promotion-button" class="button-header">Promote to Next Egg!</button>
+    {#if data.indexValues.currentEgg < data.progression.unlockedEgg.length}
+        <button id="promotion-button" class="button-header{data.currency.money.gte(eggs[data.indexValues.currentEgg].discoveryReq) && data.currency.money.lt(eggs[data.indexValues.currentEgg].unlockReq) ? '-yellow' : '' }">Promote to Next Egg!</button>
+    {/if}
     <h2>1000 $</h2>
     <p>Chickens: 1000</p>
     <button id="prestige-button" class="button-purple-header">Prestige</button>

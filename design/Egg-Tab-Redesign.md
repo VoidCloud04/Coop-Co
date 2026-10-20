@@ -1,6 +1,6 @@
 # Egg Tab UI Redesign — Design Proposal
 
-**Version:** Draft 1.0 (design proposal — no code changes)
+**Version:** Draft 1.1 (revised: single promotion bar, fixed-cost Lay button, dex folded into the ladder)
 **Target:** v3.0 Svelte rebuild (`src/routes/Egg.svelte`, currently a stub)
 **Source basis:** `Legacy Code Base/index.html` (`#eggTab`, the only legacy tab reviewed for structure), `Scripts/egghandler.js`, `Scripts/update.js`, `Scripts/main.js`, `Scripts/data.js`, `Scripts/eggspeditions.js`, `Scripts/research.js`, plus `CODE_REVIEW_REPORT.md` / `systems_proposal.md` where useful for context. The rebuilt side is represented by `src/routes/Research.svelte` (the only tab rebuilt so far) and `src/lib/scripts/DataManager.svelte.js`.
 
@@ -15,9 +15,15 @@ The legacy Egg tab is a "here is your egg, here is the next egg, here is a list 
 The redesign keeps the Egg tab's identity — **this is the *farm*, the tab you look at while you play** — and reframes it around:
 
 1. **A live "farm console"** — the top card answers *"how fast am I earning, and what is making me earn that fast?"* with a compact stat readout and a visible breakdown of the grain multipliers.
-2. **A progression ladder instead of a dex grid** — the 19 eggs become a horizontal, scrollable timeline that shows where you are, what's next, and exactly how far away it is (two-stage discover → unlock progress).
-3. **A deliberate place for the Hatch affordance** — the legacy `#mainButton` is a fixed, screen-hogging bar. In v3 it becomes a dedicated, primary "Lay Eggs" control that also communicates the manual-click share of income.
+2. **One progression ladder that carries the whole egg catalog** — the 19 eggs become a horizontal, scrollable timeline that shows where you are, what's next, and exactly how far away it is. It replaces *both* the legacy "next egg" panel and the legacy "Discovered Eggs" dex, because they are two views of the same list.
+3. **A deliberate place for the Lay Eggs affordance** — the legacy `#mainButton` is a fixed, screen-hogging bar. In v3 it becomes an in-flow, primary control that is intentionally a fixed `+1` and is presented as such.
 4. **Everything that the *other* tabs own stays out** — contracts, prestige, ascension, eggspeditions get one-line "you have something to do elsewhere" summaries, not duplicated controls.
+
+### Changes in this revision
+
+- **Discovery and Unlock are now one progress bar**, not two. Research into the legacy code (below) shows discovery is not a second *cost* — it is a *visibility reveal*. Unlock (the actual promotion cost) is the only thing left to measure.
+- **The Lay Eggs button is no longer described as upgradeable.** It is deliberately a flat `+1` with no upgrade path planned; the proposal drops the click-share/click-power framing accordingly.
+- **Zone D (the "Eggs Discovered" dex) is removed.** Its entire payload is absorbed by the ladder, which was already showing the same information in a better shape.
 
 ---
 
@@ -72,9 +78,36 @@ These are facts about the legacy DOM, all confirmed in the legacy source:
 | Promote progress | `.style.setProperty('--x'/'--y', …)` on `#eggPromoteButton` | two independent progress values: **discover** = `log10(money)/log10(discoverReq)`, **unlock** = log-scaled on unlockReq (`update.js:14-21`) |
 | Hatch click | `data.chickens = data.chickens.add(1)` (`main.js:15`) | flat +1, no upgrade interaction |
 
-**The discover/unlock two-stage gate is the most under-served piece of information in the legacy tab.** It is computed (`update.js:17-20`) purely to animate two CSS variables on the Promote button, and the *numbers* behind it are never shown to the player.
+**The discover/unlock pair is the most mis-served piece of information in the legacy tab — and it is also the most mis-described.** See §1.4 before designing UI around it.
 
-### 1.4 What the legacy tab is actually good at
+### 1.4 What `discoverReq` and `unlockReq` actually do (important)
+
+The names suggest two sequential *costs*. They are not. Reading every use site:
+
+**`discoverReq` is a reveal threshold, not a purchase.**
+- It is compared against `data.money` (`egghandler.js:147-151`) and, when crossed, the next egg's sprite and details replace `question.png`. Nothing is deducted.
+- It is **never** compared against `data.money` to grant promotion. `promoteEgg()` only checks `unlockReq` (`egghandler.js:241`).
+- The reveal test is written against the *current* egg's flag: `data.unlockedEgg[data.currentEgg] === true || data.money.gte(eggData[data.currentEgg + 1].discoverReq)`.
+  - On a **fresh save**, `unlockedEgg[currentEgg]` is `false`, so the gate is the money threshold — the player sees `Not Discovered / Discover at $1e7`.
+  - On a **repeat run**, the previous promotion set `unlockedEgg[currentEgg] = true`, so the gate is *bypassed entirely* — the next egg is revealed immediately, at any money.
+- So `discoverReq` is the "show me this egg's name and value" milestone on the first-ever lap. It exists to stop a new player from seeing all 19 egg names on turn one.
+
+**`unlockReq` is the actual promotion cost gate.**
+- `promoteEgg()` returns early unless `data.money.gte(eggData[data.currentEgg + 1].unlockReq)` (`egghandler.js:241`). The promotion button colours green on that same test (`update.js:21`), and Auto-Promote fires on it (`automation.js:14`, `:60`).
+- This is the value that behaves like a wall.
+
+**Consequences for the UI:**
+
+| | First-ever lap | Every later lap |
+|---|---|---|
+| Discovery reveal | gated by `money ≥ discoverReq` | already revealed (flag is set) |
+| Unlock / promote | gated by `money ≥ unlockReq` | gated by `money ≥ unlockReq` |
+
+So on a repeat lap **there is only ever one threshold in play**. Only on a first lap is there a reveal point that is *informationally* meaningful — and even then it is not a barrier, since a player will always blow past `discoverReq` (≈6× below `unlockReq`) on the way to `unlockReq` anyway.
+
+**This is why the redesign uses a single progress bar** (§4 Zone B): one bar measuring `money` against `unlockReq`, with a **discovery marker tick** drawn at `discoverReq / unlockReq` (a fixed position per egg, roughly 1/6 of the way along). Crossing that marker is the moment the egg's name, value and sprite stop being hidden — the reveal event the legacy code gestures at, shown as a labelled notch on the bar instead of a separate bar of its own.
+
+### 1.5 What the legacy tab is actually good at
 
 For fairness, these survive the redesign:
 
@@ -94,8 +127,9 @@ For fairness, these survive the redesign:
 | **P4** | Progress to the next egg is a CSS gradient, not a number. Players do not know "how much more money". | `update.js:14-21` |
 | **P5** | The "next egg" panel lies when `onPlanet` (shows planet egg twice). | `egghandler.js:166-168` |
 | **P6** | The Hatch button is `position: fixed` at 50% width — it covers content and does not relate to the farm it feeds. | `style.css:143-149` |
-| **P7** | Dex rows are inert — no name, value, requirement, or "owned" detail on hover/click. | 19 × `<img id="currentEggImg">` |
+| **P7** | 19 separate `eggHold` rows and the "next egg" panel are two disconnected renders of the *same* egg list, so they can and do disagree (off-by-one sizing, `onPlanet` overwrite). | `index.html:80-161` + `egghandler.js:170-171` |
 | **P8** | Nothing on the tab acknowledges that Contracts / Prestige / Ascension / Eggspeditions exist and are blocked by *your current egg*. | Siloed per-tab `updateHTML()` branches |
+| **P9** | The discover/unlock device is presented as two equal bars even though discover is a reveal flag, not a cost. | `update.js:17-20` vs `egghandler.js:241` |
 
 ---
 
@@ -103,16 +137,17 @@ For fairness, these survive the redesign:
 
 1. **The Egg tab is the farm, not the menu.** It should be the tab a player leaves open. Everything else (research, contracts, prestige, ascension, eggspeditions) is a *visit*, not a *home*. Therefore the Egg tab gets the live telemetry, and the other tabs get status summaries here.
 2. **Every number on this tab must be live and derived, never a literal.** `DataManager` already centralises state; the tab must read derived values from one place, not recompute inline like `egghandler.js` does.
-3. **Two-stage progression is the hero of the tab.** Discover → Unlock is the tab's only real "gameplay loop" and should get the largest visual weight after the income readout.
-4. **Data-driven, unique keys, no ID reuse.** The dex becomes `{#each eggCatalog}`. No `id="currentEggImg"`.
-5. **Progressive disclosure.** Early-game players (3 eggs discovered) see a short ladder and a big Hatch button. Late-game players see the same tab with a long ladder, an on-planet banner, and artifact/automation chips — same component, denser payload.
-6. **Mobile-first flow.** Legacy's fixed 50%-wide bottom button and 3-column `flexEgg` dex are a desktop assumption. The redesign is a single vertical column that degrades to one column under ~40em.
+3. **One list of eggs, one render of it.** The legacy tab draws the catalog twice (the next-egg panel and the 19 dex rows) and the two drift. The ladder is the single source of truth for "what eggs exist and where am I".
+4. **Measure only what is a barrier.** `unlockReq` is a wall; `discoverReq` is a reveal. The bar measures the wall; the reveal is a marker on it.
+5. **Data-driven, unique keys, no ID reuse.** The ladder becomes `{#each eggCatalog}`. No `id="currentEggImg"`.
+6. **Progressive disclosure.** Early-game players (3 eggs discovered) see a short ladder and a big Lay button. Late-game players see the same tab with a long ladder, an on-planet banner, and artifact/automation chips — same component, denser payload.
+7. **Mobile-first flow.** Legacy's fixed 50%-wide bottom button and 3-column `flexEgg` dex are a desktop assumption. The redesign is a single vertical column that degrades to one column under ~40em.
 
 ---
 
 ## 4. Proposed Egg tab layout
 
-Single vertical column, four zones top-to-bottom. Nothing is `position: fixed`.
+Single vertical column, three zones top-to-bottom. Nothing is `position: fixed`.
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
@@ -128,32 +163,24 @@ Single vertical column, four zones top-to-bottom. Nothing is `position: fixed`.
 └──────────────────────────────────────────────────────────────┘
 
 ┌──────────────────────────────────────────────────────────────┐
-│ ZONE B — PROMOTION LADDER (hero progression)                  │
+│ ZONE B — PROMOTION LADDER (hero progression + the whole dex)  │
 │                                                                 │
 │   ✓ Regular ── ✓ Superfood ── ● Medical ── ○ Rocket Fuel ── …  │
-│                                 scrollable ──▸                 │
+│   how fast am I earning              scrollable ──▸           │
+│                                    (19 nodes, incl. locked    │
+│                                     and undiscovered)         │
 │                                                                 │
 │  ┌── Next: Rocket Fuel Egg ─────────────────────────────────┐  │
-│  │  DISCOVER  ████████████░░░░░░  78%   at $3.80e10         │  │
-│  │  UNLOCK    ██████░░░░░░░░░░░░  41%   at $2.40e11         │  │
-│  │  Value $30/egg  ·  ×120 over Medical                     │  │
-│  │                         [ Promote to Next Egg ]  (gated) │  │
-│  └──────────────────────────────────────────────────────────┘│
+│  │  ████████████░░░░░░░░░░░░░░   41%    $1.0e11 / $2.40e11  │  │
+│  │  ▲ discovered here ($3.80e10)                             │  │
+│  │  Value $30/egg  ·  ×120 over Medical · Discovered ✓       │  │
+│  │                         [ Promote to Next Egg ]  (gated)  │  │
+│  └──────────────────────────────────────────────────────────┘  │
 └──────────────────────────────────────────────────────────────┘
 
 ┌──────────────────────────────────────────────────────────────┐
 │ ZONE C — LAY EGGS (the farm verb)                             │
 │              [ Click to Lay Eggs  ·  +1 Chicken ]             │
-│   manual clicks: 12  ·  worth 0.4% of income (upgrades ↑)     │
-└──────────────────────────────────────────────────────────────┘
-
-┌──────────────────────────────────────────────────────────────┐
-│ ZONE D — EGGS DISCOVERED  (the dex, collapsed)                │
-│  19 discovered · 12/19 promoted · [Show dex ▾]                │
-│  ┌────┬────────────────┬───────────┬────────┬───────┐        │
-│  │ □  │ Superfood Egg  │ $1.25     │ 1e7    │ beyond│        │
-│  │ □  │ Medical Egg    │ $6.25     │ 8.4e8  │ beyond│        │
-│  └────┴────────────────┴───────────┴────────┴───────┘        │
 └──────────────────────────────────────────────────────────────┘
 ```
 
@@ -181,33 +208,51 @@ Replaces the legacy `currentEggText` `<h4>`. It is the "at a glance" panel.
 - `🕯 Enlightenment — Lamp charging` (late-game, per `systems_proposal.md` §6)
 - `⚙ Auto-promote: On`
 
-### Zone B — Promotion Ladder (the hero)
+### Zone B — Promotion Ladder (the hero, and the whole catalog)
 
-This is the biggest structural change and the highest-value one.
+This is the biggest structural change. It is also the **replacement for the legacy dex** — the ladder *is* the egg list, so there is no separate "Eggs Discovered" panel (see §4.1).
 
-**B1 — Ladder strip.** A horizontally scrollable rail of node chips, one per egg in `eggData` (19). Each node has three states:
+**B1 — Ladder strip.** A horizontally scrollable rail of node chips, one per egg in `eggData` (19). Each node has four states, derived from `money` + the unlock flag:
 
-| State | Visual | Meaning |
+| State | Condition | Visual |
 |---|---|---|
-| **Locked** | grayscale `question.png`-style silhouette, no name | `!data.unlockedEgg[i] && money < discoverReq` |
-| **Discovered** | full-colour sprite, name in `$gray` | `data.unlockedEgg[i]` but `i > currentEgg` |
-| **Current** | full-colour sprite, outlined, name in white | `i === data.currentEgg` |
+| **Undiscovered** | `i > currentEgg`, not yet promoted, `money < discoverReq_i` | silhouette (`question.png`), name `???`, value hidden |
+| **Discovered / locked** | `i > currentEgg`, `money ≥ discoverReq_i` (or previously promoted past it) | full sprite, real name, `$value` in `$gray` |
+| **Current** | `i === currentEgg` | full sprite, outlined, white label |
+| **Promoted** | `i < currentEgg` | full sprite, `✓` badge, label in `$gray` |
 
-Clicking a node expands a small popover: `Name · Value $X · Discover $Y · Unlock $Z · ×N vs current`. This replaces all 19 inert dex rows with real information *without* needing a separate dex panel to be open (P7).
+This is the *only* place the catalog is rendered. It naturally handles all 19 eggs (`eggData.length`), fixing the legacy off-by-one and the duplicate-ID problem in one move (P1, P7).
 
-**B2 — Next-egg progress card.** Two labelled bars, replacing the Promote button's CSS-variable trick (P4):
+Clicking any node expands its detail popover:
+
+```
+┌── Rocket Fuel Egg ──────────────┐
+│  $30 / egg                      │
+│  Discovered ✓  (at $3.80e10)    │
+│  Promotes from Medical Egg      │
+│  ×120 value over Medical        │
+│  Status: not yet reached        │
+└─────────────────────────────────┘
+```
+
+For an **undiscovered** node the popover deliberately withholds name, sprite and value, showing instead: `??? · Discovered at $X`. That preserves the legacy reveal behaviour (`egghandler.js:150-151`) as information, not as a hidden bar.
+
+This is what the old dex did, in the place a player already looks. It also makes the dex's "sort by tier / by value" question moot — the rail is always tier order, which is the order that matters for progression.
+
+**B2 — Next-egg progress card. One bar, one marker.**
 
 ```
 Next: Rocket Fuel Egg
-DISCOVER  ████████████░░░░░░  78%   at $3.80e10
-UNLOCK    ██████░░░░░░░░░░░░  41%   at $2.40e11
+████████████░░░░░░░░░░░░░░░░   41%    $1.0e11 of $2.40e11
+▲ discovered ($3.80e10) · Discovered ✓
 Value $30/egg · ×120 over Medical
+                    [ Promote to Next Egg ]   (red → green at 100%)
 ```
 
-- Discover bar = `clamp(log10(money) / log10(discoverReq), 0, 1)` — exactly the legacy `--y` value (`update.js:17`), now with a numeral.
-- Unlock bar = the legacy `--x` value (`update.js:18`), now with a numeral.
-- Values shown are the **raw requirement** (`eggData[i+1].discoverReq` / `.unlockReq`), which the legacy tab never displayed.
-- The **Promote** button lives inside this card, gated: red and disabled until `money ≥ unlockReq`, green after. This matches legacy behaviour (`update.js:21`) but co-locates the button with the progress that justifies it.
+- **The bar measures `money` against `unlockReq` only** — the actual promotion gate (`egghandler.js:241`, `update.js:21`, `automation.js:14`). Because requirements span 1e7 → 3.6e65, the fill uses a log scale: `clamp(log10(money) / log10(unlockReq), 0, 1)`. The existing legacy `--x` value (`update.js:18`) is already log-scaled, so this is a straight port.
+- **The discovery marker is a tick at `log10(discoverReq) / log10(unlockReq)`** — a fixed position per egg (roughly 1/6 along, since `unlockReq ≈ 6.3 × discoverReq` across the whole table). When `money` passes it, the egg's sprite/name/value become visible on the ladder and the marker flips to `Discovered ✓`. This is the reveal event, rendered as a notch instead of a second bar (resolves P9).
+- **The marker is hidden once discovered** (i.e. on any repeat lap, where the reveal flag is already set — §1.4), which keeps the bar clean for the 90% case where only the unlock wall matters.
+- Labels: current money, required money, percentage. The legacy tab showed *none* of these three.
 
 **B3 — Final-egg variant.** When `currentEgg === eggData.length - 1`, the card is replaced by a single "Final Egg" plate: `The Final Egg` + a link-chip to Prestige/Ascension if those are unlocked (legacy did the same via `egghandler.js:153-159`).
 
@@ -215,28 +260,29 @@ Value $30/egg · ×120 over Medical
 
 ### Zone C — Lay Eggs
 
-The legacy `#mainButton` moves from a fixed overlay into a normal, large, primary control directly under the ladder (P6). Content: `Click to Lay Eggs · +1 Chicken` (the legacy wording is `Click to Hatch +1 Chicken`; rename to "Lay" to match the "Lay Rate" stat and free "hatch" for later systems).
+The legacy `#mainButton` moves from a fixed overlay into a normal, large, primary control directly under the ladder (P6). Content: `Click to Lay Eggs · +1 Chicken` (legacy wording is `Click to Hatch +1 Chicken`; rename to "Lay" to match the "Lay Rate" stat).
 
-Add a **manual-share readout** beneath it: `manual clicks: 12 · 0.4% of income`. In legacy, clicking is `+1` flat while income is exponential, so the button becomes decoration within minutes — surfacing the share is honest about that and gives a clear hook for a future "click power" upgrade line without committing to one here.
+**This button is intentionally flat and final.** There is no click-power upgrade line and none is planned (`main.js:15` is a bare `+1`). It is a flavour/engagement affordance, not an economic one, and the redesign treats it that way:
 
-### Zone D — Eggs Discovered (dex)
+- No click counter, no "share of income" readout, no progress framing.
+- No hint that it will ever scale.
+- It sits *below* the ladder and above nothing — it must never be mistaken for the primary progression lever.
 
-Kept, because the legacy dex is the one place players see the full 19-egg shape of the game — but demoted to a **collapsed summary bar** by default, expanding into a responsive list (not the legacy 3 fixed 300px columns, `style.css:53-57`).
+The only thing added beyond the legacy button is placement: in flow, full-width on mobile, centred on desktop. The label change is the sole wording ask (§9).
 
-Summary bar: `19 discovered · 12/19 promoted` + `[Show dex ▾]`.
+#### Why the old "Eggs Discovered" panel is gone
 
-Expanded rows (one per egg, `{#each}`):
+An earlier draft kept the legacy dex as a fourth zone. It has been removed because the ladder already carries the same payload, better:
 
-| Column | Content |
+| Legacy dex gave the player… | Ladder equivalent |
 |---|---|
-| Sprite | egg image |
-| Name | `eggData[i].name` + `Egg` |
-| Value | `eggData[i].value`, formatted |
-| Discover | `eggData[i].discoverReq` |
-| Unlock | `eggData[i].unlockReq` |
-| Status | `✓ promoted` / `current` / `locked` |
+| The full 19-egg list | All 19 nodes, always rendered |
+| Which eggs are unlocked | Node state (promoted / current / discovered / undiscovered) |
+| Egg names | Node label |
+| Egg sprites | Node sprite |
+| Nothing else (values/reqs were unreachable) | Click popover: value, discover point, ×N vs previous, status |
 
-Sort toggle: **by tier** (default) or **by value**. This is the "useful information" the legacy grid had no room for.
+The dex was a *second render of the same list* — which is exactly the drift problem in P7. Keeping it would mean maintaining two components that must agree about `currentEgg`, `unlockedEgg` and the length of `eggData`, and that is the legacy mistake being fixed, not preserved. The "useful information" the legacy grid lacked (value, requirements, comparison) moves into the ladder popover; nothing is lost.
 
 ---
 
@@ -266,13 +312,12 @@ Following the `Research.svelte` pattern (`tiers = commonByTier()`, local `collap
 |---|---|---|
 | `Egg.svelte` | Zone composition, owns local UI state | — |
 | `FarmConsole.svelte` | Zone A | `egg`, `income`, `layRate`, `chickenGain`, `breakdown`, `chips` |
-| `PromotionLadder.svelte` | Zone B1 ladder rail | `eggs`, `currentEgg`, `unlockedEgg`, `onSelect` |
-| `NextEggCard.svelte` | Zone B2/B3/B4 | `next`, `progress`, `canPromote`, `onPromote`, `planet?` |
-| `LayEggsBar.svelte` | Zone C | `clickValue`, `clicks`, `manualShare`, `onClick` |
-| `EggDex.svelte` | Zone D | `eggs`, `unlockedEgg`, `currentEgg`, `open`, `sort` |
-| `StatReadout.svelte` | reusable labelled `LABEL value` cell (Zone A + D) | `label`, `value`, `color?` |
+| `PromotionLadder.svelte` | Zone B1 ladder rail (the catalog) + node popover | `eggs`, `currentEgg`, `promotedCount`, `money`, `onSelect` |
+| `NextEggCard.svelte` | Zone B2/B3/B4, incl. the single progress bar + discovery marker | `next`, `progress`, `discoverMarker`, `discovered`, `canPromote`, `onPromote`, `planet?` |
+| `LayEggsBar.svelte` | Zone C | `clickValue`, `onClick` |
+| `StatReadout.svelte` | reusable labelled `LABEL value` cell (Zone A) | `label`, `value`, `color?` |
 
-`StatReadout` and the progress bar are the only two primitives worth generalising now; the Research tab already contains the same "grid + collapse-all" idiom, and a future shared `TierGrid`/`ProgressBar` in `src/lib/components/` would let both tabs stay consistent.
+`StatReadout`, `ProgressBar` and `EggNode` are the primitives worth generalising now; the Research tab already contains the same "grid + collapse-all" idiom, and shared components in `src/lib/components/` would let both tabs stay consistent.
 
 ### 6.2 Deriving the numbers once
 
@@ -280,30 +325,34 @@ The legacy failure mode is that the *same* derived value is recomputed in `main.
 
 ```js
 // EggManager.js — pure derivations, no DOM, no $state writes
-export function eggCount()                        // eggData.length
-export function currentEgg(state)                 // eggData[state.indexValues.currentEgg]
-export function eggValue(state)                   // base × eggValueBonus
-export function valueBonusBreakdown(state)        // { research, epic, soul, artifacts, gems, planet }
-export function incomePerSecond(state)            // value × soulBoost × chickens × layRate
-export function discoverProgress(state, nextEgg)  // 0..1  (legacy update.js:17)
-export function unlockProgress(state, nextEgg)    // 0..1  (legacy update.js:18)
-export function canPromote(state)                 // money ≥ unlockReq && !onPlanet && !contractActive
-export function hatchClickValue(state)            // currently 1
+export function eggCount()                         // eggData.length (19)
+export function currentEgg(state)                  // eggData[state.indexValues.currentEgg]
+export function eggValue(state)                    // base × eggValueBonus
+export function valueBonusBreakdown(state)         // { research, epic, soul, artifacts, gems, planet }
+export function incomePerSecond(state)             // value × soulBoost × chickens × layRate
+export function promotionProgress(state)           // 0..1, log10(money)/log10(unlockReq)   (legacy update.js:18)
+export function discoveryMarker(state)             // 0..1 or null, log10(discoverReq)/log10(unlockReq)
+export function isDiscovered(state, eggIndex)      // reveal flag OR money ≥ discoverReq     (legacy egghandler.js:147)
+export function canPromote(state)                  // money ≥ unlockReq && !onPlanet && !contractActive
+export function hatchClickValue(state)             // always 1 — intentionally flat
 ```
+
+**Note on `promotionProgress` vs the legacy `--y`:** the legacy `--y` ("discover progress", `update.js:17`) is *dropped*, not ported. Its only job was to animate a second gradient for a state that `money` will always pass on the way to `unlockReq`; the discovery marker subsumes it as a static tick position (`discoveryMarker`).
 
 `Egg.svelte` then becomes a pure view over `data` + these selectors — no `console.log` in the component body (a leftover currently in `Research.svelte:47`), no inline ternaries, no ID-based DOM writes.
 
 ### 6.3 State this design requests from `DataManager`
 
-The current `DefaultDataObject()` (`DataManager.svelte.js:4-63`) is missing three things the Egg tab needs, all of which the legacy `data` object also lacked:
+The current `DefaultDataObject()` (`DataManager.svelte.js:4-63`) is missing two things the Egg tab needs, both of which the legacy `data` object also got wrong:
 
-1. **`indexValues.unlockedEgg` exists but is never sized.** Legacy used `new Array(18).fill(false)` for a 19-entry catalog (`data.js:16`) — off by one. Rebuild must derive it: `new Array(eggData.length).fill(false)`.
-2. **`indexValues.currentEgg` is a single index, and `onPlanet`/`currentPlanet` are separate.** Zone B4 needs an explicit `onPlanet` boolean plus `currentPlanet`, and the console needs to know *which* egg source is authoritative. Recommend `indexValues.planet: { index: -1, onPlanet: false }` so `-1` means home, matching but not mirroring legacy's mixed `onPlanet` + `currentPlanetIndex: -1` convention.
-3. **Manual click counter.** `stats.clicks` (Decimal) — needed for the Zone C share readout and a future click-power upgrade. Legacy had no such counter; the button was fire-and-forget.
+1. **`progression.unlockedEgg` exists but is never sized.** Legacy used `new Array(18).fill(false)` for a 19-entry catalog (`data.js:16`) — off by one, which is why `eggHold18` could never be shown. Rebuild must derive it: `new Array(eggCatalog.length).fill(false)`. Note the v3 object already nests it under `progression` rather than at the root, which is correct.
+2. **`indexValues.currentPlanet: -1` plus no `onPlanet` flag.** Zone B4 needs an explicit boolean, and the console needs to know *which* egg source is authoritative. Legacy tracked `onPlanet` and `currentPlanetIndex` in two different files with `-1` as an implicit "home" sentinel (`eggspeditions.js:57-80`). Recommend an explicit `indexValues.planet: { index: -1, active: false }` so `active` is the only thing zone logic reads.
 
-New `automation` / `stats` reads the tab wants (all already partially present or trivially derivable):
-- `automation.autoPromote` (legacy `autoActive[?]` / `settingsToggles[3]` for the stop-at-Enlightenment rule, `update.js:60`)
-- `stats.bestEgg` (`main.js:225-233`) — for the dex "best reached" badge
+**Not requested:** a click counter. The Lay button is intentionally non-economic (§4 Zone C), so there is nothing to count.
+
+New `automation` / `stats` reads the tab wants (already present in `DefaultDataObject` and trivially derivable):
+- `automation` auto-promote state — the tab shows a `⚙ Auto-promote: On` chip (legacy `autoActive[2]`, `automation.js:13-16`)
+- `stats.bestMoney` — not needed by the tab itself, but the ladder's "furthest reached" badge uses `indexValues.currentEgg`, not a stat
 - `settings.toggles` for newsticker/notation are untouched by this tab
 
 ### 6.4 Styling
@@ -326,14 +375,14 @@ New `automation` / `stats` reads the tab wants (all already partially present or
 | Lay rate | `currentEggText` line 4 | Zone A EGG RATE |
 | Chicken gain | `currentEggText` line 5 | Zone A CHICKENS |
 | Next egg sprite + name | `nextEggImg` / `nextEggText` | Zone B1 ladder + B2 card |
-| Next egg unlock req | `nextEggText` | Zone B2 UNLOCK bar + requirement |
+| Next egg unlock req | `nextEggText` | Zone B2 progress bar label |
 | Next egg value | `nextEggText` | Zone B2 footer |
-| "Not Discovered" gate | `egghandler.js:150-151` | Zone B1 locked node + B2 discover bar |
+| "Not Discovered" gate | `egghandler.js:150-151` | Zone B1 undiscovered node + B2 discovery marker |
 | Final-egg special case | `egghandler.js:153-159` | Zone B3 |
 | On-planet fork | `egghandler.js:162-169` | Zone B4 (replaces, doesn't overwrite) |
-| 19-egg dex visibility | `eggHold0..17` show/hide | Zone D |
-| Promote button + 2 progress values | `eggPromoteButton`, `update.js:14-21` | Zone B2 |
-| Click to hatch | `mainButton`, `main.js:15` | Zone C |
+| 19-egg dex visibility | `eggHold0..17` show/hide | Zone B1 ladder nodes (all 19, correct length) |
+| Promote button + 2 progress values | `eggPromoteButton`, `update.js:14-21` | Zone B2 single bar; `--y` dropped as redundant |
+| Click to hatch | `mainButton`, `main.js:15` | Zone C (unchanged `+1`, relabelled/repositioned) |
 | Header egg + promote duplication | `currentEggImgHeader`, `eggPromoteButton` in `#mainHeader` | Header keeps the promote affordance (see `Header.svelte`); Zone B2 is the *informed* promote |
 
 > Note: the legacy header (`#mainHeader`, `index.html:40-47`) **duplicates** the promote control and the current-egg sprite. The rebuild's `Header.svelte` currently hard-codes `Promote to Next Egg!` and `Gilded.png`. The Egg tab redesign should decide, with the Header owner, that the header shows a *quick* promote (sheet-free) while Zone B2 shows the *informed* promote (with progress). Both must share one `canPromote` selector so they can never disagree.
@@ -346,21 +395,21 @@ New `automation` / `stats` reads the tab wants (all already partially present or
 |---|---|---|
 | **1** | `EggManager.js` selectors + `data` additions (§6.2, §6.3) | `DataManager` array sizing fix |
 | **2** | Zone A console + Zone C button — the "playable" tab | Phase 1 |
-| **3** | Zone B ladder + next-egg card (both progress bars) | Phase 1, egg sprites in `static/Images/Eggs/` (already present) |
-| **4** | Zone D dex (collapsed by default) | Phase 3 |
+| **3** | Zone B ladder (all 19 nodes + popover) — this also retires the legacy dex | Phase 1, egg sprites in `static/Images/Eggs/` (already present) |
+| **4** | Next-egg card: single bar + discovery marker + Promote gating | Phase 3 |
 | **5** | On-planet variant (B4) + status chips | Eggspeditions tab existing |
-| **6** | Breakdown popover + shared `ProgressBar`/`StatReadout` extracted to `src/lib/components/` for reuse by Research | Phase 2 |
+| **6** | Breakdown popover + shared `ProgressBar`/`StatReadout`/`EggNode` extracted to `src/lib/components/` for reuse by Research | Phase 2 |
 
 ---
 
 ## 9. Open questions for the maintainer
 
 1. **Hatch vs Lay.** Legacy calls the action "Hatch" but the rate stat is "Lay Rate". Renaming the button to "Lay Eggs" is proposed here; confirm the game's voice.
-2. **Click value.** This design surfaces the manual-click share rather than fixing it. Should the tab also propose a click-power research line (making Zone C permanently relevant), or is manual clicking intentionally cosmetic?
-3. **Dex default state.** Collapsed by default is proposed to give Zone B room on mobile. If the dex is a core collection feature, it may deserve its own sub-tab instead.
-4. **Planet eggs in the ladder.** Should the ladder show the 6 planet eggs inline when travelling, or keep Zone B strictly the home-egg progression with B4 as the only planet surface?
-5. **Breakdown detail.** Group-level factors (`Research ×2.10`) or per-research contributory factors (18 rows)? Group-level is proposed; per-research is a bigger "why is my number this" tool but risks becoming a second Research tab.
-6. **Colour semantics.** The legacy Egg tab uses no colour on egg values; the ladder proposes `$majorColors`. Confirm that the palette is reserved for tier/state language across tabs.
+2. **Discovery marker.** Is the reveal milestone worth a tick on the bar at all, given it only exists on a first lap and is always passed before `unlockReq`? The alternative is to drop it and let the ladder node flip from `???` to revealed with no bar notation. Marked here as the lowest-confidence part of the design.
+3. **Planet eggs in the ladder.** Should the ladder show the 6 planet eggs inline when travelling, or keep Zone B strictly the home-egg progression with B4 as the only planet surface?
+4. **Breakdown detail.** Group-level factors (`Research ×2.10`) or per-research contributory factors (18 rows)? Group-level is proposed; per-research is a bigger "why is my number this" tool but risks becoming a second Research tab.
+5. **Colour semantics.** The legacy Egg tab uses no colour on egg values; the ladder proposes `$majorColors`. Confirm that the palette is reserved for tier/state language across tabs.
+6. **Ladder default scroll position.** Should the rail auto-scroll to centre the current egg on mount, or always start at Tier I so the player sees the whole climb? Auto-centre is convenient late-game but hides the "you have 19 eggs" scale.
 
 ---
 
@@ -369,10 +418,11 @@ New `automation` / `stats` reads the tab wants (all already partially present or
 | Legacy | Proposed |
 |---|---|
 | 20 duplicate `currentEggImg` IDs | `{#each}` with per-egg unique keys, zero ID reuse |
-| 19 hard-coded dex rows toggled by `display` | data-driven array from `eggData.length` (19), no off-by-one |
+| 19 hard-coded dex rows toggled by `display`, off-by-one sized | one data-driven ladder over `eggCatalog.length` (19) |
+| Two disconnected renders of the egg list (next-egg panel + dex) | single ladder is the catalog; next-egg card is a detail view of one node |
 | 5-line `\n`-joined `<h4>` as telemetry | labelled stat readout + expandable multiplier breakdown |
-| CSS-variable-only promote progress | two labelled progress bars with exact requirement values |
-| Fixed-position 50%-wide Hatch button | in-flow primary "Lay Eggs" control + manual-share readout |
+| Two CSS-variable progress bars, one of which measures a non-cost | one bar measuring `unlockReq` + a static discovery marker |
+| Fixed-position 50%-wide Hatch button | in-flow primary "Lay Eggs" control |
 | Next-egg panel overwritten on planet | dedicated planet-run card |
-| Inert dex images | per-egg detail popover + sortable dex table |
+| Inert dex images | per-node detail popover on the ladder |
 | Total silence about other systems | status chips + factor groups that name the other systems |
