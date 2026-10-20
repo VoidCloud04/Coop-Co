@@ -116,3 +116,25 @@ export const eggs = [
         baseValue: new Decimal(0.0000001)
     }
 ]
+
+export const regularEggImgIds = [
+    "egg",
+    "superfood",
+    "medical",
+    "rocketfuel",
+    "supermaterial",
+    "fusion",
+    "quantum",
+    "immortality",
+    "tachyon",
+    "graviton",
+    "dilithium",
+    "prodigy",
+    "terraform",
+    "antimatter",
+    "darkmatter",
+    "ai",
+    "nebula",
+    "universe",
+    "enlightenment"
+]
