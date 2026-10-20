@@ -306,3 +306,12 @@ export const legendaryResearch = [
         maxLevels: 1
     }
 ]
+
+export function commonByTier() {
+    const maxTier = commonResearch.reduce((max, obj) => Math.max(max, obj.tier),0)
+    const ret = Array.from({ length: maxTier + 1 }, () => [])
+    for(let i = 0; i < commonResearch.length; i++) {
+        ret[commonResearch[i].tier].push(commonResearch[i])
+    }
+    return ret
+}
