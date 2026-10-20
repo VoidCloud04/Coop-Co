@@ -200,7 +200,7 @@
         background-color: $red;
         color: $white;
         padding: 2px 4px;
-        border-radius: 5px;
+        border-radius: $borderRadius;
         text-align: center;
         margin-left: 1vw;
         margin-right: 1vw;
@@ -210,7 +210,7 @@
         background-color: $green;
         color: $white;
         padding: 2px 4px;
-        border-radius: 5px;
+        border-radius: $borderRadius;
         text-align: center;
         margin-left: 1vw;
         margin-right: 1vw;
@@ -220,7 +220,7 @@
         background-color: $blue;
         color: $white;
         padding: 2px 4px;
-        border-radius: 5px;
+        border-radius: $borderRadius;
         text-align: center;
         margin-left: 1vw;
         margin-right: 1vw;
@@ -230,7 +230,7 @@
         background-color: $yellow;
         color: $bg-color;
         padding: 2px 4px;
-        border-radius: 5px;
+        border-radius: $borderRadius;
         text-align: center;
         margin-left: 1vw;
         margin-right: 1vw;
