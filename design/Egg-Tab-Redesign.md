@@ -1,6 +1,6 @@
 # Egg Tab UI Redesign — Design Proposal
 
-**Version:** Draft 1.1 (revised: single promotion bar, fixed-cost Lay button, dex folded into the ladder)
+**Version:** Draft 1.2 (revised: ladder pinned to a flex-row chip rail, progress bar pinned to real CSS — linear red/green fill + yellow discovery tick, Zone C removed)
 **Target:** v3.0 Svelte rebuild (`src/routes/Egg.svelte`, currently a stub)
 **Source basis:** `Legacy Code Base/index.html` (`#eggTab`, the only legacy tab reviewed for structure), `Scripts/egghandler.js`, `Scripts/update.js`, `Scripts/main.js`, `Scripts/data.js`, `Scripts/eggspeditions.js`, `Scripts/research.js`, plus `CODE_REVIEW_REPORT.md` / `systems_proposal.md` where useful for context. The rebuilt side is represented by `src/routes/Research.svelte` (the only tab rebuilt so far) and `src/lib/scripts/DataManager.svelte.js`.
 
@@ -15,11 +15,17 @@ The legacy Egg tab is a "here is your egg, here is the next egg, here is a list 
 The redesign keeps the Egg tab's identity — **this is the *farm*, the tab you look at while you play** — and reframes it around:
 
 1. **A live "farm console"** — the top card answers *"how fast am I earning, and what is making me earn that fast?"* with a compact stat readout and a visible breakdown of the grain multipliers.
-2. **One progression ladder that carries the whole egg catalog** — the 19 eggs become a horizontal, scrollable timeline that shows where you are, what's next, and exactly how far away it is. It replaces *both* the legacy "next egg" panel and the legacy "Discovered Eggs" dex, because they are two views of the same list.
-3. **A deliberate place for the Lay Eggs affordance** — the legacy `#mainButton` is a fixed, screen-hogging bar. In v3 it becomes an in-flow, primary control that is intentionally a fixed `+1` and is presented as such.
+2. **One progression ladder that carries the whole egg catalog** — the 19 eggs become a horizontal, scrollable **flex-row of per-egg chips** (decided — *not* a text line; spec in §4 B1) that shows where you are, what's next, and exactly how far away it is. It replaces *both* the legacy "next egg" panel and the legacy "Discovered Eggs" dex, because they are two views of the same list.
+3. **The Lay button is left alone** — the legacy `#mainButton` keeps its solitary, fixed-bottom nature. No zone is dedicated to it (Zone C is removed, §4.3), and it remains an intentionally flat `+1`.
 4. **Everything that the *other* tabs own stays out** — contracts, prestige, ascension, eggspeditions get one-line "you have something to do elsewhere" summaries, not duplicated controls.
 
-### Changes in this revision
+### Changes in this revision (1.2)
+
+- **The ladder's form is decided: a flex-row of per-egg chips**, rendered with `{#each}` plus explicit connector spans — not a text line. §4 B1 now carries the markup and CSS.
+- **The progress bar is a real CSS element** — no ASCII mockups, no layered gradient. A red track (0%) filled green by a **linear** `money / unlockReq`, with a yellow tick at `discoverReq / unlockReq` (≈ 1/6 along) that hides once discovered. §4 B2 carries the markup and CSS.
+- **Zone C (Lay Eggs) is removed.** The button keeps its legacy solitary, fixed-bottom nature; it gets no zone, wrapper or redesign (§4.3).
+
+### Previous revision (1.1)
 
 - **Discovery and Unlock are now one progress bar**, not two. Research into the legacy code (below) shows discovery is not a second *cost* — it is a *visibility reveal*. Unlock (the actual promotion cost) is the only thing left to measure.
 - **The Lay Eggs button is no longer described as upgradeable.** It is deliberately a flat `+1` with no upgrade path planned; the proposal drops the click-share/click-power framing accordingly.
@@ -57,7 +63,7 @@ These are facts about the legacy DOM, all confirmed in the legacy source:
   Chicken Gain: <chickenGain> Chickens/min
   ```
   This is the whole information payload. It is unstyled, unlabeled, and re-written every 60 ms tick.
-- **`#mainButton` is a fixed-position overlay**, `width: 50%`, `font-size: 1.5em`, pinned `bottom: 1dvh` (`style.css:143-149`). It floats over the tab content and is the only control on the page that is not in flow.
+- **`#mainButton` is a fixed-position overlay**, `width: 50%`, `font-size: 1.5em`, pinned `bottom: 1dvh` (`style.css:143-149`). It floats over the tab content and is the only control on the page that is not in flow. *(Retained deliberately as of 1.2 — see §4.3.)*
 - **The tab is display-toggled, not rendered.** `changeTab()` (`main.js:263-269`) flips `#eggTab` between `flex`/`none`. `updateHTML()` then branches on `data.currentTab === 0` before calling `updateEggPage()` (`update.js:38-40`).
 - **The "next egg" block is conditional spaghetti** (`egghandler.js:147-151`): a three-way nested ternary decides between the real next-egg image and `question.png`, and the discover check mixes `data.unlockedEgg[data.currentEgg]` with `eggData[data.currentEgg+1].discoverReq`.
 - **`onPlanet` forks the entire tab** (`egghandler.js:142-169`). When the player is on an Eggspedition, the current/next block is overwritten with planet egg data, and "next" becomes a copy of "current" (`egghandler.js:166-168`) — a visibly broken state.
@@ -126,7 +132,7 @@ For fairness, these survive the redesign:
 | **P3** | `eggValueBonus ×18 multipliers` — the player cannot see *which* research is carrying them, so the tab can't teach the game. | `egghandler.js:176-208` |
 | **P4** | Progress to the next egg is a CSS gradient, not a number. Players do not know "how much more money". | `update.js:14-21` |
 | **P5** | The "next egg" panel lies when `onPlanet` (shows planet egg twice). | `egghandler.js:166-168` |
-| **P6** | The Hatch button is `position: fixed` at 50% width — it covers content and does not relate to the farm it feeds. | `style.css:143-149` |
+| **P6** | The Hatch button is `position: fixed` at 50% width — it covers content and does not relate to the farm it feeds. | `style.css:143-149` — **accepted as of 1.2** (§4.3): the button deliberately keeps its legacy solitary placement; no zone is built around it. |
 | **P7** | 19 separate `eggHold` rows and the "next egg" panel are two disconnected renders of the *same* egg list, so they can and do disagree (off-by-one sizing, `onPlanet` overwrite). | `index.html:80-161` + `egghandler.js:170-171` |
 | **P8** | Nothing on the tab acknowledges that Contracts / Prestige / Ascension / Eggspeditions exist and are blocked by *your current egg*. | Siloed per-tab `updateHTML()` branches |
 | **P9** | The discover/unlock device is presented as two equal bars even though discover is a reveal flag, not a cost. | `update.js:17-20` vs `egghandler.js:241` |
@@ -140,14 +146,14 @@ For fairness, these survive the redesign:
 3. **One list of eggs, one render of it.** The legacy tab draws the catalog twice (the next-egg panel and the 19 dex rows) and the two drift. The ladder is the single source of truth for "what eggs exist and where am I".
 4. **Measure only what is a barrier.** `unlockReq` is a wall; `discoverReq` is a reveal. The bar measures the wall; the reveal is a marker on it.
 5. **Data-driven, unique keys, no ID reuse.** The ladder becomes `{#each eggCatalog}`. No `id="currentEggImg"`.
-6. **Progressive disclosure.** Early-game players (3 eggs discovered) see a short ladder and a big Lay button. Late-game players see the same tab with a long ladder, an on-planet banner, and artifact/automation chips — same component, denser payload.
-7. **Mobile-first flow.** Legacy's fixed 50%-wide bottom button and 3-column `flexEgg` dex are a desktop assumption. The redesign is a single vertical column that degrades to one column under ~40em.
+6. **Progressive disclosure.** Early-game players (3 eggs discovered) see a short ladder. Late-game players see the same tab with a long ladder, an on-planet banner, and artifact/automation chips — same component, denser payload.
+7. **Mobile-first flow.** Legacy's 3-column `flexEgg` dex is a desktop assumption and is gone (the ladder absorbs it). The two zones are a single vertical column that degrades under ~40em; the fixed Lay button is retained unchanged (§4.3).
 
 ---
 
 ## 4. Proposed Egg tab layout
 
-Single vertical column, three zones top-to-bottom. Nothing is `position: fixed`.
+Single vertical column, two zones top-to-bottom, plus the standalone Lay button which stays `position: fixed` (deliberately — §4.3). Nothing *inside the column* is fixed.
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
@@ -166,22 +172,19 @@ Single vertical column, three zones top-to-bottom. Nothing is `position: fixed`.
 │ ZONE B — PROMOTION LADDER (hero progression + the whole dex)  │
 │                                                                 │
 │   ✓ Regular ── ✓ Superfood ── ● Medical ── ○ Rocket Fuel ── …  │
-│   how fast am I earning              scrollable ──▸           │
-│                                    (19 nodes, incl. locked    │
-│                                     and undiscovered)         │
+│   flex-row of chips, scrollable ──▸                            │
+│   (19 nodes, incl. locked and undiscovered)                    │
 │                                                                 │
 │  ┌── Next: Rocket Fuel Egg ─────────────────────────────────┐  │
-│  │  ████████████░░░░░░░░░░░░░░   41%    $1.0e11 / $2.40e11  │  │
-│  │  ▲ discovered here ($3.80e10)                             │  │
+│  │  ┌ progress bar (CSS: green fill / red track / yellow ▲)┐│  │
+│  │  41.7%   $1.0e11 of $2.40e11 · discovery ▲ at $3.80e10  ││  │
 │  │  Value $30/egg  ·  ×120 over Medical · Discovered ✓       │  │
 │  │                         [ Promote to Next Egg ]  (gated)  │  │
 │  └──────────────────────────────────────────────────────────┘  │
 └──────────────────────────────────────────────────────────────┘
 
-┌──────────────────────────────────────────────────────────────┐
-│ ZONE C — LAY EGGS (the farm verb)                             │
-│              [ Click to Lay Eggs  ·  +1 Chicken ]             │
-└──────────────────────────────────────────────────────────────┘
+  (outside the column: the Lay button, still position: fixed at the
+   bottom — §4.3)
 ```
 
 ### Zone A — Farm Console
@@ -222,6 +225,76 @@ This is the biggest structural change. It is also the **replacement for the lega
 | **Promoted** | `i < currentEgg` | full sprite, `✓` badge, label in `$gray` |
 
 This is the *only* place the catalog is rendered. It naturally handles all 19 eggs (`eggData.length`), fixing the legacy off-by-one and the duplicate-ID problem in one move (P1, P7).
+
+**Form (decided in 1.2): a flex-row of chip elements, not a text line.** The alternative — a plain string like `Regular --> Superfood --> Medical`, which the current stub renders at `Egg.svelte:24` — is explicitly rejected: text cannot carry sprites, the four node states, per-node click targets, or `???` masking, and keeping the dex alongside it would recreate the two-renders drift of P7. The rail is one `{#each}` over `eggs`, each node a `<button>` chip, with connector `<span>`s between chips (explicit spans rather than `::after` pseudo-elements: connectors can be coloured by state — `$white` behind walked segments, `$darkgray` ahead — with no stacking-context tricks).
+
+```svelte
+<div class="ladder">
+    {#each eggs as egg, i}
+        {#if i > 0}
+            <span class="link" class:done={i <= currentEgg}></span>
+        {/if}
+        <button class="node node-{stateOf(i)}"
+                class:current={i === currentEgg}
+                onclick={() => (selected = i)}>
+            <img src="/Images/Eggs/{eggImgIds[i]}.png" alt="">
+            <span class="name">{nameOf(i)}</span>   <!-- "???" while undiscovered -->
+            <span class="badge">{badgeOf(i)}</span> <!-- ✓ promoted / ● current / — -->
+        </button>
+    {/each}
+</div>
+
+{#if selected !== null}
+    <!-- detail is an inline row under the rail, not a positioned popover -->
+    <div class="node-detail">…value, discover point, ×N vs previous, status…</div>
+{/if}
+```
+
+```scss
+.ladder {
+    display: flex;   // NOT the global .flexRow — that gives every child button
+                     // a 0.25vw side margin (global.scss:103-106), which would
+                     // break fixed chip widths and connector alignment
+    align-items: flex-start;   // chips top-align, so all sprites sit on one row
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    scrollbar-width: thin;
+    background-color: transparent;
+    margin: 0;
+    > * { margin: 0; }   // `body *` adds 0.25vh top/bottom to every descendant
+}                        // (global.scss:48-51) — zero it on rail contents
+
+.node {
+    flex: 0 0 6.5rem;    // fixed chip width; long names wrap inside
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    scroll-snap-align: center;
+    padding: 0.25rem;
+    border: $borderWidth solid transparent;
+    border-radius: $borderRadius;
+    background-color: transparent;
+    text-align: center;
+    transition-duration: 0.15s;   // global button hover runs $buttonTransitionDuration (0.5s)
+    &:hover { border-color: $darkgray; }   // overrides the global white-invert hover
+}
+
+.node img { height: 2em; width: 2em; }     // global img rule is 3.25em (global.scss:54-57)
+
+.link {                        // connector: right edge of chip i-1 → chip i
+    flex: 0 0 1rem;
+    height: $borderWidth;
+    align-self: flex-start;
+    margin-top: 1.35rem;       // centre of the 2em sprite + chip padding (tune)
+    background-color: $darkgray;
+    &.done { background-color: $white; }
+}
+```
+
+State classes map straight onto the table above: `node-undiscovered` (sprite `question.png`, name `???` in `$gray`), `node-discovered` (default), `node-current` (`border-color: $white`, white label), `node-promoted` (`✓` badge, label `$gray`). Every colour is set explicitly, because any layer you forget paints the universal `$bg-color` (§6.4).
+
+Responsive: the rail keeps `overflow-x: auto` at every width — touch scroll is the natural interaction for a timeline, and per principle 7 the *column* is what collapses, not the rail. Auto-centring on mount is open question §9-5.
 
 Clicking any node expands its detail popover:
 

@@ -1,5 +1,7 @@
 <script>
     import { data } from "$lib/scripts/DataManager.svelte";
+    import { format } from "$lib/scripts/Utilities";
+    import { eggs } from "$lib/scripts/EggManager";
 
 
 </script>
@@ -8,7 +10,7 @@
     <div class="flexRow">
         <img src="/Images/Eggs/egg.png" alt="Bruh">
         <div class="flexCol">
-            <p><strong>Regular Egg</strong><br>1$ per Egg x3.40</p>
+            <p><strong>{eggs[data.indexValues.currentEgg].name} Egg</strong><br>${format(eggs[data.indexValues.currentEgg].baseValue)} per Egg x3.40</p>
             <p>Income: $1/s | Egg Lay Rate: 40/s<br>Chickens: 10 (+10/s)</p>
         </div>
     </div>

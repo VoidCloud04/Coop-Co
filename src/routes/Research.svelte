@@ -43,10 +43,6 @@
         }
         return ret
     }
-    
-    console.log(buyAmountLabels[data.settings.buyAmounts[0]])
-
-
 </script>
 
 <h3>Research Center</h3>
