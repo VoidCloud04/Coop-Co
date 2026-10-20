@@ -66,7 +66,7 @@
             <button class="tier-label" onclick={() => toggleCollapsed(i)}>Tier {toRN(i + 1)} {collapsed[i] ? "▸" : "▾"}</button>
             <div class="researches">
                 {#each items as item}
-                    <button>{item.title}<br>{item.description}<br>{"Level: 0/0"}</button>
+                    <button>{item.title}<br>{item.description}<br>{"Level: 0/0 | Cost: 1.00e3" }</button>
                 {/each}
             </div>
         </div>
