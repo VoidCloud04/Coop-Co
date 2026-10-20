@@ -19,7 +19,7 @@
     margin: 0%;
 }
 
-h1, h2, h3, h4, h5, h6, p, td, th {
+h1, h2, h3, h4, h5, h6, p, td, th, div {
     font-family: 'Martian Mono';
     color: $white;
 }
@@ -90,3 +90,13 @@ img {
         }
     }
 } 
+
+.flexCol {
+    display: flex;
+    flex-direction: column;
+}
+
+.flexRow {
+    display: flex;
+    flex-direction: row;
+}

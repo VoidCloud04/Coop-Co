@@ -39,7 +39,7 @@
 </script>
 
 <h3>Research Center</h3>
-<table>
+<!-- <table>
     <thead>
         <tr style="border-right: 2px solid whitesmoke">
             <th>Research Tier</th>
@@ -61,25 +61,44 @@
             </tr>
         {/each}
     </tbody>
-</table>
+</table> -->
+<div class="tier-grid">
+    <div class="heading">Tier</div>
+    <div class="heading">Researches</div>
+
+    {#each tiers as items, i}
+        <div class="tier-label">Tier {toRN(i + 1)}</div>
+        <div class="researches">
+            {#each items as item}
+                <button>{item.title}+{item.desc}<br>{"Level: 0/0"}</button>
+            {/each}
+        </div>
+    {/each}
+</div>
 
 <style lang="scss">
     @use '$lib/styles/variables' as *;
-    table {
-        border: $borderWidth solid $white;
-        padding: 5px; 
-        text-align: justify;
-        border-collapse: collapse;
+    .tier-grid {
+        display: grid;
+        grid-template-columns: 8rem minmax(0, 1fr);
+        gap: 0.5rem 1rem;
+        align-items: start;
     }
-    th,td {
-        border: $borderWidth solid $white;
-        padding: 0.5em;
-        button {
-            margin-left: 0.25vw;
-            margin-right: 0.25vw;
-        }
+
+    .heading {
+        font-weight: bold;
+        border-bottom: 2px solid $white;
     }
-    tr:nth-child(even) {
-        background-color: $blue;
+
+    .tier-label,
+    .researches {
+        padding-block: 0.25rem;
     }
+
+    .researches {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
 </style>
