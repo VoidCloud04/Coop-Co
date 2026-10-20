@@ -360,3 +360,15 @@ export function commonByTier() {
     }
     return ret
 }
+
+export function purchaseCommonResearch(index) {
+
+}
+
+export function purchaseEpicResearch(index) {
+
+}
+
+export function purchaseLegendaryResearch(index) {
+    
+}

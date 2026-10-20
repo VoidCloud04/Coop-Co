@@ -99,4 +99,9 @@ img {
 .flexRow {
     display: flex;
     flex-direction: row;
+    
+    button {
+        margin-left: 0.25vw;
+        margin-right: 0.25vw;
+    }
 }

@@ -3,6 +3,7 @@
     import Header from "$lib/components/Header.svelte";
     import Newsticker from "$lib/components/Newsticker.svelte";
     import { data } from "$lib/scripts/DataManager.svelte"; // The global data object for all of the UI updates (& logic handled in the JavaScript Functions)
+    import { commonByTier } from "$lib/scripts/ResearchManager";
     import Ascension from "./Ascension.svelte";
 
     import Contracts from "./Contracts.svelte";
@@ -12,8 +13,6 @@
     import Prestige from "./Prestige.svelte";
     import Research from "./Research.svelte";
     import Settings from "./Settings.svelte";
-
-    // Imports
 
     // Variable Definitions
     let tabIndex = $state(0)
@@ -32,6 +31,8 @@
     function changeTab(i) {
         tabIndex = i
     }
+    const commonTiers = commonByTier()
+    let commonCollapsed = $state(commonTiers.map(() => true))
 </script>
 
 <Header />
@@ -43,7 +44,7 @@
 {#if tabIndex === 0}
     <Egg />
 {:else if tabIndex === 1}
-    <Research />
+    <Research bind:collapsed={commonCollapsed}/>
 {:else if tabIndex === 2}
     <Prestige />
 {:else if tabIndex === 3}
