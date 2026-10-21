@@ -9,6 +9,20 @@
     const nextEgg = $derived(eggs[data.indexValues.currentEgg+1])
     const progressPercent = $derived(Decimal.min(100,Decimal.max(0,data.currency.money.log10().dividedBy(nextEgg.unlockReq.log10()).times(100))))
     const tickPercent = $derived(Decimal.min(100,Decimal.max(0,nextEgg.discoveryReq.log10().dividedBy(nextEgg.unlockReq.log10()).times(100))))
+
+    let unlockDisplayIndex = $derived(data.indexValues.currentEgg)
+    let unlockDisplayEgg = $derived(eggs[unlockDisplayIndex])
+    let nextDisplayIndex = $derived(unlockDisplayIndex + 1)
+    let nextDisplayEgg = $derived(eggs[nextDisplayIndex])
+
+    function eggChipColor(index) {
+        if(data.indexValues.currentEgg === index)
+            return "blue"
+        else if(data.progression.unlockedEgg[index])
+            return "green"
+        else
+            return "gray"
+    }
 </script>
 
 <div class="flexCol holder">
@@ -25,13 +39,19 @@
 </div>
 
 <div class="flexCol holder">
-    <div>Promotion Ticker</div>
-    <div class="flexRow">
-        <button>{"<<<"}</button>
-        <Chip imgSrc={`Images/Eggs/${regularEggImgIds[data.indexValues.currentEgg]}.png`} content={currentEgg.name} color={"blue"}></Chip>
+    <p style="text-align: center;">Egg Unlocks</p>
+    <div class="flexRow" style="display: inline-flex; align-self:center; align-items: center;">
+        <button onclick={() => {unlockDisplayIndex -= 1}} disabled={unlockDisplayIndex === 0} class={unlockDisplayIndex === 0 ? "button-gray" : ""}>{"<<<"}</button>
+        <Chip 
+            imgSrc={data.progression.unlockedEgg[unlockDisplayIndex] ? `Images/Eggs/${regularEggImgIds[unlockDisplayIndex]}.png` : `Images/Eggs/question.png`} 
+            content={data.progression.unlockedEgg[unlockDisplayIndex] ? unlockDisplayEgg.name : '???'} 
+            color={eggChipColor(unlockDisplayIndex)}></Chip>
         {"=>"}
-        <Chip imgSrc={`Images/Eggs/${regularEggImgIds[data.indexValues.currentEgg+1]}.png`}  content={nextEgg.name} color={"green"}></Chip>
-        <button>{">>>"}</button>
+        <Chip 
+            imgSrc={data.progression.unlockedEgg[nextDisplayIndex] ? `Images/Eggs/${regularEggImgIds[nextDisplayIndex]}.png` : `Images/Eggs/question.png`} 
+            content={data.progression.unlockedEgg[nextDisplayIndex] ? nextDisplayEgg.name : '???'} 
+            color={eggChipColor(nextDisplayIndex)}></Chip>
+        <button onclick={() => {unlockDisplayIndex += 1}} disabled={nextDisplayIndex === (eggs.length - 1)} class={nextDisplayIndex === (eggs.length - 1) ? "button-gray" : ""}>{">>>"}</button>
     </div>
     <div class="flexCol holder">
         {#if data.indexValues.currentEgg < eggs.length-1}
@@ -48,6 +68,14 @@
             </div>
         {/if}
         <p>Value: ${format(nextEgg.baseValue)}, {format(nextEgg.baseValue.div(currentEgg.baseValue))}x over current egg</p>
+        <div class="flexRow">
+            {#if data.indexValues.currentEgg < eggs.length - 1}
+                {#if !data.progression.unlockedEgg[data.indexValues.currentEgg+1]}
+                <Chip content={`Discover At: $${format(nextEgg.discoveryReq)}`} color={"yellow"}/>
+                {/if}
+                <Chip content={`Unlock At: $${format(nextEgg.unlockReq)}`} color={"green"}/>
+            {/if}
+        </div>
     </div>
 </div>
 

@@ -93,6 +93,8 @@
         column-gap: 1rem;
         align-items: center;
         padding-block: 0.25rem;
+        border-radius: $borderRadius;
+        padding: 0.2vh 0.2vw 0.2vh 0.2vw;
     }
 
     // The global `*` rule paints $bg-color on every element; clear it on the
