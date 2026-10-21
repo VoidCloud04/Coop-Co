@@ -16,7 +16,8 @@
                 {#if ach.name !== ''}
                     <img 
                     onmouseenter={() => {hoverIndex = (j + 8*i)}} 
-                    class={`ach ${achievements[j + 8*i].unlockCondition() ? 'ach-green' : 'ach-red'}`} src={`Images/${ach.img}`} 
+                    class={`ach ${achievements[j+i*8].unlockCondition() ? 'ach-green' : 'ach-red'}`} 
+                    src={achievements[j+i*8].hidden && !achievements[j+i*8].unlockCondition() ? `Images/${achievements[j+i*8].hiddenImg}` : `Images/${achievements[j+i*8].img}`} 
                     alt={ach.name}>
                 {:else}
                     <div class="ach"></div>
@@ -26,10 +27,17 @@
     {/each}
 </div>
 {#if hoverIndex != -1 && achievements[hoverIndex].name !== ''}
-    <p class={achievements[hoverIndex].unlockCondition() ? 'green' : 'red'}>
-        [{hoverIndex+1}] - {currAchievement.name}<br>
-        {currAchievement.description}
-    </p>
+    {#if currAchievement.hidden && !currAchievement.unlockCondition()}
+        <p class={'red'}>
+            [{hoverIndex+1}] - ???<br>
+            Keep playing to unlock this achievement
+        </p>
+    {:else}
+        <p class={achievements[hoverIndex].unlockCondition() ? 'green' : 'red'}>
+            [{hoverIndex+1}] - {currAchievement.name}<br>
+            {currAchievement.description}
+        </p>
+    {/if}
 {/if}
 
 <style lang="scss">
