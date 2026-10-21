@@ -71,11 +71,11 @@ export let runTimeData = $state({})
 export const buyAmountLabels = ['1','5','10','20','Max']
 
 export function Load() {
-
+    console.log('Loaded Data')
 }
 
 export function Save() {
-
+    console.log('Saved Data')
 }
 
 // Helpers

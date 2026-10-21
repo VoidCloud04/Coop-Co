@@ -1,6 +1,13 @@
 <script>
 	const changelog = [
 		{
+			version: "v3.0.0",
+			date: "TBD",
+			type: "major",
+			title: "Major Update",
+			changes: "Migrated Game to Svelte & Sass, redid entire codebase, redesigned all UI tabs, overhaul of contracts, overhaul of eggspeditions",
+		},
+		{
 			version: "v2.0.3",
 			date: "2026-01-12",
 			type: "bugfix",
@@ -176,9 +183,13 @@
 			changes: "All Eggs, 28 \"Common\" Researches, Egg Promotion System"
 		}
 	]
+
+	changelog.forEach((entry) => {
+		entry.changes = entry.changes.split(',')
+	})
 </script>
 
-<h1>Changlog :O</h1>
+<h1>Changelog :O</h1>
 <div class="flexCol" style="align-items: left; padding: 10px">
 	{#each changelog as log, i}
 		<div class="flexRow">
@@ -186,7 +197,11 @@
 			<h2 class="{log.type === "major" ? 'badge-green' : ''}{log.type === "minor" ? 'badge-blue' : ''}{log.type === "rebalance" ? 'badge-red' : ''}{log.type === "bugfix" ? 'badge-yellow' : ''}">{log.title}</h2>
 			<h2>{log.date}</h2>
 		</div>
-		<p>{log.changes}</p>
+		<ul>
+			{#each log.changes as item, j}
+				<li>{item}</li>
+			{/each}
+		</ul>
 	{/each}
 </div>
 
@@ -194,7 +209,7 @@
 <style lang="scss">
 	@use '$lib/styles/variables'  as *;
 	p {
-		text-align: left;
+		text-align: justify;
 	}
 	.badge-red {
         background-color: $red;
@@ -208,7 +223,7 @@
     
     .badge-green {
         background-color: $green;
-        color: $white;
+        color: $bg-color;
         padding: 2px 4px;
         border-radius: $borderRadius;
         text-align: center;

@@ -1,6 +1,8 @@
 <script>
     import { buyAmountLabels, data, toggleAutomator, updateBA } from "$lib/scripts/DataManager.svelte";
+    import { toPlaces } from "$lib/scripts/Formatting";
     import { commonByTier, commonResearch } from "$lib/scripts/ResearchManager";
+    import { format } from "$lib/scripts/Utilities";
     let { collapsed = $bindable() } = $props()
 
     let tiers = commonByTier()
@@ -57,7 +59,7 @@
             <button class="tier-label" onclick={() => toggleCollapsed(i)}>Tier {toRN(i + 1)} {collapsed[i] ? "▸" : "▾"}</button>
             <div class="researches">
                 {#each items as item}
-                    <button>{item.title}<br>{item.description}<br>{"Level: 0/0 | Cost: 1.00e3" }</button>
+                    <button>{item.title}<br>{item.description}<br>{`Level: 0/${toPlaces(item.maxLevels,0,item.maxLevels+1)} | Cost: ${format(item.baseCost)}` }</button>
                 {/each}
             </div>
         </div>
