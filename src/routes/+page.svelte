@@ -5,6 +5,7 @@
     import TabContentSeparator from "$lib/components/TabContentSeparator.svelte";
     import { data } from "$lib/scripts/DataManager.svelte"; // The global data object for all of the UI updates (& logic handled in the JavaScript Functions)
     import { commonByTier } from "$lib/scripts/ResearchManager";
+    import Achievements from "./Achievements.svelte";
     import Ascension from "./Ascension.svelte";
 
     import Contracts from "./Contracts.svelte";
@@ -30,6 +31,7 @@
     ])
 
     function changeTab(i) {
+        console.log(i)
         tabIndex = i
     }
     const commonTiers = commonByTier()
@@ -61,6 +63,9 @@
     <TabContentSeparator />
     <Ascension />
 {:else if tabIndex === 6}
+    <TabContentSeparator />
+    <Achievements />
+{:else if tabIndex === 7}
     <TabContentSeparator />
     <Settings />
 {:else}

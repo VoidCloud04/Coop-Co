@@ -1,6 +1,7 @@
 import Decimal from "break_eternity.js"
 import { commonResearch, epicResearch, legendaryResearch } from "./ResearchManager"
 import { eggs } from "./EggManager"
+import { achievements } from "./AchievementsManager"
 
 function DefaultDataObject() {
     return {
@@ -17,7 +18,7 @@ function DefaultDataObject() {
             legendaryResearch: new Array(legendaryResearch.length)
         },
         progression: {
-            achievements: new Array(),
+            achievements: new Array(achievements.length),
             hasPrestiged: false,
             hasAscended: false,
             unlockedContracts: false,
@@ -53,6 +54,7 @@ function DefaultDataObject() {
             bestMoney: Decimal.dZero,
             bestSoulEggs: Decimal.dZero,
             bestKnowleggs: Decimal.dZero,
+            contractsComplete: Decimal.dZero,
         },
         settings: {
             buyAmounts: new Array(3).fill(0),
