@@ -3,9 +3,6 @@
     import { commonByTier, commonResearch } from "$lib/scripts/ResearchManager";
     let { collapsed = $bindable() } = $props()
 
-    // Per-tier row color, one entry per tier (index-matched).
-    // Values are keys from $majorColors in $lib/styles/variables.
-    // Drive these from game state (available / maxed / etc.) as needed.
     let tiers = commonByTier()
     function toggleCollapsed(i) {
         collapsed[i] = !collapsed[i]
@@ -44,8 +41,6 @@
         return ret
     }
 </script>
-
-<h3>Research Center</h3>
 <div class="flexRow">
     <button onclick={() => {updateBA(0)}}>Buy Amount: {buyAmountLabels[data.settings.buyAmounts[0]]}</button>
     <button onclick={() => {toggleAutomator(0,0)}} class={data.automation.commonAutomatorActive[0] ? 'button-green' : 'button-red'}>Tier I-V Auto: {data.automation.commonAutomatorActive[0] ? 'On' : 'Off'}</button>

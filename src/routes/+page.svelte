@@ -2,6 +2,7 @@
     import ButtonGroup from "$lib/components/ButtonGroup.svelte";
     import Header from "$lib/components/Header.svelte";
     import Newsticker from "$lib/components/Newsticker.svelte";
+    import TabContentSeparator from "$lib/components/TabContentSeparator.svelte";
     import { data } from "$lib/scripts/DataManager.svelte"; // The global data object for all of the UI updates (& logic handled in the JavaScript Functions)
     import { commonByTier } from "$lib/scripts/ResearchManager";
     import Ascension from "./Ascension.svelte";
@@ -40,23 +41,33 @@
     <Newsticker />
 {/if}
 <ButtonGroup buttonArr={tabs} onclick={changeTab} baseId="tab-button"/>
-
 {#if tabIndex === 0}
+    <TabContentSeparator />
     <Egg />
 {:else if tabIndex === 1}
+    <TabContentSeparator />
     <Research bind:collapsed={commonCollapsed}/>
 {:else if tabIndex === 2}
-    <Prestige />
-{:else if tabIndex === 3}
+    <TabContentSeparator />
     <Contracts />
-{:else if tabIndex === 4}
+{:else if tabIndex === 3}
+
+    <TabContentSeparator />
     <Eggspeditions />
+{:else if tabIndex === 4}
+    <TabContentSeparator />
+    <Prestige />
 {:else if tabIndex === 5}
+    <TabContentSeparator />
     <Ascension />
 {:else if tabIndex === 6}
+    <TabContentSeparator />
     <Settings />
 {:else}
+    <TabContentSeparator />
     <h1>Invalid Tab Selected</h1>
-    <button class="button-blue">Hello I'm a Button</button>
 {/if}
 
+<style lang="scss">
+
+</style>

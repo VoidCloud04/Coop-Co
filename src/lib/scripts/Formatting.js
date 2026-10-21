@@ -98,7 +98,7 @@ function formatTimeAlternate(time) {
     else return "00:00:0"+ Decimal.floor(time % 60)
 }
 
-function toPlaces(x, precision, maxAccepted) {
+export function toPlaces(x, precision, maxAccepted) {
     x = new Decimal(x)
     let result = x.toStringWithDecimalPlaces(precision)
     if (new Decimal(result).gte(maxAccepted)) {

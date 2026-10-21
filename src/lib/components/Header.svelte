@@ -3,10 +3,10 @@
     import { eggs, regularEggImgIds } from "$lib/scripts/EggManager";
     import { format } from "$lib/scripts/Utilities";
 
-    console.log(eggs[data.indexValues.currentEgg + 1].discoveryReq)
-    console.log(eggs[data.indexValues.currentEgg + 1].unlockReq)
-    console.log(data.currency.money)
-    console.log(data.indexValues.currentEgg)
+    // console.log(eggs[data.indexValues.currentEgg + 1].discoveryReq)
+    // console.log(eggs[data.indexValues.currentEgg + 1].unlockReq)
+    // console.log(data.currency.money)
+    // console.log(data.indexValues.currentEgg)
 </script>
 
 <div>
