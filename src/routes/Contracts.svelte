@@ -4,8 +4,7 @@
 
     let tabs = $state([
         {title: "Exchange", class: ""},
-        {title: "Active", class: ""},
-        {title: "Ledger", class: ""}
+        {title: "Active", class: ""}
     ])
     let subTab = $state(0)
     function changeTab(i) {
@@ -142,8 +141,6 @@
         <p>Stake: 3 Prophecy Eggs | Reward: 5 Prophecy Eggs</p>
         <button>Abandon Contract</button>
     </div>
-{:else if subTab === 2}
-    <p>Ledger</p>
 {/if}
 
 <style lang="scss">
