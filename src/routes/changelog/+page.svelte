@@ -208,9 +208,6 @@
 
 <style lang="scss">
 	@use '$lib/styles/variables'  as *;
-	p {
-		text-align: justify;
-	}
 	.badge-red {
         background-color: $red;
         color: $white;

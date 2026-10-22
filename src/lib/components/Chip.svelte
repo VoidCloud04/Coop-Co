@@ -32,8 +32,21 @@
             margin-right: 0.25vw;
         }
     }
+    @each $name, $color in $ratings {
+        .badge-#{$name} {
+            display: inline-flex;
+            align-items: center;
+            background-color: $color;
+            color: $white;
+            padding: 2px 4px;
+            border-radius: $borderRadius;
+            text-align: center;
+            margin-left: 0.25vw;
+            margin-right: 0.25vw;
+        }
+    }
 
-    .badge-yellow, .badge-green {
+    .badge-yellow, .badge-green, .badge-C, .badge-B, .badge-A, .badge-AA, .badge-AAA {
         color: $bg-color;
     }
 </style>

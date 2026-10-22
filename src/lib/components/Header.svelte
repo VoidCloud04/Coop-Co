@@ -2,6 +2,7 @@
     import { data } from "$lib/scripts/DataManager.svelte";
     import { eggs, regularEggImgIds } from "$lib/scripts/EggManager";
     import { format } from "$lib/scripts/Utilities";
+    import Chip from "./Chip.svelte";
 
     // console.log(eggs[data.indexValues.currentEgg + 1].discoveryReq)
     // console.log(eggs[data.indexValues.currentEgg + 1].unlockReq)
@@ -10,6 +11,7 @@
 </script>
 
 <div>
+    <Chip content="USDE AA" color="gray"/>
     <img src="/Images/Eggs/{regularEggImgIds[data.indexValues.currentEgg]}.png" alt="{eggs[data.indexValues.currentEgg].name} Egg">
     {#if data.indexValues.currentEgg < data.progression.unlockedEgg.length}
         <button id="promotion-button" class="button{data.currency.money.gte(eggs[data.indexValues.currentEgg + 1].discoveryReq) && data.currency.money.lt(eggs[data.indexValues.currentEgg + 1].unlockReq) ? '-yellow' : '-red' }{data.currency.money.gte(eggs[data.indexValues.currentEgg + 1].unlockReq) ? '-green' : '' }-header">Promote to Next Egg!</button>

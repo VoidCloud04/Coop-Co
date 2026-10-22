@@ -21,6 +21,16 @@ $majorColors: (
     "gray": $darkgray
 );
 
+$ratings: (
+    "D":   #5a5f63,
+    "C":   #858d93,
+    "B":   #4481d7,
+    "A":   #65be67,
+    "AA":  #b980e8,
+    "AAA": #e8c15a
+);
+
+
 // Extra Variables
 $borderRadius: 5px;
 $borderWidth: 2px;

@@ -99,40 +99,4 @@
         font-size: 1.5em;
         bottom: 1dvh;
     }
-
-    .progress-row {
-        width: 100%;
-    }
-
-    .progress-bar {
-        display: block;
-        position: relative;
-        flex: 1;
-        min-width: 0;
-        height: 1rem;
-        box-sizing: border-box;
-
-        border: $borderWidth solid $white;
-        border-radius: $borderRadius;
-
-        // Green fill, red remainder
-        background: linear-gradient(
-            90deg,
-            $green 0%,
-            $green var(--progress),
-            $red var(--progress),
-            $red 100%
-        );
-
-        &::after {
-            content: "";
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            left: var(--tick-position);
-            width: 2px;
-            background: $yellow;
-            transform: translateX(-50%);
-        }
-    }
 </style>

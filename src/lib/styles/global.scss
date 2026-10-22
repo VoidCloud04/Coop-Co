@@ -56,6 +56,11 @@ img {
     width: 3.25em;
 }
 
+hr {
+    border: 1px solid $white;
+    color: $white
+}
+
 // Global Classes
 
 .button-header {
@@ -89,7 +94,7 @@ img {
             color: $header-color;
         }
     }
-} 
+}
 
 .flexCol {
     display: flex;
@@ -103,5 +108,41 @@ img {
     button {
         margin-left: 0.25vw;
         margin-right: 0.25vw;
+    }
+}
+
+.progress-row {
+    width: 100%;
+}
+
+.progress-bar {
+    display: block;
+    position: relative;
+    flex: 1;
+    min-width: 0;
+    height: 1rem;
+    box-sizing: border-box;
+
+    border: $borderWidth solid $white;
+    border-radius: $borderRadius;
+
+    // Green fill, red remainder
+    background: linear-gradient(
+        90deg,
+        $green 0%,
+        $green var(--progress),
+        $red var(--progress),
+        $red 100%
+    );
+
+    &::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: var(--tick-position);
+        width: 2px;
+        background: $yellow;
+        transform: translateX(-50%);
     }
 }

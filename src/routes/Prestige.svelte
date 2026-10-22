@@ -21,7 +21,7 @@
         {/each}
         <h3>Automation</h3>
         {#each automation as item, i}
-            <button class="button-purple">{item.title} | {item.description}<br>Level: 0/{toPlaces(item.maxLevels,0,item.maxLevels+1)} | Cost: {format(item.baseCost)} Soul Eggs</button>
+            <button class="button-yellow">{item.title} | {item.description}<br>Level: 0/{toPlaces(item.maxLevels,0,item.maxLevels+1)} | Cost: {format(item.baseCost)} Prophecy Eggs</button>
         {/each}
     </div>
     <div class="flexCol">
