@@ -99,11 +99,13 @@ hr {
 .flexCol {
     display: flex;
     flex-direction: column;
+    flex-wrap: wrap;
 }
 
 .flexRow {
     display: flex;
     flex-direction: row;
+    flex-wrap: wrap;
     
     button {
         margin-left: 0.25vw;

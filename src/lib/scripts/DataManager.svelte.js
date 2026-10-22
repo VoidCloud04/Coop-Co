@@ -55,6 +55,9 @@ function DefaultDataObject() {
             bestSoulEggs: Decimal.dZero,
             bestKnowleggs: Decimal.dZero,
             contractsComplete: Decimal.dZero,
+            timePlayed: Decimal.dZero,
+            last3Prestiges: new Array(3).fill(Decimal.dZero),
+            last3Ascensions: new Array(3).fill(Decimal.dZero)
         },
         settings: {
             buyAmounts: new Array(3).fill(0),
