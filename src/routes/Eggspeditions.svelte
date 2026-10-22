@@ -7,7 +7,6 @@
     const planetRowCount = planets.length / 3
     const planetsSilced = new Array(planetRowCount)
     for(let i = 0; i < planetRowCount; i++) {
-        console.log(`${i} | ${i+(i*3)} | ${planetRowCount} | ${planets.length}`)
         planetsSilced[i] = planets.slice(i + (i*2),3+(i*3))
     }
     let selectIndex = $state(-1)
@@ -21,9 +20,10 @@
                 {#each planet as item, j}
                     <button
                     type="button"
-                    class="planetIcon"
                     aria-label={item.name}
                     onclick={() => (selectIndex = (i * 3) + j)}
+                    style={(i*3 + j) == 2 && !data.progression.hasAscended ? 'display:none' : ''}
+                    class={(i*3 + j) == 2 ? 'button-orange planetIcon' : 'planetIcon'}
                     >
                         <img src={data.progression.unlockedPlanet[(i*3) + j] ? item.imgSrc : hiddenPlanetImg} alt="" />
                     </button>
@@ -39,9 +39,13 @@
         color={data.progression.unlockedPlanet[selectIndex] ? "blue" : "gray"}/>
         <Chip color={"green"} content={"Planetary Value: $0.00"} />
         <Chip color={"blue"} content={"Bonus: x0.00"} />
+        
 
             {#if data.progression.unlockedPlanet[selectIndex]}
                 <button class={"button-green"}>Travel to {planets[selectIndex].name}</button>
+            {:else}
+                <Chip color={"red"} content={"Discovery Cost: ???"} />
+                <button class={"button-red"}>Discover ???</button>
             {/if}
         {:else}
         <h3>No Planet Selected</h3>
@@ -66,7 +70,7 @@
         margin-left: 0.25vw;
         margin-right: 0.25vw;
         padding: 10px;
-        border: $borderWidth solid $white;
+        border: $borderWidth solid inherit;
         border-radius: $borderRadius;
 
         img {
@@ -74,5 +78,8 @@
             width: 7em;
             background-color: inherit;
         }
+    }
+    .button-orange .planetIcon {
+        border-color: $orange;
     }
 </style>

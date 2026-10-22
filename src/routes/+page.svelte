@@ -42,7 +42,7 @@
         Load()
     })
 </script>
-
+<!-- Main Game Page Content / Will be not rendered during planets -->
 <Header />
 {#if showNewsTicker}
     <Newsticker />
