@@ -81,16 +81,83 @@ export function Load() {
     console.log('Loaded Data')
     let loadedData = window.localStorage.getItem(gameKey)
     if(loadedData === null || loadedData === undefined)
-        gameState.data = DefaultDataObject()
-    else
-        gameState.data = JSON.parse(loadedData)
+        loadedData = DefaultDataObject()
+    else {
+        try {
+            loadedData = fixSave(DefaultDataObject(),loadedData)
+        }
+        catch(error) {
+            console.error("Could not Load Save Reverting to Defaults ",error)
+            loadedData = DefaultDataObject()
+        }
+    }
+    // console.log(loadedData)
+    gameState.data = loadedData
+    Save()
 }
 
 export function Save() {
+    window.localStorage.setItem(gameKey,JSON.stringify(gameState.data))
     console.log('Saved Data')
 }
 
 // Helpers
+
+function fixSave(defaults, saved, path = "data") {
+    if (defaults instanceof Decimal) {
+        if (saved === undefined || saved === null) return defaults
+
+        try {
+            const value = new Decimal(saved);
+            if (value.isNaN()) throw new Error("Invalid Decimal")
+            return value
+        } catch {
+            console.warn(`Invalid Decimal at ${path}; using default`)
+            return defaults
+        }
+    }
+
+    if (Array.isArray(defaults)) {
+        if (defaults.length === 0) {
+            return Array.isArray(saved) ? saved : []
+        }
+
+        const savedArray = Array.isArray(saved) ? saved : []
+        return defaults.map((defaultItem, index) =>
+            fixSave(defaultItem, savedArray[index], `${path}[${index}]`)
+        )
+    }
+
+    if (defaults !== null && typeof defaults === "object") {
+        const savedObject =
+            saved !== null && typeof saved === "object" && !Array.isArray(saved) ? saved : {}
+
+        const result = {}
+
+        // Start from the defaults, so missing fields are restored.
+        for (const key of Object.keys(defaults)) {
+            result[key] = fixSave(defaults[key],savedObject[key],`${path}.${key}`)
+        }
+
+        // Optionally preserve fields from the save that aren't in the defaults.
+        for (const key of Object.keys(savedObject)) {
+            if (!(key in defaults)) result[key] = savedObject[key]
+        }
+
+        return result
+    }
+
+    return saved === undefined ? defaults : saved;
+}
+
+export function Import() {
+
+}
+
+export function Export() {
+    console.log("Exported to Clipboard Successfully")
+    navigator.clipboard.writeText(btoa(JSON.stringify(gameState.data)))
+}
 
 export function updateBA(index) {
     gameState.data.settings.buyAmounts[index] += 1
