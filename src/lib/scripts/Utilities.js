@@ -1,10 +1,10 @@
-import { data } from "./DataManager.svelte"
+import { gameState } from "./DataManager.svelte"
 import Decimal from "break_eternity.js"
 import { formatSci } from "./Formatting"
 
 export function format(a,b = 2) {
     a = new Decimal(a)
-    if(!data.settings.toggles[0]) {
+    if(!gameState.data.settings.toggles[0]) {
         if(a.div(1e93).lt(1e3))
             return notate(a)
         else 

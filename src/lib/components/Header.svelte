@@ -1,8 +1,10 @@
 <script>
-    import { data } from "$lib/scripts/DataManager.svelte";
+    import { gameState } from "$lib/scripts/DataManager.svelte";
     import { eggs, regularEggImgIds } from "$lib/scripts/EggManager";
     import { format } from "$lib/scripts/Utilities";
     import Chip from "./Chip.svelte";
+
+    let data = $derived(gameState.data)
 
     // console.log(eggs[data.indexValues.currentEgg + 1].discoveryReq)
     // console.log(eggs[data.indexValues.currentEgg + 1].unlockReq)

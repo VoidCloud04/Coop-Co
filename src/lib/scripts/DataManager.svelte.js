@@ -71,12 +71,20 @@ function DefaultDataObject() {
 }
 
 const gameKey = 'coopCo-Revised'
-export let data = $state(DefaultDataObject())
-export let runTimeData = $state({})
+export let gameState = $state({
+    data: DefaultDataObject(),
+    runTimeData: {}
+})
+export const data = $derived(gameState.data)
 export const buyAmountLabels = ['1','5','10','20','Max']
 
 export function Load() {
     console.log('Loaded Data')
+    let loadedData = window.localStorage.getItem(gameKey)
+    if(loadedData === null || loadedData === undefined)
+        gameState.data = DefaultDataObject()
+    else
+        gameState.data = JSON.parse(loadedData)
 }
 
 export function Save() {
@@ -86,22 +94,22 @@ export function Save() {
 // Helpers
 
 export function updateBA(index) {
-    data.settings.buyAmounts[index] += 1
-    if(data.settings.buyAmounts[index] > buyAmountLabels.length - 1)
-        data.settings.buyAmounts[index] = 0
-    // console.log(data.settings.buyAmounts[index])
+    gameState.data.settings.buyAmounts[index] += 1
+    if(gameState.data.settings.buyAmounts[index] > buyAmountLabels.length - 1)
+        gameState.data.settings.buyAmounts[index] = 0
+    // console.log(gameState.data.settings.buyAmounts[index])
 }
 
 export function toggleAutomator(classIndex, index) {
     switch(classIndex) {
         case 0:
-            data.automation.commonAutomatorActive[index] = !data.automation.commonAutomatorActive[index]
+            gameState.data.automation.commonAutomatorActive[index] = !gameState.data.automation.commonAutomatorActive[index]
             break
         case 1:
-            data.automation.epicAutomatorActive[index] = !data.automation.epicAutomatorActive[index]
+            gameState.data.automation.epicAutomatorActive[index] = !gameState.data.automation.epicAutomatorActive[index]
             break
         case 2:
-            data.automation.legendaryAutomatorActive[index] = !data.automation.legendaryAutomatorActive[index]
+            gameState.data.automation.legendaryAutomatorActive[index] = !gameState.data.automation.legendaryAutomatorActive[index]
             break
         default:
             console.warn("Invalid index supplied to toggleAutomator classIndex")

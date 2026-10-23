@@ -1,10 +1,10 @@
 <script>
     import Chip from "$lib/components/Chip.svelte";
-    import { buyAmountLabels, data, toggleAutomator, updateBA } from "$lib/scripts/DataManager.svelte";
+    import { buyAmountLabels, gameState, toggleAutomator, updateBA } from "$lib/scripts/DataManager.svelte";
     import { toPlaces } from "$lib/scripts/Formatting";
     import { epicResearch } from "$lib/scripts/ResearchManager";
     import { format } from "$lib/scripts/Utilities";
-
+    let data = $derived(gameState.data)
     const automationSplitIndex = 6
     const normalResearch = epicResearch.slice(0,automationSplitIndex)
     const automation = epicResearch.slice(automationSplitIndex)

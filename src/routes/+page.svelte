@@ -3,7 +3,7 @@
     import Header from "$lib/components/Header.svelte";
     import Newsticker from "$lib/components/Newsticker.svelte";
     import TabContentSeparator from "$lib/components/TabContentSeparator.svelte";
-    import { data, Load } from "$lib/scripts/DataManager.svelte"; // The global data object for all of the UI updates (& logic handled in the JavaScript Functions)
+    import { gameState, Load } from "$lib/scripts/DataManager.svelte"; // The global data object for all of the UI updates (& logic handled in the JavaScript Functions)
     import { commonByTier } from "$lib/scripts/ResearchManager";
     import { onMount } from "svelte";
     import Achievements from "./Achievements.svelte";
@@ -39,7 +39,7 @@
     let commonCollapsed = $state(commonTiers.map(() => true))
 
     onMount(() => {
-        Load()
+        // Load()
     })
 </script>
 <!-- Main Game Page Content / Will be not rendered during planets -->

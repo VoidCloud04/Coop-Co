@@ -1,8 +1,8 @@
 <script>
     import { achievements } from "$lib/scripts/AchievementsManager";
-    import { data } from "$lib/scripts/DataManager.svelte";
+    import { gameState } from "$lib/scripts/DataManager.svelte";
     import { onMount } from "svelte";
-
+    let data = $derived(gameState.data)
     const columns = new Array(achievements.length / 8)
     let hoverIndex = $state(-1)
     let currAchievement = $derived(achievements[hoverIndex])

@@ -1,9 +1,9 @@
 <script>
-    import { data } from "$lib/scripts/DataManager.svelte";
+    import { gameState } from "$lib/scripts/DataManager.svelte";
     import { format } from "$lib/scripts/Utilities";
     import { planets, hiddenPlanetImg } from "$lib/scripts/EggspeditionsManager";
     import Chip from "$lib/components/Chip.svelte";
-    
+    let data = $derived(gameState.data)
     const planetRowCount = planets.length / 3
     const planetsSilced = new Array(planetRowCount)
     for(let i = 0; i < planetRowCount; i++) {

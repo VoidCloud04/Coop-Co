@@ -1,15 +1,15 @@
 <script>
-    import { data } from "$lib/scripts/DataManager.svelte";
+    import { gameState } from "$lib/scripts/DataManager.svelte";
     import { format } from "$lib/scripts/Utilities";
     import { eggs, regularEggImgIds } from "$lib/scripts/EggManager";
     import Decimal from "break_eternity.js";
     import Chip from "$lib/components/Chip.svelte";
 
+    let data = $derived(gameState.data)
     const currentEgg = $derived(eggs[data.indexValues.currentEgg])
     const nextEgg = $derived(eggs[data.indexValues.currentEgg+1])
     const progressPercent = $derived(Decimal.min(100,Decimal.max(0,data.currency.money.log10().dividedBy(nextEgg.unlockReq.log10()).times(100))))
     const tickPercent = $derived(Decimal.min(100,Decimal.max(0,nextEgg.discoveryReq.log10().dividedBy(nextEgg.unlockReq.log10()).times(100))))
-
     let unlockDisplayIndex = $derived(data.indexValues.currentEgg)
     let unlockDisplayEgg = $derived(eggs[unlockDisplayIndex])
     let nextDisplayIndex = $derived(unlockDisplayIndex + 1)

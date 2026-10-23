@@ -1,10 +1,10 @@
 <script>
-    import { buyAmountLabels, data, toggleAutomator, updateBA } from "$lib/scripts/DataManager.svelte";
+    import { buyAmountLabels, gameState, toggleAutomator, updateBA } from "$lib/scripts/DataManager.svelte";
     import { toPlaces } from "$lib/scripts/Formatting";
     import { commonByTier, commonResearch } from "$lib/scripts/ResearchManager";
     import { format } from "$lib/scripts/Utilities";
     let { collapsed = $bindable() } = $props()
-
+    let data = $derived(gameState.data)
     let tiers = commonByTier()
     function toggleCollapsed(i) {
         collapsed[i] = !collapsed[i]

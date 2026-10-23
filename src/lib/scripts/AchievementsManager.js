@@ -1,5 +1,5 @@
 import Decimal from "break_eternity.js"
-import { data } from "./DataManager.svelte"
+import { gameState } from "./DataManager.svelte"
 
 const planetCount = 6
 const artifactTiers = 4
@@ -9,11 +9,11 @@ const blankObj = {name: ''}
 const blankIndices = [19,38,38]
 
 function artifactCount(index) {
-    return new Decimal(data.ascension.artifacts[index]?.count ?? 0)
+    return new Decimal(gameState.data.ascension.artifacts[index]?.count ?? 0)
 }
 
 function gemCount(index) {
-    return new Decimal(data.ascension.gems[index]?.count ?? 0)
+    return new Decimal(gameState.data.ascension.gems[index]?.count ?? 0)
 }
 
 function ownsArtifactTier(tier) {
@@ -30,15 +30,15 @@ function ownsGemTier(tier) {
 
 function collectionBonus() {
     let bonus = Decimal.dOne
-    for(let i = 0; i < data.ascension.artifacts.length; i++)
+    for(let i = 0; i < gameState.data.ascension.artifacts.length; i++)
         bonus = bonus.add(artifactCount(i).times(collectionWeights[i % artifactTiers]))
     return bonus
 }
 
 function allHarvestersAtLevel(level) {
-    if(data.ascension.harvesters.length < planetCount) return false
-    for(let i = 0; i < data.ascension.harvesters.length; i++)
-        if(data.ascension.harvesters[i].level < level) return false
+    if(gameState.data.ascension.harvesters.length < planetCount) return false
+    for(let i = 0; i < gameState.data.ascension.harvesters.length; i++)
+        if(gameState.data.ascension.harvesters[i].level < level) return false
     return true
 }
 
@@ -58,7 +58,7 @@ export const achievements = [
         hidden: false,
         group: 'eggs',
         img: 'Eggs/egg.png',
-        unlockCondition: () => {return data.progression.unlockedEgg[0]}
+        unlockCondition: () => {return gameState.data.progression.unlockedEgg[0]}
     },
     {
         name: 'Superegg',
@@ -66,7 +66,7 @@ export const achievements = [
         hidden: true,
         group: 'eggs',
         img: 'Eggs/superfood.png',
-        unlockCondition: () => {return data.progression.unlockedEgg[1]},
+        unlockCondition: () => {return gameState.data.progression.unlockedEgg[1]},
         hiddenImg: 'Eggs/question.png'
     },
     {
@@ -75,7 +75,7 @@ export const achievements = [
         hidden: true,
         group: 'eggs',
         img: 'Eggs/medical.png',
-        unlockCondition: () => {return data.progression.unlockedEgg[2]},
+        unlockCondition: () => {return gameState.data.progression.unlockedEgg[2]},
         hiddenImg: 'Eggs/question.png'
     },
     {
@@ -84,7 +84,7 @@ export const achievements = [
         hidden: true,
         group: 'eggs',
         img: 'Eggs/rocketfuel.png',
-        unlockCondition: () => {return data.progression.unlockedEgg[3]},
+        unlockCondition: () => {return gameState.data.progression.unlockedEgg[3]},
         hiddenImg: 'Eggs/question.png'
     },
     {
@@ -93,7 +93,7 @@ export const achievements = [
         hidden: true,
         group: 'eggs',
         img: 'Eggs/supermaterial.png',
-        unlockCondition: () => {return data.progression.unlockedEgg[4]},
+        unlockCondition: () => {return gameState.data.progression.unlockedEgg[4]},
         hiddenImg: 'Eggs/question.png'
     },
     {
@@ -102,7 +102,7 @@ export const achievements = [
         hidden: true,
         group: 'eggs',
         img: 'Eggs/fusion.png',
-        unlockCondition: () => {return data.progression.unlockedEgg[5]},
+        unlockCondition: () => {return gameState.data.progression.unlockedEgg[5]},
         hiddenImg: 'Eggs/question.png'
     },
     {
@@ -111,7 +111,7 @@ export const achievements = [
         hidden: true,
         group: 'eggs',
         img: 'Eggs/quantum.png',
-        unlockCondition: () => {return data.progression.unlockedEgg[6]},
+        unlockCondition: () => {return gameState.data.progression.unlockedEgg[6]},
         hiddenImg: 'Eggs/question.png'
     },
     {
@@ -120,7 +120,7 @@ export const achievements = [
         hidden: true,
         group: 'eggs',
         img: 'Eggs/immortality.png',
-        unlockCondition: () => {return data.progression.unlockedEgg[7]},
+        unlockCondition: () => {return gameState.data.progression.unlockedEgg[7]},
         hiddenImg: 'Eggs/question.png'
     },
     {
@@ -129,7 +129,7 @@ export const achievements = [
         hidden: true,
         group: 'eggs',
         img: 'Eggs/tachyon.png',
-        unlockCondition: () => {return data.progression.unlockedEgg[8]},
+        unlockCondition: () => {return gameState.data.progression.unlockedEgg[8]},
         hiddenImg: 'Eggs/question.png'
     },
     {
@@ -138,7 +138,7 @@ export const achievements = [
         hidden: true,
         group: 'eggs',
         img: 'Eggs/graviton.png',
-        unlockCondition: () => {return data.progression.unlockedEgg[9]},
+        unlockCondition: () => {return gameState.data.progression.unlockedEgg[9]},
         hiddenImg: 'Eggs/question.png'
     },
     {
@@ -147,7 +147,7 @@ export const achievements = [
         hidden: true,
         group: 'eggs',
         img: 'Eggs/dilithium.png',
-        unlockCondition: () => {return data.progression.unlockedEgg[10]},
+        unlockCondition: () => {return gameState.data.progression.unlockedEgg[10]},
         hiddenImg: 'Eggs/question.png'
     },
     {
@@ -156,7 +156,7 @@ export const achievements = [
         hidden: true,
         group: 'eggs',
         img: 'Eggs/prodigy.png',
-        unlockCondition: () => {return data.progression.unlockedEgg[11]},
+        unlockCondition: () => {return gameState.data.progression.unlockedEgg[11]},
         hiddenImg: 'Eggs/question.png'
     },
     {
@@ -165,7 +165,7 @@ export const achievements = [
         hidden: true,
         group: 'eggs',
         img: 'Eggs/terraform.png',
-        unlockCondition: () => {return data.progression.unlockedEgg[12]},
+        unlockCondition: () => {return gameState.data.progression.unlockedEgg[12]},
         hiddenImg: 'Eggs/question.png'
     },
     {
@@ -174,7 +174,7 @@ export const achievements = [
         hidden: true,
         group: 'eggs',
         img: 'Eggs/antimatter.png',
-        unlockCondition: () => {return data.progression.unlockedEgg[13]},
+        unlockCondition: () => {return gameState.data.progression.unlockedEgg[13]},
         hiddenImg: 'Eggs/question.png'
     },
     {
@@ -183,7 +183,7 @@ export const achievements = [
         hidden: true,
         group: 'eggs',
         img: 'Eggs/darkmatter.png',
-        unlockCondition: () => {return data.progression.unlockedEgg[14]},
+        unlockCondition: () => {return gameState.data.progression.unlockedEgg[14]},
         hiddenImg: 'Eggs/question.png'
     },
     {
@@ -192,7 +192,7 @@ export const achievements = [
         hidden: true,
         group: 'eggs',
         img: 'Eggs/ai.png',
-        unlockCondition: () => {return data.progression.unlockedEgg[15]},
+        unlockCondition: () => {return gameState.data.progression.unlockedEgg[15]},
         hiddenImg: 'Eggs/question.png'
     },
     {
@@ -201,7 +201,7 @@ export const achievements = [
         hidden: true,
         group: 'eggs',
         img: 'Eggs/nebula.png',
-        unlockCondition: () => {return data.progression.unlockedEgg[16]},
+        unlockCondition: () => {return gameState.data.progression.unlockedEgg[16]},
         hiddenImg: 'Eggs/question.png'
     },
     {
@@ -210,7 +210,7 @@ export const achievements = [
         hidden: true,
         group: 'eggs',
         img: 'Eggs/universe.png',
-        unlockCondition: () => {return data.progression.unlockedEgg[17]},
+        unlockCondition: () => {return gameState.data.progression.unlockedEgg[17]},
         hiddenImg: 'Eggs/question.png'
     },
     {
@@ -219,7 +219,7 @@ export const achievements = [
         hidden: true,
         group: 'eggs',
         img: 'Eggs/enlightenment.png',
-        unlockCondition: () => {return data.progression.unlockedEgg[18]},
+        unlockCondition: () => {return gameState.data.progression.unlockedEgg[18]},
         hiddenImg: 'Eggs/question.png'
     },
     // Contracts
@@ -229,7 +229,7 @@ export const achievements = [
         hidden: false,
         group: 'contracts',
         img: 'greencheck.png',
-        unlockCondition: () => {return data.stats.contractsComplete.gte(1)}
+        unlockCondition: () => {return gameState.data.stats.contractsComplete.gte(1)}
     },
     {
         name: 'Contractual',
@@ -237,7 +237,7 @@ export const achievements = [
         hidden: false,
         group: 'contracts',
         img: 'greencheck.png',
-        unlockCondition: () => {return data.stats.contractsComplete.gte(10)}
+        unlockCondition: () => {return gameState.data.stats.contractsComplete.gte(10)}
     },
     {
         name: 'Contractful',
@@ -245,7 +245,7 @@ export const achievements = [
         hidden: false,
         group: 'contracts',
         img: 'greencheck.png',
-        unlockCondition: () => {return data.stats.contractsComplete.gte(100)}
+        unlockCondition: () => {return gameState.data.stats.contractsComplete.gte(100)}
     },
     {
         name: 'Contractor',
@@ -253,7 +253,7 @@ export const achievements = [
         hidden: false,
         group: 'contracts',
         img: 'greencheck.png',
-        unlockCondition: () => {return data.stats.contractsComplete.gte(250)}
+        unlockCondition: () => {return gameState.data.stats.contractsComplete.gte(250)}
     },
     // Prestige (Soul Eggs & Prophecy Eggs)
     {
@@ -262,7 +262,7 @@ export const achievements = [
         hidden: false,
         group: 'prestige',
         img: 'Eggs/soul.png',
-        unlockCondition: () => {return data.currency.soulEggs.gte(1e3)}
+        unlockCondition: () => {return gameState.data.currency.soulEggs.gte(1e3)}
     },
     {
         name: 'Quite a few Souls',
@@ -270,7 +270,7 @@ export const achievements = [
         hidden: false,
         group: 'prestige',
         img: 'Eggs/soul.png',
-        unlockCondition: () => {return data.currency.soulEggs.gte(1e6)}
+        unlockCondition: () => {return gameState.data.currency.soulEggs.gte(1e6)}
     },
     {
         name: 'Lotta Souls',
@@ -278,7 +278,7 @@ export const achievements = [
         hidden: false,
         group: 'prestige',
         img: 'Eggs/soul.png',
-        unlockCondition: () => {return data.currency.soulEggs.gte(1e9)}
+        unlockCondition: () => {return gameState.data.currency.soulEggs.gte(1e9)}
     },
     {
         name: 'No More Souls Please',
@@ -286,7 +286,7 @@ export const achievements = [
         hidden: false,
         group: 'prestige',
         img: 'Eggs/soul.png',
-        unlockCondition: () => {return data.currency.soulEggs.gte(1e12)}
+        unlockCondition: () => {return gameState.data.currency.soulEggs.gte(1e12)}
     },
     {
         name: 'Elijah',
@@ -294,7 +294,7 @@ export const achievements = [
         hidden: false,
         group: 'prestige',
         img: 'Eggs/prophecy.png',
-        unlockCondition: () => {return data.currency.prophecyEggs.gte(10)}
+        unlockCondition: () => {return gameState.data.currency.prophecyEggs.gte(10)}
     },
     {
         name: 'Elisha',
@@ -302,7 +302,7 @@ export const achievements = [
         hidden: false,
         group: 'prestige',
         img: 'Eggs/prophecy.png',
-        unlockCondition: () => {return data.currency.prophecyEggs.gte(100)}
+        unlockCondition: () => {return gameState.data.currency.prophecyEggs.gte(100)}
     },
     {
         name: 'Daniel',
@@ -310,7 +310,7 @@ export const achievements = [
         hidden: false,
         group: 'prestige',
         img: 'Eggs/prophecy.png',
-        unlockCondition: () => {return data.currency.prophecyEggs.gte(1e3)}
+        unlockCondition: () => {return gameState.data.currency.prophecyEggs.gte(1e3)}
     },
     {
         name: 'Isaiah',
@@ -318,7 +318,7 @@ export const achievements = [
         hidden: false,
         group: 'prestige',
         img: 'Eggs/prophecy.png',
-        unlockCondition: () => {return data.currency.prophecyEggs.gte(1e4)}
+        unlockCondition: () => {return gameState.data.currency.prophecyEggs.gte(1e4)}
     },
     // Eggspeditions (Planets)
     {
@@ -327,7 +327,7 @@ export const achievements = [
         hidden: true,
         group: 'eggspeditions',
         img: 'planet1.png',
-        unlockCondition: () => {return data.progression.planets[0]},
+        unlockCondition: () => {return gameState.data.progression.planets[0]},
         hiddenImg: 'questionplanet.png'
     },
     {
@@ -336,7 +336,7 @@ export const achievements = [
         hidden: true,
         group: 'eggspeditions',
         img: 'planet2.png',
-        unlockCondition: () => {return data.progression.planets[1]},
+        unlockCondition: () => {return gameState.data.progression.planets[1]},
         hiddenImg: 'questionplanet.png'
     },
     {
@@ -345,7 +345,7 @@ export const achievements = [
         hidden: true,
         group: 'eggspeditions',
         img: 'planet3.png',
-        unlockCondition: () => {return data.progression.planets[2]},
+        unlockCondition: () => {return gameState.data.progression.planets[2]},
         hiddenImg: 'questionplanet.png'
     },
     {
@@ -354,7 +354,7 @@ export const achievements = [
         hidden: true,
         group: 'eggspeditions',
         img: 'planet4.png',
-        unlockCondition: () => {return data.progression.planets[3]},
+        unlockCondition: () => {return gameState.data.progression.planets[3]},
         hiddenImg: 'questionplanet.png'
     },
     {
@@ -363,7 +363,7 @@ export const achievements = [
         hidden: true,
         group: 'eggspeditions',
         img: 'planet5.png',
-        unlockCondition: () => {return data.progression.planets[4]},
+        unlockCondition: () => {return gameState.data.progression.planets[4]},
         hiddenImg: 'questionplanet.png'
     },
     {
@@ -372,7 +372,7 @@ export const achievements = [
         hidden: true,
         group: 'eggspeditions',
         img: 'planet6.png',
-        unlockCondition: () => {return data.progression.planets[5]},
+        unlockCondition: () => {return gameState.data.progression.planets[5]},
         hiddenImg: 'questionplanet.png'
     },
     // Ascension
@@ -382,7 +382,7 @@ export const achievements = [
         hidden: false,
         group: 'ascension',
         img: 'Eggs/knowlegg.png',
-        unlockCondition: () => {return data.stats.bestKnowleggs.gte(1)}
+        unlockCondition: () => {return gameState.data.stats.bestKnowleggs.gte(1)}
     },
     {
         name: 'Knowledge is the Key',
@@ -390,7 +390,7 @@ export const achievements = [
         hidden: false,
         group: 'ascension',
         img: 'Eggs/knowlegg.png',
-        unlockCondition: () => {return data.stats.bestKnowleggs.gte(10)}
+        unlockCondition: () => {return gameState.data.stats.bestKnowleggs.gte(10)}
     },
     {
         name: 'Lightbulb...',
@@ -398,7 +398,7 @@ export const achievements = [
         hidden: false,
         group: 'ascension',
         img: 'Eggs/knowlegg.png',
-        unlockCondition: () => {return data.stats.bestKnowleggs.gte(25)}
+        unlockCondition: () => {return gameState.data.stats.bestKnowleggs.gte(25)}
     },
     {
         name: 'Library of Alexandria',
@@ -406,7 +406,7 @@ export const achievements = [
         hidden: false,
         group: 'ascension',
         img: 'Eggs/knowlegg.png',
-        unlockCondition: () => {return data.stats.bestKnowleggs.gte(50)}
+        unlockCondition: () => {return gameState.data.stats.bestKnowleggs.gte(50)}
     },
     {
         name: 'Dusty Garbage',
@@ -470,7 +470,7 @@ export const achievements = [
         hidden: false,
         group: 'prestige',
         img: 'Achievements/Anti1.png',
-        unlockCondition: () => {return data.progression.hasPrestiged && data.currency.prophecyEggs.eq(0)}
+        unlockCondition: () => {return gameState.data.progression.hasPrestiged && gameState.data.currency.prophecyEggs.eq(0)}
     },
     {
         name: 'Anti-Anti-Anti-Prophecy Club',
@@ -478,7 +478,7 @@ export const achievements = [
         hidden: false,
         group: 'prestige',
         img: 'Achievements/Anti2.png',
-        unlockCondition: () => {return data.progression.hasAscended && data.currency.prophecyEggs.eq(0)}
+        unlockCondition: () => {return gameState.data.progression.hasAscended && gameState.data.currency.prophecyEggs.eq(0)}
     },
     {
         name: 'Hoarder',

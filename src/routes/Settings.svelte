@@ -1,8 +1,8 @@
 <script>
-    import { data } from "$lib/scripts/DataManager.svelte";
+    import { gameState } from "$lib/scripts/DataManager.svelte";
     import ButtonGroup from "$lib/components/ButtonGroup.svelte";
     import { format } from "$lib/scripts/Utilities";
-
+    let data = $derived(gameState.data)
     let tabs = $state([
     {title: "Settings", class: ""},
     {title: "Stats", class: ""},
