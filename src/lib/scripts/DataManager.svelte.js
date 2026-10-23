@@ -75,7 +75,6 @@ export let gameState = $state({
     data: DefaultDataObject(),
     runTimeData: {}
 })
-export const data = $derived(gameState.data)
 export const buyAmountLabels = ['1','5','10','20','Max']
 
 export function Load() {
