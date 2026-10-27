@@ -3,9 +3,11 @@
     import { gameState } from "$lib/scripts/DataManager.svelte";
     import { onMount } from "svelte";
     let data = $derived(gameState.data)
-    const columns = new Array(achievements.length / 8)
+    const columns = new Array(Math.ceil(achievements.length / 8))
     let hoverIndex = $state(-1)
     let currAchievement = $derived(achievements[hoverIndex])
+
+    console.log(achievements)
 </script>
 <h3>Achievements</h3>
 <div class="flexRow">

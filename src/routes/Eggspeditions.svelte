@@ -47,7 +47,11 @@
                 <Chip color={"red"} content={"Discovery Cost: ???"} />
                 <button class={"button-red"}>Discover ???</button>
             {/if}
-        {:else}
+            {#if data.progression.hasAscended}
+                <Chip color={"orange"} content={"Harvester Level: 0"} />
+                <button class={"button-red"}>Infrastructure Permit Required</button>
+            {/if}
+            {:else}
         <h3>No Planet Selected</h3>
         {/if}
     </div>

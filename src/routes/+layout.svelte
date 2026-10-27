@@ -7,6 +7,7 @@
 
 <svelte:head>
 	<link rel="icon" href="/Images/Eggs/{regularEggImgIds[gameState.data.indexValues.currentEgg]}.png" />
+	<title>Coop Co</title>
 </svelte:head>
 
 {@render children()}

@@ -6,7 +6,7 @@ const artifactTiers = 4
 const gemTiers = 3
 const collectionWeights = [0.025, 0.05, 0.125, 0.25]
 const blankObj = {name: ''}
-const blankIndices = [19,38,38]
+const blankIndices = [19,19,19,19,19,30,30,46,46]
 
 function artifactCount(index) {
     return new Decimal(gameState.data.ascension.artifacts[index]?.count ?? 0)
@@ -224,36 +224,52 @@ export const achievements = [
     },
     // Contracts
     {
-        name: 'Contracted',
-        description: 'Complete a Contract',
+        name: "Basic Contractor",
+        description: "Unlock Contracts and Grade D Certification",
         hidden: false,
         group: 'contracts',
-        img: 'greencheck.png',
-        unlockCondition: () => {return gameState.data.stats.contractsComplete.gte(1)}
+        img: 'Achievements/D-Rating.png',
+        unlockCondition: () => {return false}
     },
     {
-        name: 'Contractual',
-        description: 'Complete 10 Contracts',
+        name: "70% is fine I guess",
+        description: "Obtain Grade C Certification",
         hidden: false,
         group: 'contracts',
-        img: 'greencheck.png',
-        unlockCondition: () => {return gameState.data.stats.contractsComplete.gte(10)}
+        img: 'Achievements/C-Rating.png',
+        unlockCondition: () => {return false}
     },
     {
-        name: 'Contractful',
-        description: 'Complete 100 Contracts',
+        name: "The B stands for better",
+        description: "Obtain Grade B Certification",
         hidden: false,
         group: 'contracts',
-        img: 'greencheck.png',
-        unlockCondition: () => {return gameState.data.stats.contractsComplete.gte(100)}
+        img: 'Achievements/B-Rating.png',
+        unlockCondition: () => {return false}
     },
     {
-        name: 'Contractor',
-        description: 'Complete 250 Contracts',
+        name: "Acceptable Standards",
+        description: "Obtain Grade A Certification",
         hidden: false,
         group: 'contracts',
-        img: 'greencheck.png',
-        unlockCondition: () => {return gameState.data.stats.contractsComplete.gte(250)}
+        img: 'Achievements/A-Rating.png',
+        unlockCondition: () => {return false}
+    },
+    {
+        name: "Okay that's just a battery",
+        description: "Obtain Grade AA Certification",
+        hidden: false,
+        group: 'contracts',
+        img: 'Achievements/AA-Rating.png',
+        unlockCondition: () => {return false}
+    },
+    {
+        name: "Ascended Bureaucracy",
+        description: "Obtain Grade AAA Certification",
+        hidden: false,
+        group: 'contracts',
+        img: 'Achievements/AAA-Rating.png',
+        unlockCondition: () => {return false}
     },
     // Prestige (Soul Eggs & Prophecy Eggs)
     {

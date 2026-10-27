@@ -309,43 +309,43 @@ export const epicResearch = [
 
 export const legendaryResearch = [
     {
-        title: 'Planetary Discovery',
-        description: 'Unlock a final planet for discovery',
+        title: 'Grade AAA Exam',
+        description: 'You are allowed into the exclusive USDE Grade AAA supplier club.\nEarn enough reputation to unlock',
         baseCost: new Decimal(1),
         costScale: new Decimal(1.45),
         maxLevels: 1
     },
     {
-        title: 'Basic Harvesting & Artifacts',
-        description: 'Unlock Harvesters & The Reliquary',
+        title: 'Planetary Discovery',
+        description: 'Discover the 6th planet that was out of your reach!',
         baseCost: new Decimal(10),
         costScale: new Decimal(1.45),
         maxLevels: 1
     },
     {
         title: 'Epic Research Autobuyer',
-        description: 'Automatically Purchase Epic Researches',
+        description: 'Automatically buys Prestige Level Epic Research',
         baseCost: new Decimal(10),
         costScale: new Decimal(1.45),
         maxLevels: 1
     },
     {
-        title: 'Upgraded Harvesters',
-        description: '+5 More Levels to Harvester Level Cap\nUnlock Tier II Artifacts & Tier I Gems\nAnd Reliquary Loadouts & Statistics',
+        title: 'Limited Infrastructure Permit',
+        description: 'This is a non sublicensable permit to build small scale extraction equipment on other worlds',
         baseCost: new Decimal(15),
         costScale: new Decimal(1.45),
         maxLevels: 1
     },
     {
-        title: 'Advanced Harvesters',
-        description: '+5 More Levels to Harvester Level Cap\nUnlock Tier III Artifacts & Tier II Gems',
+        title: 'Moderate Scale Infrastructure Permit',
+        description: 'An upgraded permit to expand extraction operations on other worlds',
         baseCost: new Decimal(20),
         costScale: new Decimal(1.45),
         maxLevels: 1
     },
     {
-        title: 'Superior Harvesters',
-        description: '+5 More Levels to Harvester Level Cap\nUnlock Tier IV Artifacts & Tier III Gems',
+        title: 'Hyperscale Infrastructure Permit',
+        description: 'Mass infrastructure expansion allowed on all worlds',
         baseCost: new Decimal(25),
         costScale: new Decimal(1.45),
         maxLevels: 1
