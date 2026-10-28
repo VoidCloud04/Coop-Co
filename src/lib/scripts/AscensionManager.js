@@ -1,4 +1,4 @@
-export const infrastructureResources = [
+export const harvesterResources = [
     {
         title: "Unstable Particles",
         description: "The key reason for why chickens on arcturus produce dark energy",
