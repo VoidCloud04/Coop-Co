@@ -6,49 +6,7 @@ const artifactTiers = 4
 const gemTiers = 3
 const collectionWeights = [0.025, 0.05, 0.125, 0.25]
 const blankObj = {name: ''}
-const blankIndices = [19,19,19,19,19,30,30,46,46]
-
-function artifactCount(index) {
-    return new Decimal(gameState.data.ascension.artifacts[index]?.count ?? 0)
-}
-
-function gemCount(index) {
-    return new Decimal(gameState.data.ascension.gems[index]?.count ?? 0)
-}
-
-function ownsArtifactTier(tier) {
-    for(let i = 0; i < planetCount; i++)
-        if(artifactCount(tier + (i * artifactTiers)).gte(1)) return true
-    return false
-}
-
-function ownsGemTier(tier) {
-    for(let i = 0; i < planetCount; i++)
-        if(gemCount(tier + (i * gemTiers)).gt(0)) return true
-    return false
-}
-
-function collectionBonus() {
-    let bonus = Decimal.dOne
-    for(let i = 0; i < gameState.data.ascension.artifacts.length; i++)
-        bonus = bonus.add(artifactCount(i).times(collectionWeights[i % artifactTiers]))
-    return bonus
-}
-
-function allHarvestersAtLevel(level) {
-    if(gameState.data.ascension.harvesters.length < planetCount) return false
-    for(let i = 0; i < gameState.data.ascension.harvesters.length; i++)
-        if(gameState.data.ascension.harvesters[i].level < level) return false
-    return true
-}
-
-function collectedMaxTierItems() {
-    for(let i = 0; i < planetCount; i++) {
-        if(artifactCount(3 + (i * artifactTiers)).lte(0)) return false
-        if(gemCount(2 + (i * gemTiers)).lte(0)) return false
-    }
-    return true
-}
+const blankIndices = [19,19,19,19,19]
 
 export const achievements = [
     // Eggs
@@ -425,101 +383,13 @@ export const achievements = [
         unlockCondition: () => {return gameState.data.stats.bestKnowleggs.gte(50)}
     },
     {
-        name: 'Dusty Garbage',
-        description: 'Acquire your first Tier I Artifact',
-        hidden: false,
-        group: 'ascension',
-        img: 'Fragmented.png',
-        unlockCondition: () => {return ownsArtifactTier(0)}
-    },
-    {
-        name: 'Restoration Expert',
-        description: 'Acquire your first Tier II Artifact',
-        hidden: false,
-        group: 'ascension',
-        img: 'Restored.png',
-        unlockCondition: () => {return ownsArtifactTier(1)}
-    },
-    {
-        name: 'Master Reforger',
-        description: 'Acquire your first Tier III Artifact',
-        hidden: false,
-        group: 'ascension',
-        img: 'Upgraded.png',
-        unlockCondition: () => {return ownsArtifactTier(2)}
-    },
-    {
-        name: 'Ultimate Craftsman',
-        description: 'Acquire your first Tier IV Artifact',
-        hidden: false,
-        group: 'ascension',
-        img: 'Gilded.png',
-        unlockCondition: () => {return ownsArtifactTier(3)}
-    },
-    {
-        name: 'Scrounger',
-        description: 'Acquire a Gem Fragment',
-        hidden: false,
-        group: 'ascension',
-        img: 'Gems/Knowledge-Fragment.png',
-        unlockCondition: () => {return ownsGemTier(0)}
-    },
-    {
-        name: 'Gemsmith',
-        description: 'Acquire a Gem Shard',
-        hidden: false,
-        group: 'ascension',
-        img: 'Gems/Soul-Shard.png',
-        unlockCondition: () => {return ownsGemTier(1)}
-    },
-    {
-        name: 'Gemologist',
-        description: 'Acquire a Gemstone',
-        hidden: false,
-        group: 'ascension',
-        img: 'Gems/Ascension-Gem.png',
-        unlockCondition: () => {return ownsGemTier(2)}
-    },
-    {
         name: 'Anti-Prophecy Club',
-        description: 'Prestige with No Prophecy Eggs',
+        description: 'Ascend for the first time with no prophecy eggs',
         hidden: false,
         group: 'prestige',
-        img: 'Achievements/Anti1.png',
-        unlockCondition: () => {return gameState.data.progression.hasPrestiged && gameState.data.currency.prophecyEggs.eq(0)}
+        img: 'Achievements/Anti.png',
+        unlockCondition: () => {return gameState.data.progression.hasAcended && gameState.data.currency.prophecyEggs.eq(0)}
     },
-    {
-        name: 'Anti-Anti-Anti-Prophecy Club',
-        description: 'Ascend with No Prophecy Eggs',
-        hidden: false,
-        group: 'prestige',
-        img: 'Achievements/Anti2.png',
-        unlockCondition: () => {return gameState.data.progression.hasAscended && gameState.data.currency.prophecyEggs.eq(0)}
-    },
-    {
-        name: 'Hoarder',
-        description: 'Get your Artifact Collection Bonus to 100x',
-        hidden: false,
-        group: 'ascension',
-        img: 'Achievements/Hoarder.png',
-        unlockCondition: () => {return collectionBonus().gte(100)}
-    },
-    {
-        name: 'Extraction Specialist',
-        description: 'Get all Harvesters to Level 20',
-        hidden: false,
-        group: 'ascension',
-        img: 'Achievements/Extractor.png',
-        unlockCondition: () => {return allHarvestersAtLevel(20)}
-    },
-    {
-        name: 'The Collector',
-        description: 'Collect All of the Max Tier Gems & Artifacts',
-        hidden: false,
-        group: 'ascension',
-        img: 'Achievements/Collector.png',
-        unlockCondition: () => {return collectedMaxTierItems()}
-    }
 ]
 
 
@@ -528,6 +398,7 @@ for(let i = 0; i < blankIndices.length; i++) {
 }
 
 const blankPadding = achievements.length % 8
+console.log(blankPadding)
 for(let i = 0; i < blankPadding; i++) {
     achievements.push(blankObj)
 }

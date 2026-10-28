@@ -41,8 +41,6 @@
         * {
             margin-left: 0.5vw;
             margin-right: 0.5vw;
-            margin-top: 0.5vh;
-            margin-bottom: 0.5vh;
         }
 
         img, p, h2 {

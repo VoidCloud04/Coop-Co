@@ -37,13 +37,14 @@
     }
     const commonTiers = commonByTier()
     let commonCollapsed = $state(commonTiers.map(() => true))
-
+    
     onMount(() => {
+        
         Load()
     })
 </script>
 <!-- Main Game Page Content / Will be not rendered during planets -->
-<Header />
+<Header style="margin-top: 0;"/>
 {#if showNewsTicker}
     <Newsticker />
 {/if}
