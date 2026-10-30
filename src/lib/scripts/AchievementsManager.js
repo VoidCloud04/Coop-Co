@@ -404,9 +404,9 @@ for(let i = 0; i < blankPadding; i++) {
 }
 
 export function unlockAchievements() {
-    for(ach of achievements) {
-        if(ach.name !== '' && !gameState.data.achievements[i] && ach.unlockCondition) {
-            gameState.data.achievements[i] = true
+    for(let i = 0; i < achievements.length; i++) {
+        if(achievements[i].name !== '' && !gameState.data.progression.achievements[i] && achievements[i].unlockCondition) {
+            gameState.data.progression.achievements[i] = true
         }
     }
 }

@@ -1,5 +1,5 @@
 <script>
-    import { gameState } from "$lib/scripts/DataManager.svelte";
+    import { DeleteSave, Export, gameState, Save } from "$lib/scripts/DataManager.svelte";
     import ButtonGroup from "$lib/components/ButtonGroup.svelte";
     import { format } from "$lib/scripts/Utilities";
     let data = $derived(gameState.data)
@@ -19,10 +19,10 @@
 <ButtonGroup buttonArr={tabs} onclick={changeTab}/>
 {#if subTab === 0}
     <div class="flexRow">
-        <button class="button-green">Save Game</button>
+        <button class="button-green" onclick={Save}>Save Game</button>
         <button>Import Save</button>
-        <button>Export Save</button>
-        <button class="button-red">Delete Save</button>
+        <button onclick={Export}>Export Save</button>
+        <button class="button-red" onclick={DeleteSave()}>Delete Save</button>
     </div>
     <div class="flexRow">
         <button>Notation: Mixed Sci</button>

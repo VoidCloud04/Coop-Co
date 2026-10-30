@@ -1,9 +1,10 @@
 <script>
     import { gameState } from "$lib/scripts/DataManager.svelte";
     import { format } from "$lib/scripts/Utilities";
-    import { eggs, regularEggImgIds } from "$lib/scripts/EggManager";
+    import { calculateEggValueBonus, calculateInternalHatchery, calculateLayRate, eggs, regularEggImgIds } from "$lib/scripts/EggManager";
     import Decimal from "break_eternity.js";
     import Chip from "$lib/components/Chip.svelte";
+    import { toPlaces } from "$lib/scripts/Formatting";
 
     let data = $derived(gameState.data)
     const currentEgg = $derived(eggs[data.indexValues.currentEgg])
@@ -14,6 +15,11 @@
     let unlockDisplayEgg = $derived(eggs[unlockDisplayIndex])
     let nextDisplayIndex = $derived(unlockDisplayIndex + 1)
     let nextDisplayEgg = $derived(eggs[nextDisplayIndex])
+    
+    let eggBonus = $state(calculateEggValueBonus())
+    let chickenGain = $state(calculateInternalHatchery())
+    let layRate = $state(calculateLayRate())
+    let moneyGain = $derived(layRate.times(data.currency.chickens).times(currentEgg.baseValue.times(eggBonus)))
 
     function eggChipColor(index) {
         if(data.indexValues.currentEgg === index)
@@ -29,8 +35,8 @@
     <div class="flexRow">
         <img src="/Images/Eggs/{regularEggImgIds[data.indexValues.currentEgg]}.png" alt="{currentEgg.name}">
         <div class="flexCol">
-            <p><strong>{currentEgg.name} Egg</strong><br>${format(currentEgg.baseValue)} per Egg x3.40</p>
-            <p>Income: $1/s | Egg Lay Rate: 40/s<br>Chickens: {format(data.currency.chickens)} (+10/s)</p>
+            <p><strong>{currentEgg.name} Egg</strong><br>${format(currentEgg.baseValue)} per Egg x{format(eggBonus,)}</p>
+            <p>Income: ${format(moneyGain)}/s | Egg Lay Rate: {format(layRate)}/s<br>Chickens: {format(data.currency.chickens)} (+{format(chickenGain)}/s)</p>
         </div>
     </div>
     <div class="flexRow">

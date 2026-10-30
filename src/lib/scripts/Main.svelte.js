@@ -16,7 +16,8 @@ export function updateGameData(timeStamp) {
     else {
         timeDiff = Math.max(0,timeStamp-lastFrameTimestamp) / 1000
     }
-
+    lastFrameTimestamp = timeStamp
+    
     // Update Function Calls
     updateChickens(timeDiff)
     updateMoney(timeDiff)
@@ -26,17 +27,17 @@ export function updateGameData(timeStamp) {
 }
 
 function updateMoney(diff) {
-    const baseValue = eggs[gameState.data.indexValues.currentEgg].baseValue.times()
+    const baseValue = eggs[gameState.data.indexValues.currentEgg].baseValue
     const eggValueBonus = calculateEggValueBonus()
     const eggValue = baseValue.times(eggValueBonus)
     const layRate = calculateLayRate()
-    const eggsProduced = (gameState.data.chickens.times(layRate)).times(diff)
-
+    const eggsProduced = (gameState.data.currency.chickens.times(layRate)).times(diff)
+    
     gameState.data.currency.money = gameState.data.currency.money.plus(eggsProduced.times(eggValue))
+    //console.log(diff)
 }
 
 function updateChickens(diff) {
     const chickenGain = calculateInternalHatchery()
     gameState.data.currency.chickens = gameState.data.currency.chickens.plus((chickenGain.times(diff)))
 }
-

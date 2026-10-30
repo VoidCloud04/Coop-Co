@@ -61,7 +61,7 @@
                 {#each items as item}
                     <button
                         class="{data.currency.money.lt(item.baseCost) ? 'button-red' : 'button-green'}"
-                    >{item.title}<br>{item.description}<br>{`Level: 0/${toPlaces(item.maxLevels,0,item.maxLevels+1)} | Cost: ${format(item.baseCost)}` }</button>
+                    >{item.title}<br>{item.description}<br>{`Level: 0/${toPlaces(item.maxLevels,0,item.maxLevels+1)} | Cost: $${format(item.baseCost)}` }</button>
                 {/each}
             </div>
         </div>

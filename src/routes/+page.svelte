@@ -16,6 +16,7 @@
     import Prestige from "./Prestige.svelte";
     import Research from "./Research.svelte";
     import Settings from "./Settings.svelte";
+    import { updateGameData } from "$lib/scripts/Main.svelte";
 
     // Variable Definitions
     let tabIndex = $state(0)
@@ -41,6 +42,9 @@
     onMount(() => {
         
         Load()
+        requestAnimationFrame(updateGameData)
+
+        window.setInterval(Save,30000)
     })
 </script>
 <!-- Main Game Page Content / Will be not rendered during planets -->

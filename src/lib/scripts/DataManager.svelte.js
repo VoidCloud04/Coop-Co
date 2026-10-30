@@ -19,7 +19,7 @@ function DefaultDataObject() {
             legendaryResearch: new Array(legendaryResearch.length).fill(0)
         },
         progression: {
-            achievements: new Array(achievements.length),
+            achievements: new Array(achievements.length).fill(false),
             hasPrestiged: false,
             hasAscended: false,
             unlockedContracts: false,
@@ -85,7 +85,7 @@ export function Load() {
         loadedData = DefaultDataObject()
     else {
         try {
-            loadedData = fixSave(DefaultDataObject(),loadedData)
+            loadedData = fixSave(DefaultDataObject(), JSON.parse(loadedData))
         }
         catch(error) {
             console.error("Could not Load Save Reverting to Defaults ",error)
@@ -98,7 +98,7 @@ export function Load() {
     if(!gameState.data.progression.unlockedEgg[0]) {
         gameState.data.progression.unlockedEgg[0] = true
     }
-    Save()
+    console.log("Loaded Data:", loadedData)
 }
 
 export function Save() {
@@ -114,7 +114,7 @@ function fixSave(defaults, saved, path = "data") {
 
         try {
             const value = new Decimal(saved);
-            if (value.isNaN()) throw new Error("Invalid Decimal")
+            if (value.isNan()) throw new Error("Invalid Decimal")
             return value
         } catch {
             console.warn(`Invalid Decimal at ${path}; using default`)
@@ -186,4 +186,9 @@ export function toggleAutomator(classIndex, index) {
             console.warn("Invalid index supplied to toggleAutomator classIndex")
             break
     }
+}
+
+export function DeleteSave() {
+    window.localStorage.removeItem(gameKey)
+    location.reload()
 }

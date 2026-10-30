@@ -20,7 +20,7 @@
         class="button{data.currency.money.gte(eggs[data.indexValues.currentEgg + 1].discoveryReq) && data.currency.money.lt(eggs[data.indexValues.currentEgg + 1].unlockReq) ? '-yellow' : '-red' }{data.currency.money.gte(eggs[data.indexValues.currentEgg + 1].unlockReq) ? '-green' : '' }-header"
         onclick={promoteEgg}>Promote to Next Egg!</button>
     {/if}
-    <h2>${format(data.currency.money)}</h2>
+    <h2>${format(gameState.data.currency.money)}</h2>
     <p>Chickens: {format(data.currency.chickens)}</p>
     <button id="prestige-button" class="button-purple-header">Prestige</button>
     <button id="ascension-button" class="button-orange-header">Ascend</button>
