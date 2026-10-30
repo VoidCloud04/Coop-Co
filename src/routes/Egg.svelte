@@ -27,7 +27,7 @@
 
 <div class="flexCol holder">
     <div class="flexRow">
-        <img src="/Images/Eggs/egg.png" alt="Bruh">
+        <img src="/Images/Eggs/{regularEggImgIds[data.indexValues.currentEgg]}.png" alt="{currentEgg.name}">
         <div class="flexCol">
             <p><strong>{currentEgg.name} Egg</strong><br>${format(currentEgg.baseValue)} per Egg x3.40</p>
             <p>Income: $1/s | Egg Lay Rate: 40/s<br>Chickens: {format(data.currency.chickens)} (+10/s)</p>

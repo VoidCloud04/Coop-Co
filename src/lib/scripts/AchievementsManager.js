@@ -402,3 +402,11 @@ console.log(blankPadding)
 for(let i = 0; i < blankPadding; i++) {
     achievements.push(blankObj)
 }
+
+export function unlockAchievements() {
+    for(ach of achievements) {
+        if(ach.name !== '' && !gameState.data.achievements[i] && ach.unlockCondition) {
+            gameState.data.achievements[i] = true
+        }
+    }
+}

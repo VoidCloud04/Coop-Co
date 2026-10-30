@@ -14,9 +14,9 @@ function DefaultDataObject() {
             knowleggs: Decimal.dZero
         },
         research: {
-            commonResearch: new Array(commonResearch.length),
-            epicResearch: new Array(epicResearch.length),
-            legendaryResearch: new Array(legendaryResearch.length)
+            commonResearch: new Array(commonResearch.length).fill(0),
+            epicResearch: new Array(epicResearch.length).fill(0),
+            legendaryResearch: new Array(legendaryResearch.length).fill(0)
         },
         progression: {
             achievements: new Array(achievements.length),
@@ -24,7 +24,7 @@ function DefaultDataObject() {
             hasAscended: false,
             unlockedContracts: false,
             unlockedEggspeditions: false,
-            unlockedEgg: new Array(eggs.length),
+            unlockedEgg: new Array(eggs.length).fill(false),
             planets: new Array(planets.length), // Not Decided new Structure Yet Likely change from this to fit a different style for each planet
             unlockedPlanet: new Array(planets.length).fill(false),
         },
@@ -66,7 +66,8 @@ function DefaultDataObject() {
             toggles: new Array(7).fill(false)
 
         },
-        saveVersion: 'v3.0.0'
+        saveVersion: 'v3.0.0',
+        time: Date.now()
     }
 }
 
@@ -93,6 +94,10 @@ export function Load() {
     }
     // console.log(loadedData)
     gameState.data = loadedData
+    // Pre Start Checks
+    if(!gameState.data.progression.unlockedEgg[0]) {
+        gameState.data.progression.unlockedEgg[0] = true
+    }
     Save()
 }
 
