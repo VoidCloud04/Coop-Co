@@ -1,4 +1,5 @@
 import Decimal from "break_eternity.js";
+import { gameState } from "./DataManager.svelte";
 
 export const commonResearch = [
     {
@@ -361,8 +362,100 @@ export function commonByTier() {
     return ret
 }
 
-export function purchaseCommonResearch(index) {
+const BUY_AMOUNTS = [1, 5, 10, 20, Infinity];
+const COMMON_SCALE = new Decimal(1.15);
 
+function totalCost(base, scale, level, count) {
+    if (count <= 0) return Decimal.dZero;
+    if (scale.eq(Decimal.dOne)) return base.times(count);
+
+    return base
+        .times(Decimal.pow(scale, level))
+        .times(Decimal.pow(scale, count).sub(Decimal.dOne))
+        .div(scale.sub(Decimal.dOne));
+}
+
+function maxAffordable(base, scale, level, remaining, money) {
+    if (remaining <= 0) return 0;
+
+    const next = base.times(Decimal.pow(scale, level));
+    if (money.lt(next)) return 0;
+
+    let count;
+    if (scale.eq(Decimal.dOne)) {
+        count = Decimal.floor(money.div(next)).toNumber();
+    } else {
+        count = Decimal.floor(
+            Decimal.log(
+                money.div(next).times(scale.sub(Decimal.dOne)).add(Decimal.dOne),
+                scale
+            )
+        ).toNumber();
+    }
+
+    if (!Number.isFinite(count)) count = remaining;
+    count = Math.max(0, Math.min(count, remaining));
+
+    while (count < remaining && totalCost(base, scale, level, count + 1).lte(money)) {
+        count++;
+    }
+    while (count > 0 && totalCost(base, scale, level, count).gt(money)) {
+        count--;
+    }
+
+    return count;
+}
+
+export function getCommonResearch(index, options = {}) {
+    const data = options.data ?? gameState.data;
+    const item = commonResearch[index];
+    const scale = new Decimal(options.costScale ?? COMMON_SCALE);
+    const baseCost = new Decimal(options.baseCost ?? item.baseCost);
+
+    const level = Math.min(data.research.commonResearch[index] ?? 0, item.maxLevels);
+    const remaining = item.maxLevels - level;
+
+    const labLevel = Math.min(10, Math.max(0, data.research.epicResearch[1] ?? 0));
+    const discount = new Decimal(labLevel).times(0.05);
+    const base = baseCost.times(Decimal.dOne.sub(discount));
+
+    const nextCost = base.times(Decimal.pow(scale, level));
+    const buyAmount = Math.min(
+        BUY_AMOUNTS[data.settings.buyAmounts[0]] ?? 1,
+        remaining
+    );
+    const cost = totalCost(base, scale, level, buyAmount);
+    const maxBuyAmount = maxAffordable(
+        base,
+        scale,
+        level,
+        remaining,
+        data.currency.money
+    );
+    const buyCount = Math.min(buyAmount, maxBuyAmount);
+    const charge = totalCost(base, scale, level, buyCount);
+
+    return {
+        level,
+        maxLevel: item.maxLevels,
+        nextCost,
+        cost,
+        buyAmount,
+        maxBuyAmount,
+        buyCount,
+        charge,
+        isMaxed: remaining <= 0
+    };
+}
+
+export function purchaseCommonResearch(index, options = {}) {
+    const data = options.data ?? gameState.data;
+    const info = getCommonResearch(index, { ...options, data });
+
+    if (info.buyCount <= 0) return;
+
+    data.currency.money = data.currency.money.sub(info.charge);
+    data.research.commonResearch[index] = info.level + info.buyCount;
 }
 
 export function purchaseEpicResearch(index) {

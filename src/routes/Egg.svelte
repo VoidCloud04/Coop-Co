@@ -35,7 +35,7 @@
     <div class="flexRow">
         <img src="/Images/Eggs/{regularEggImgIds[data.indexValues.currentEgg]}.png" alt="{currentEgg.name}">
         <div class="flexCol">
-            <p><strong>{currentEgg.name} Egg</strong><br>${format(currentEgg.baseValue)} per Egg x{format(eggBonus,)}</p>
+            <p><strong>{currentEgg.name} Egg</strong><br>${format(currentEgg.baseValue)} per Egg x{format(eggBonus)}</p>
             <p>Income: ${format(moneyGain)}/s | Egg Lay Rate: {format(layRate)}/s<br>Chickens: {format(data.currency.chickens)} (+{format(chickenGain)}/s)</p>
         </div>
     </div>

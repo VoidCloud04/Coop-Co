@@ -1,11 +1,34 @@
 <script>
     import { buyAmountLabels, gameState, toggleAutomator, updateBA } from "$lib/scripts/DataManager.svelte";
     import { toPlaces } from "$lib/scripts/Formatting";
-    import { commonByTier, commonResearch } from "$lib/scripts/ResearchManager";
+    import {
+        commonByTier,
+        commonResearch,
+        getCommonResearch,
+        purchaseCommonResearch
+    } from "$lib/scripts/ResearchManager";
     import { format } from "$lib/scripts/Utilities";
     let { collapsed = $bindable() } = $props()
     let data = $derived(gameState.data)
     let tiers = commonByTier()
+    let rows = $derived.by(() =>
+        tiers.map((items) =>
+            items.map((item) => {
+                const index = commonResearch.indexOf(item)
+                return { item, index, info: getCommonResearch(index, { data }) }
+            })
+        )
+    )
+    let unlockedTiers = $derived.by(() => {
+        const unlocked = [true]
+        for(let i = 1; i < rows.length; i++) {
+            const previous = rows[i - 1]
+            const totalLevels = previous.reduce((sum, { info }) => sum + info.level, 0)
+            const totalMaxLevels = previous.reduce((sum, { info }) => sum + info.maxLevel, 0)
+            unlocked.push(totalMaxLevels === 0 || totalLevels / totalMaxLevels >= 0.25)
+        }
+        return unlocked
+    })
     function toggleCollapsed(i) {
         collapsed[i] = !collapsed[i]
     }
@@ -54,17 +77,27 @@
     <div class="heading">Tier</div>
     <div class="heading">Researches</div>
 
-    {#each tiers as items, i}
-        <div class="tier-row tier-row-gray" class:collapsed={collapsed[i]}>
-            <button class="tier-label" onclick={() => toggleCollapsed(i)}>Tier {toRN(i + 1)} {collapsed[i] ? "▸" : "▾"}</button>
-            <div class="researches">
-                {#each items as item}
-                    <button
-                        class="{data.currency.money.lt(item.baseCost) ? 'button-red' : 'button-green'}"
-                    >{item.title}<br>{item.description}<br>{`Level: 0/${toPlaces(item.maxLevels,0,item.maxLevels+1)} | Cost: $${format(item.baseCost)}` }</button>
-                {/each}
+    {#each rows as items, i}
+        {#if unlockedTiers[i]}
+            <div class="tier-row tier-row-gray" class:collapsed={collapsed[i]}>
+                <button class="tier-label" onclick={() => toggleCollapsed(i)}>Tier {toRN(i + 1)} {collapsed[i] ? "▸" : "▾"}</button>
+                <div class="researches">
+                    {#each items as { item, index, info }}
+                        <button
+                            class={info.isMaxed
+                                ? 'button-blue'
+                                : data.currency.money.gte(info.cost)
+                                    ? 'button-green'
+                                    : data.currency.money.gte(info.nextCost)
+                                        ? 'button-yellow'
+                                        : 'button-red'}
+                            disabled={info.isMaxed}
+                            onclick={() => purchaseCommonResearch(index)}
+                        >{item.title}<br>{item.description}<br>{`Level: ${info.level}/${toPlaces(info.maxLevel,0,info.maxLevel+1)} | Cost: ${info.isMaxed ? "[MAXED]" : "$" + format(info.cost)}`}</button>
+                    {/each}
+                </div>
             </div>
-        </div>
+        {/if}
     {/each}
 </div>
 
@@ -83,8 +116,6 @@
         border-bottom: 2px solid $white;
     }
 
-    // One wrapper per tier row: spans the full grid so its background
-    // is a continuous band, while subgrid keeps the two columns aligned.
     .tier-row {
         grid-column: 1 / -1;
         display: grid;
@@ -96,8 +127,6 @@
         padding: 0.2vh 0.2vw 0.2vh 0.2vw;
     }
 
-    // The global `*` rule paints $bg-color on every element; clear it on the
-    // row's direct children so the wrapper's color shows through.
     .tier-row > * {
         background-color: transparent;
     }
