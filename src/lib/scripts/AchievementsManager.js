@@ -5,8 +5,6 @@ const planetCount = 6
 const artifactTiers = 4
 const gemTiers = 3
 const collectionWeights = [0.025, 0.05, 0.125, 0.25]
-const blankObj = {name: ''}
-const blankIndices = [19,19,19,19,19]
 
 export const achievements = [
     // Eggs
@@ -393,19 +391,10 @@ export const achievements = [
 ]
 
 
-for(let i = 0; i < blankIndices.length; i++) {
-    achievements.splice(blankIndices[i],0,blankObj)
-}
-
-const blankPadding = achievements.length % 8
-console.log(blankPadding)
-for(let i = 0; i < blankPadding; i++) {
-    achievements.push(blankObj)
-}
-
 export function unlockAchievements() {
     for(let i = 0; i < achievements.length; i++) {
-        if(achievements[i].name !== '' && !gameState.data.progression.achievements[i] && achievements[i].unlockCondition) {
+        const achievement = achievements[i]
+        if(!gameState.data.progression.achievements[i] && achievement.unlockCondition()) {
             gameState.data.progression.achievements[i] = true
         }
     }

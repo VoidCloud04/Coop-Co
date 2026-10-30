@@ -1,26 +1,45 @@
 <script>
     import { achievements } from "$lib/scripts/AchievementsManager";
-    import { gameState } from "$lib/scripts/DataManager.svelte";
-    import { onMount } from "svelte";
-    let data = $derived(gameState.data)
-    const columns = new Array(Math.ceil(achievements.length / 8))
-    let hoverIndex = $state(-1)
-    let currAchievement = $derived(achievements[hoverIndex])
 
-    console.log(achievements)
+    const columnSize = 8
+
+    function groupAchievements(list) {
+        const groups = new Map()
+        for (const achievement of list) {
+            const group = achievement.group ?? 'other'
+            if (!groups.has(group)) groups.set(group, [])
+            groups.get(group).push(achievement)
+        }
+        return [...groups.values()]
+    }
+
+    function buildColumns(list) {
+        const columns = []
+        for (const group of groupAchievements(list)) {
+            for (let i = 0; i < group.length; i += columnSize) {
+                const column = group.slice(i, i + columnSize)
+                while (column.length < columnSize) column.push(null)
+                columns.push(column)
+            }
+        }
+        return columns
+    }
+
+    const columns = buildColumns(achievements)
+    let hovered = $state(null)
+    const hoveredIndex = $derived(hovered ? achievements.indexOf(hovered) : -1)
 </script>
 <h3>Achievements</h3>
 <div class="flexRow">
-    {#each columns as col, i}
-        <div class="flexCol" style="margin-left: 0.25vw; margin-right: 0.25vw;">
-            <!-- <p>[{i + (7*i)} | {8 + (i*8)}]</p> -->
-            {#each achievements.slice(i + (7*i),8+(8*i)) as ach,j}
-                {#if ach.name !== ''}
-                    <img 
-                    onmouseenter={() => {hoverIndex = (j + 8*i)}} 
-                    class={`ach ${achievements[j+i*8].unlockCondition() ? 'ach-green' : 'ach-red'}`} 
-                    src={achievements[j+i*8].hidden && !achievements[j+i*8].unlockCondition() ? `Images/${achievements[j+i*8].hiddenImg}` : `Images/${achievements[j+i*8].img}`} 
-                    alt={ach.name}>
+    {#each columns as column, columnIndex (columnIndex)}
+        <div class="flexCol ach-column">
+            {#each column as ach, slotIndex (slotIndex)}
+                {#if ach}
+                    <img
+                        onmouseenter={() => { hovered = ach }}
+                        class={`ach ${ach.unlockCondition() ? 'ach-green' : 'ach-red'}`}
+                        src={`Images/${ach.hidden && !ach.unlockCondition() ? ach.hiddenImg : ach.img}`}
+                        alt={ach.name}>
                 {:else}
                     <div class="ach"></div>
                 {/if}
@@ -28,16 +47,16 @@
         </div>
     {/each}
 </div>
-{#if hoverIndex != -1 && achievements[hoverIndex].name !== ''}
-    {#if currAchievement.hidden && !currAchievement.unlockCondition()}
-        <p class={'red'}>
-            [{hoverIndex+1}] - ???<br>
+{#if hovered}
+    {#if hovered.hidden && !hovered.unlockCondition()}
+        <p class="red">
+            [{hoveredIndex + 1}] - ???<br>
             Keep playing to unlock this achievement
         </p>
     {:else}
-        <p class={achievements[hoverIndex].unlockCondition() ? 'green' : 'red'}>
-            [{hoverIndex+1}] - {currAchievement.name}<br>
-            {currAchievement.description}
+        <p class={hovered.unlockCondition() ? 'green' : 'red'}>
+            [{hoveredIndex + 1}] - {hovered.name}<br>
+            {hovered.description}
         </p>
     {/if}
 {/if}
@@ -46,6 +65,10 @@
     @use '$lib/styles/variables' as *;
     p {
         text-align: center;
+    }
+    .ach-column {
+        margin-left: 0.25vw;
+        margin-right: 0.25vw;
     }
     .ach {
         background-color: $gray;
