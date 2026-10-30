@@ -153,3 +153,71 @@ export function promoteEgg() {
         gameState.data.progression.unlockedEgg[gameState.data.indexValues.currentEgg] = true
     }
 }
+
+export function calculateEggValueBonus() {
+    let bonus = Decimal.dOne // starting value
+    const commonResearch = gameState.data.research.commonResearch
+    const epicResearch = gameState.data.research.epicResearch
+    // Common Research Modifiers
+    bonus = bonus.times(Decimal.max(Decimal.dOne, Decimal.dOne.plus(new Decimal(0.25).times(commonResearch[1])))) // Nutritional Supplements
+    bonus = bonus.times(Decimal.max(Decimal.dOne, Decimal.dOne.plus(new Decimal(0.25).times(commonResearch[3])))) // Padded Packaging
+    bonus = bonus.times(Decimal.max(Decimal.dOne, new Decimal(2).times(commonResearch[4]))) // Bigger Eggs
+    bonus = bonus.times(Decimal.max(Decimal.dOne, new Decimal(3).times(commonResearch[6]))) // USDE Prime Certification
+    bonus = bonus.times(Decimal.max(Decimal.dOne, Decimal.dOne.plus(new Decimal(0.25).times(commonResearch[8])))) // Superfeed Diet
+    bonus = bonus.times(Decimal.max(Decimal.dOne, Decimal.dOne.plus(new Decimal(0.15).times(commonResearch[10])))) // Improved Genetics
+    bonus = bonus.times(Decimal.max(Decimal.dOne, Decimal.dOne.plus(new Decimal(0.15).times(commonResearch[11])))) // Shell Fortification
+    bonus = bonus.times(Decimal.max(Decimal.dOne, new Decimal(2).times(commonResearch[12]))) // Even Bigger Eggs
+    bonus = bonus.times(Decimal.max(Decimal.dOne, Decimal.dOne.plus(new Decimal(0.10).times(commonResearch[14])))) // Genetic Purification
+    bonus = bonus.times(Decimal.max(Decimal.dOne, new Decimal(2).times(commonResearch[17]))) // Graviton Coating
+    bonus = bonus.times(Decimal.max(Decimal.dOne, Decimal.dOne.plus(new Decimal(0.25).times(commonResearch[18])))) // Crystalline Shelling
+    bonus = bonus.times(Decimal.max(Decimal.dOne, Decimal.dOne.plus(new Decimal(0.25).times(commonResearch[20])))) // Telepathic Will
+    bonus = bonus.times(Decimal.max(Decimal.dOne, Decimal.dOne.plus(new Decimal(0.10).times(commonResearch[21])))) // Atomic Purification
+    bonus = bonus.times(Decimal.max(Decimal.dOne, new Decimal(10).times(commonResearch[22]))) // Multiversal Layering
+    bonus = bonus.times(Decimal.max(Decimal.dOne, Decimal.dOne.plus(new Decimal(0.05).times(commonResearch[24])))) // Eggsistor Miniaturization
+    bonus = bonus.times(Decimal.max(Decimal.dOne, Decimal.dOne.plus(new Decimal(0.01).times(commonResearch[25])))) // Matter Reconfiguration
+    bonus = bonus.times(Decimal.max(Decimal.dOne, new Decimal(10).times(commonResearch[26]))) // Timeline Splicing
+    
+    // Epic Research Modifiers
+    bonus = bonus.times(Decimal.max(Decimal.dOne, Decimal.dOne.plus(new Decimal(0.05).times(epicResearch[5])))) // Accounting Tricks
+
+    return bonus
+}
+
+export function calculateInternalHatchery() {
+    let chickenGain = Decimal.dZero
+    const commonResearch = gameState.data.research.commonResearch
+    const epicResearch = gameState.data.research.epicResearch
+    // Common Research Chicken Production
+    chickenGain = chickenGain.plus(new Decimal(8).times(commonResearch[2])) // Internal Hatcheries
+    chickenGain = chickenGain.plus(new Decimal(20).times(commonResearch[5])) // Internal Hatchery Upgrades
+    chickenGain = chickenGain.plus(new Decimal(40).times(commonResearch[9])) // Internal Hatchery Expansion
+    chickenGain = chickenGain.plus(new Decimal(100).times(commonResearch[13])) // Internal Hatchery Expansion
+    chickenGain = chickenGain.plus(new Decimal(20).times(commonResearch[15])) // Machine Learning Incubators
+    chickenGain = chickenGain.plus(new Decimal(200).times(commonResearch[19])) // Neural Linking
+
+    // Epic Research Chicken Gain Multipliers
+    chickenGain = chickenGain.times(Decimal.max(Decimal.dOne, Decimal.dOne.plus(new Decimal(0.05).times(epicResearch[0])))) // Epic Internal Hatcheries
+
+    // TODO: Planet, Artifact and Gem Chicken Gain Boosts
+
+    return chickenGain.div(60) // Convert Chickens/min to Chickens/sec
+}
+
+export function calculateLayRate() {
+    let layRate = Decimal.dOne
+    const commonResearch = gameState.data.research.commonResearch
+    const epicResearch = gameState.data.research.epicResearch
+    layRate = layRate.times(Decimal.max(Decimal.dOne, Decimal.dOne.plus(new Decimal(0.1).times(commonResearch[0])))) // Comfortable Nests
+    layRate = layRate.times(Decimal.max(Decimal.dOne, Decimal.dOne.plus(new Decimal(0.05).times(commonResearch[7])))) // Hen House A/C
+    layRate = layRate.times(Decimal.max(Decimal.dOne, Decimal.dOne.plus(new Decimal(0.15).times(commonResearch[10])))) // Improved Genetics
+    layRate = layRate.times(Decimal.max(Decimal.dOne, Decimal.dOne.plus(new Decimal(0.1).times(commonResearch[16])))) // Time Compression
+    layRate = layRate.times(Decimal.max(Decimal.dOne, Decimal.dOne.plus(new Decimal(0.02).times(commonResearch[23])))) // Timeline Diversion
+    layRate = layRate.times(Decimal.max(Decimal.dOne, Decimal.dOne.plus(new Decimal(0.1).times(commonResearch[27])))) // Relativity Optimization
+
+    // Epic Research Lay Rate Multipliers
+    layRate = layRate.times(Decimal.max(Decimal.dOne, Decimal.dOne.plus(new Decimal(0.05).times(epicResearch[4])))) // Epic Comfy Nests
+
+    // TODO: Planet, Artifact and Gem Lay Rate Boosts
+
+    return layRate
+}

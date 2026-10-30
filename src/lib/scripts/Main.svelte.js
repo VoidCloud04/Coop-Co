@@ -1,5 +1,6 @@
 import { unlockAchievements } from "./AchievementsManager"
 import { gameState } from "./DataManager.svelte"
+import { calculateEggValueBonus, calculateInternalHatchery, calculateLayRate, eggs } from "./EggManager"
 
 let lastFrameTimestamp = null
 let timeDiff= $state(0)
@@ -17,8 +18,25 @@ export function updateGameData(timeStamp) {
     }
 
     // Update Function Calls
+    updateChickens(timeDiff)
+    updateMoney(timeDiff)
 
     unlockAchievements()
     gameState.data.time = now
+}
+
+function updateMoney(diff) {
+    const baseValue = eggs[gameState.data.indexValues.currentEgg].baseValue.times()
+    const eggValueBonus = calculateEggValueBonus()
+    const eggValue = baseValue.times(eggValueBonus)
+    const layRate = calculateLayRate()
+    const eggsProduced = (gameState.data.chickens.times(layRate)).times(diff)
+
+    gameState.data.currency.money = gameState.data.currency.money.plus(eggsProduced.times(eggValue))
+}
+
+function updateChickens(diff) {
+    const chickenGain = calculateInternalHatchery()
+    gameState.data.currency.chickens = gameState.data.currency.chickens.plus((chickenGain.times(diff)))
 }
 
