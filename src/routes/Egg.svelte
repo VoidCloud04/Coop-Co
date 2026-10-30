@@ -24,7 +24,7 @@
     function eggChipColor(index) {
         if(data.indexValues.currentEgg === index)
             return "blue"
-        else if(data.progression.unlockedEgg[index])
+        else if(data.progression.unlockedEgg[index] || data.currency.money.gte(nextEgg.discoveryReq))
             return "green"
         else
             return "gray"
@@ -54,8 +54,8 @@
             color={eggChipColor(unlockDisplayIndex)}></Chip>
         {"=>"}
         <Chip 
-            imgSrc={data.progression.unlockedEgg[nextDisplayIndex] ? `Images/Eggs/${regularEggImgIds[nextDisplayIndex]}.png` : `Images/Eggs/question.png`} 
-            content={data.progression.unlockedEgg[nextDisplayIndex] ? nextDisplayEgg.name : '???'} 
+            imgSrc={data.progression.unlockedEgg[nextDisplayIndex] || data.currency.money.gte(nextEgg.discoveryReq) ? `Images/Eggs/${regularEggImgIds[nextDisplayIndex]}.png` : `Images/Eggs/question.png`} 
+            content={data.progression.unlockedEgg[nextDisplayIndex] || data.currency.money.gte(nextEgg.discoveryReq) ? nextDisplayEgg.name : '???'} 
             color={eggChipColor(nextDisplayIndex)}></Chip>
         <button onclick={() => {unlockDisplayIndex += 1}} disabled={nextDisplayIndex === (eggs.length - 1)} class={nextDisplayIndex === (eggs.length - 1) ? "button-gray" : ""}>{">>>"}</button>
     </div>

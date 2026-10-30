@@ -19,7 +19,7 @@
     <img src="/Images/Eggs/{regularEggImgIds[data.indexValues.currentEgg]}.png" alt="{eggs[data.indexValues.currentEgg].name} Egg">
     {#if data.indexValues.currentEgg < data.progression.unlockedEgg.length - 1}
         <button id="promotion-button" 
-        class="button{data.currency.money.gte(eggs[data.indexValues.currentEgg + 1].discoveryReq) && data.currency.money.lt(eggs[data.indexValues.currentEgg + 1].unlockReq) ? '-yellow' : '-red' }{data.currency.money.gte(eggs[data.indexValues.currentEgg + 1].unlockReq) ? '-green' : '' }-header"
+        class="button{data.currency.money.gte(eggs[data.indexValues.currentEgg + 1].unlockReq) ? '-green' : '-red' }-header"
         onclick={promoteEgg}>Promote to Next Egg!</button>
     {/if}
     <h2>${format(gameState.data.currency.money)}</h2>

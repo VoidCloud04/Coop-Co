@@ -1,5 +1,6 @@
 import Decimal from "break_eternity.js";
 import { gameState } from "./DataManager.svelte";
+import { commonResearch } from "./ResearchManager";
 
 export const eggs = [
     {
@@ -142,7 +143,7 @@ export const regularEggImgIds = [
 
 export function promoteEgg() {
     if(gameState.data.indexValues.currentEgg >= eggs.length - 1) return
-    if(gameState.data.money.lt(eggs[gameState.data.indexValues.currentEgg+1].unlockReq)) return
+    if(gameState.data.currency.money.lt(eggs[gameState.data.indexValues.currentEgg+1].unlockReq)) return
 
     // Reset Money, Chickens, Research, Increase currentEgg by 1 and unlock new egg if not already
     gameState.data.research.commonResearch = new Array(commonResearch.length).fill(0)
