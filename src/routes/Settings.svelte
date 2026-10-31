@@ -1,6 +1,7 @@
 <script>
     import { DeleteSave, Export, gameState, Import, Save } from "$lib/scripts/DataManager.svelte";
     import ButtonGroup from "$lib/components/ButtonGroup.svelte";
+    import { confirmModal, promptModal } from "$lib/scripts/ModalManager.svelte";
     import { format } from "$lib/scripts/Utilities";
     let data = $derived(gameState.data)
     let tabs = $state([
@@ -14,19 +15,44 @@
         if(subTab >= tabs.length)
             subTab = 0
     }
+
+    async function importClicked() {
+        const text = await promptModal({
+            title: 'Import Save',
+            placeholder: 'Paste your save here',
+            confirmText: 'Submit'
+        })
+
+        if (text !== null) Import(text)
+    }
+
+    async function deleteClicked() {
+        const confirmed = await confirmModal({
+            title: 'Are you sure you want to reset your game?',
+            content: 'This will export your savefile to the clipboard but delete your save game in local storage.',
+            color: 'red'
+        })
+        
+        if (confirmed) DeleteSave()
+    }
 </script>
 
 <ButtonGroup buttonArr={tabs} onclick={changeTab}/>
 {#if subTab === 0}
     <div class="flexRow">
         <button class="button-green" onclick={Save}>Save Game</button>
-        <button onclick={Import}>Import Save</button>
+        <button onclick={importClicked}>Import Save</button>
         <button onclick={Export}>Export Save</button>
-        <button class="button-red" onclick={DeleteSave}>Delete Save</button>
+        <button class="button-red" onclick={deleteClicked}>Delete Save</button>
     </div>
     <div class="flexRow">
         <button>Notation: Mixed Sci</button>
-        <button class={"button-green"}>Newsticker: On</button>
+        <button
+            class={data.settings.toggles[1] ? 'button-green' : 'button-red'}
+            onclick={() => { data.settings.toggles[1] = !data.settings.toggles[1] }}
+        >
+            Newsticker: {data.settings.toggles[1] ? 'On' : 'Off'}
+        </button>
         <button class={"button-green"}>Contract Notifications: On</button>
         <button class={"button-blue"}>Auto Promotion Stops At: Universe</button>
     </div>

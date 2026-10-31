@@ -3,6 +3,7 @@ import { commonResearch, epicResearch, legendaryResearch } from "./ResearchManag
 import { eggs } from "./EggManager"
 import { achievements } from "./AchievementsManager"
 import { planets } from "./EggspeditionsManager"
+import { generateNotification } from "./NotificationManager.svelte"
 
 function DefaultDataObject() {
     return {
@@ -30,7 +31,6 @@ function DefaultDataObject() {
         },
         contracts: {
             contractsPool: new Array(),
-            activeContract: -1,
             gradeIndex: 0,
             totalReputation: Decimal.dZero
         },
@@ -64,7 +64,7 @@ function DefaultDataObject() {
         },
         settings: {
             buyAmounts: new Array(3).fill(0),
-            toggles: new Array(7).fill(false)
+            toggles: [false, true, false, false, false, false, false]
 
         },
         saveVersion: 'v3.0.0',
@@ -104,7 +104,7 @@ export function Load() {
 
 export function Save() {
     window.localStorage.setItem(gameKey,JSON.stringify(gameState.data))
-    console.log('Saved Data')
+    generateNotification("Saved Game!","success")
 }
 
 // Helpers

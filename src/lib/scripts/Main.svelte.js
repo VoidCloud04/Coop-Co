@@ -41,3 +41,7 @@ function updateChickens(diff) {
     const chickenGain = calculateInternalHatchery()
     gameState.data.currency.chickens = gameState.data.currency.chickens.plus((chickenGain.times(diff)))
 }
+
+function updateStats() {
+    
+}

@@ -124,7 +124,7 @@
         </div>
     </div>
 {:else if subTab === 1}
-    {#if gameState.data.contracts.activeContract != -1}
+    {#if gameState.data.indexValues.currentContract != -1}
         <p>Active Contract</p>
         <div class="flexCol contract">
             <div class="flexRow"> 

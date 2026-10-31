@@ -19,8 +19,8 @@
     import { updateGameData } from "$lib/scripts/Main.svelte";
 
     // Variable Definitions
+    let data = $derived(gameState.data)
     let tabIndex = $state(0)
-    let showNewsTicker = $state(true)
     let tabs = $state([
         {title: "Eggs", class: ""},
         {title: "Research"},
@@ -49,7 +49,7 @@
 </script>
 <!-- Main Game Page Content / Will be not rendered during planets -->
 <Header style="margin-top: 0;"/>
-{#if showNewsTicker}
+{#if data.settings.toggles[1]}
     <Newsticker />
 {/if}
 <ButtonGroup buttonArr={tabs} onclick={changeTab} baseId="tab-button"/>
