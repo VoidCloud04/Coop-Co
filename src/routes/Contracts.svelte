@@ -1,7 +1,11 @@
 <script>
     import ButtonGroup from "$lib/components/ButtonGroup.svelte";
     import Chip from "$lib/components/Chip.svelte";
-
+    import { gradeNames } from "$lib/scripts/ContractsManager";
+    import { gameState } from "$lib/scripts/DataManager.svelte";
+    import { format } from "$lib/scripts/Utilities";
+    
+    let gradeIndex = $derived(gameState.data.contracts.gradeIndex)
     let tabs = $state([
         {title: "Exchange", class: ""},
         {title: "Active", class: ""}
@@ -19,19 +23,23 @@
 {#if subTab === 0}
     <div class="flexCol" style="align-items: center;">
         <div class="flexRow progress-row" style="align-items: center; align-self: center; gap: 0.25vw">
-            <Chip content="USDE Class A" color={"A"}/>
-            <span
-                class="progress-bar"
-                style={`--progress: 10%; width: 25vw`}
-                role="progressbar"
-                aria-valuemin="0"
-                aria-valuemax="100"
-                aria-valuenow=10
-            ></span>
-            <p>100/1,000 Reputation</p>
-            <Chip content="USDE Class AA" color={"AA"}/>
+            <Chip content="USDE Class {gradeNames[gradeIndex]}" color={gradeNames[gradeIndex]}/>
+            {#if gradeIndex < gradeNames.length - 1}
+                <span
+                    class="progress-bar"
+                    style={`--progress: 10%; width: 25vw`}
+                    role="progressbar"
+                    aria-valuemin="0"
+                    aria-valuemax="100"
+                    aria-valuenow=10
+                ></span>
+            {/if}
+            <p>{format(gameState.data.contracts.totalReputation)}/1,000 Reputation</p>
+            {#if gradeIndex < gradeNames.length - 2 || (gradeIndex === gradeNames.length - 1 && gameState.data.research.legendaryResearch[1].gte(1))}
+                <Chip content="USDE Class {gradeNames[gradeIndex+1]}" color={gradeNames[gradeIndex+1]}/>
+            {/if}
         </div>
-        <p>Prophecy Eggs: 0 | Reroll Available!</p>
+        <p>Prophecy Eggs: <span class="yellow">{format(gameState.data.currency.prophecyEggs)}</span> | Reroll Available!</p>
     </div>
     <div class="flexRow">
         <div class="flexCol">
@@ -157,5 +165,9 @@
     div {
         align-items: left;
         align-self: left;
+    }
+
+    .yellow {
+        color: $yellow
     }
 </style>

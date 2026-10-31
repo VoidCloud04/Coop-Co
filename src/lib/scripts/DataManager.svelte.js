@@ -31,7 +31,8 @@ function DefaultDataObject() {
         contracts: {
             contractsPool: new Array(),
             activeContract: -1,
-
+            gradeIndex: 0,
+            totalReputation: Decimal.dZero
         },
         ascension: {
             harvesters: new Array(), // {level: 0, timeRemaining: 0}

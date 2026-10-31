@@ -9,8 +9,8 @@
     let data = $derived(gameState.data)
     const currentEgg = $derived(eggs[data.indexValues.currentEgg])
     const nextEgg = $derived(eggs[data.indexValues.currentEgg+1])
-    const progressPercent = $derived(Decimal.min(100,Decimal.max(0,(data.currency.money.log10().dividedBy(nextEgg.unlockReq.log10())).times(100))))
-    const tickPercent = $derived(Decimal.min(100,Decimal.max(0,(nextEgg.discoveryReq.log10().dividedBy(nextEgg.unlockReq.log10())).times(100))))
+    const progressPercent = $derived(Decimal.min(100, Decimal.max(0, data.currency.money.dividedBy(nextEgg.unlockReq).pow(0.25).times(100))))
+    const tickPercent =  $derived(Decimal.min(100, Decimal.max(0, nextEgg.discoveryReq.dividedBy(nextEgg.unlockReq).pow(0.25).times(100))))
     let unlockDisplayIndex = $derived(data.indexValues.currentEgg)
     let unlockDisplayEgg = $derived(eggs[unlockDisplayIndex])
     let nextDisplayIndex = $derived(unlockDisplayIndex + 1)
@@ -24,7 +24,7 @@
     function eggChipColor(index) {
         if(data.indexValues.currentEgg === index)
             return "blue"
-        else if(data.progression.unlockedEgg[index] || data.currency.money.gte(nextEgg.discoveryReq))
+        else if(data.progression.unlockedEgg[index] || data.currency.money.gte(nextDisplayEgg.discoveryReq))
             return "green"
         else
             return "gray"
@@ -35,12 +35,9 @@
     <div class="flexRow">
         <img src="/Images/Eggs/{regularEggImgIds[data.indexValues.currentEgg]}.png" alt="{currentEgg.name}">
         <div class="flexCol">
-            <p><strong>{currentEgg.name} Egg</strong><br>${format(currentEgg.baseValue)} per Egg x{format(eggBonus)}</p>
-            <p>Income: ${format(moneyGain)}/s | Egg Lay Rate: {format(layRate)}/s<br>Chickens: {format(data.currency.chickens)} (+{format(chickenGain)}/s)</p>
+            <p><strong>{currentEgg.name} Egg</strong><br><span class="green">${format(currentEgg.baseValue)}</span> per Egg x{format(eggBonus)}</p>
+            <p>Income: <span class="green">${format(moneyGain)}</span>/s | Egg Lay Rate: {format(layRate)}/s<br>Chickens: {format(data.currency.chickens)} (+{format(chickenGain)}/s)</p>
         </div>
-    </div>
-    <div class="flexRow">
-        <p>Bonus Breakdown: </p>
     </div>
 </div>
 
@@ -54,14 +51,14 @@
             color={eggChipColor(unlockDisplayIndex)}></Chip>
         {"=>"}
         <Chip 
-            imgSrc={data.progression.unlockedEgg[nextDisplayIndex] || data.currency.money.gte(nextEgg.discoveryReq) ? `Images/Eggs/${regularEggImgIds[nextDisplayIndex]}.png` : `Images/Eggs/question.png`} 
-            content={data.progression.unlockedEgg[nextDisplayIndex] || data.currency.money.gte(nextEgg.discoveryReq) ? nextDisplayEgg.name : '???'} 
+            imgSrc={data.progression.unlockedEgg[nextDisplayIndex] || data.currency.money.gte(nextDisplayEgg.discoveryReq) ? `Images/Eggs/${regularEggImgIds[nextDisplayIndex]}.png` : `Images/Eggs/question.png`} 
+            content={data.progression.unlockedEgg[nextDisplayIndex] || data.currency.money.gte(nextDisplayEgg.discoveryReq) ? nextDisplayEgg.name : '???'} 
             color={eggChipColor(nextDisplayIndex)}></Chip>
         <button onclick={() => {unlockDisplayIndex += 1}} disabled={nextDisplayIndex === (eggs.length - 1)} class={nextDisplayIndex === (eggs.length - 1) ? "button-gray" : ""}>{">>>"}</button>
     </div>
     <div class="flexCol holder">
         {#if data.indexValues.currentEgg < eggs.length-1}
-            <p>Next: {data.indexValues.currentEgg < eggs.length-1 && data.progression.unlockedEgg[data.indexValues.currentEgg+1] ? `${nextEgg.name} Egg` : '???'}</p>
+            <p>Next: {data.indexValues.currentEgg < eggs.length-1 && data.progression.unlockedEgg[data.indexValues.currentEgg+1] || data.currency.money.gte(nextEgg.discoveryReq) ? `${nextEgg.name} Egg` : '???'}</p>
             <div class="flexRow progress-row">
                 <span
                     class="progress-bar"
@@ -104,5 +101,9 @@
         height: auto;
         font-size: 1.5em;
         bottom: 1dvh;
+    }
+
+    .green {
+        color: $green
     }
 </style>

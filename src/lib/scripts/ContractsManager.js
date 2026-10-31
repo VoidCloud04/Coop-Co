@@ -1,0 +1,1 @@
+export const gradeNames = ["D","C","B","A","AA","AAA"] // AAA locked behind Ascension

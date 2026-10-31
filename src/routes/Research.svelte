@@ -29,6 +29,9 @@
         }
         return unlocked
     })
+    let maxedTiers = $derived(rows.map((items) =>
+        items.length > 0 && items.every(({ info }) => info.isMaxed)
+    ))
     function toggleCollapsed(i) {
         collapsed[i] = !collapsed[i]
     }
@@ -79,7 +82,7 @@
 
     {#each rows as items, i}
         {#if unlockedTiers[i]}
-            <div class="tier-row tier-row-gray" class:collapsed={collapsed[i]}>
+            <div class="tier-row {maxedTiers[i] ? 'tier-row-blue' : 'tier-row-gray'}" class:collapsed={collapsed[i]}>
                 <button class="tier-label" onclick={() => toggleCollapsed(i)}>Tier {toRN(i + 1)} {collapsed[i] ? "▸" : "▾"}</button>
                 <div class="researches">
                     {#each items as { item, index, info }}
@@ -151,6 +154,19 @@
     @each $name, $color in $majorColors {
         .tier-row-#{$name} {
             background-color: $color;
+        }
+    }
+
+    .tier-row-blue {
+        .button-blue {
+            background-color: $blue;
+            border-color: $white;
+            color: $white;
+
+            &:hover {
+                background-color: $white;
+                color: $bg-color;
+            }
         }
     }
 
