@@ -1,11 +1,12 @@
 <script>
     import { gameState } from "$lib/scripts/DataManager.svelte";
     import { eggs, promoteEgg, regularEggImgIds } from "$lib/scripts/EggManager";
+    import { calculateSoulEggGain } from "$lib/scripts/Prestige.svelte";
     import { format } from "$lib/scripts/Utilities";
     import Chip from "./Chip.svelte";
 
     let data = $derived(gameState.data)
-
+    let soulEggGain = $derived(calculateSoulEggGain())
     // console.log(eggs[data.indexValues.currentEgg + 1].discoveryReq)
     // console.log(eggs[data.indexValues.currentEgg + 1].unlockReq)
     // console.log(data.currency.money)
@@ -25,7 +26,7 @@
     <h2>${format(gameState.data.currency.money)}</h2>
     <p>Chickens: {format(data.currency.chickens)}</p>
     {#if data.indexValues.currentEgg >= 3}
-        <button id="prestige-button" class="button-purple-header">Prestige</button>
+        <button id="prestige-button" class="button-purple-header">Prestige +{format(soulEggGain)} Soul Eggs</button>
     {/if}
     {#if data.progression.hasPrestiges && data.indexValues.currentEgg === data.progression.unlockedEgg.length -1}
         <button id="ascension-button" class="button-orange-header">Ascend</button>

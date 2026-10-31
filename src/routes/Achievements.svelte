@@ -26,8 +26,8 @@
     }
 
     const columns = buildColumns(achievements)
-    let hovered = $state(null)
-    const hoveredIndex = $derived(hovered ? achievements.indexOf(hovered) : -1)
+    let hoveredIndex = $state(-1)
+    const hovered = $derived(hoveredIndex >= 0 ? achievements[hoveredIndex] : null)
 </script>
 <h3>Achievements</h3>
 <div class="flexRow">
@@ -36,7 +36,7 @@
             {#each column as ach, slotIndex (slotIndex)}
                 {#if ach}
                     <img
-                        onmouseenter={() => { hovered = ach }}
+                        onmouseenter={() => { hoveredIndex = achievements.indexOf(ach) }}
                         class={`ach ${ach.unlockCondition() ? 'ach-green' : 'ach-red'}`}
                         src={`Images/${ach.hidden && !ach.unlockCondition() ? ach.hiddenImg : ach.img}`}
                         alt={ach.name}>

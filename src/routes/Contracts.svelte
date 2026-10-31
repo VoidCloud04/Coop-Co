@@ -27,7 +27,7 @@
             {#if gradeIndex < gradeNames.length - 1}
                 <span
                     class="progress-bar"
-                    style={`--progress: 10%; width: 25vw`}
+                    style={`--progress: ${0}%; width: 25vw`}
                     role="progressbar"
                     aria-valuemin="0"
                     aria-valuemax="100"
@@ -124,31 +124,35 @@
         </div>
     </div>
 {:else if subTab === 1}
-    <p>Active Contract</p>
-    <div class="flexCol contract">
-        <div class="flexRow"> 
-            <Chip content="D" color="D"/>
-            <Chip content="Delivery Contract"/>
+    {#if gameState.data.contracts.activeContract != -1}
+        <p>Active Contract</p>
+        <div class="flexCol contract">
+            <div class="flexRow"> 
+                <Chip content="D" color="D"/>
+                <Chip content="Delivery Contract"/>
+            </div>
+            <hr>
+            <p>Supermarket Shortage</p>
+            <p>Mass egg buying has lead to increased prices, produce regular eggs to stabilize the economy</p>
+            <hr>
+            <div class="flexRow">
+                <p>Egg:</p>
+                <Chip imgSrc="Images/Eggs/egg.png" content="Regular" />
+            </div>
+            <div class="flexRow">
+                <p>Debuffs:</p>
+                <Chip content="-0.25 Egg Value" color="red" />
+                <Chip content="-0.25 Chicken Gain" color="red" />
+                <Chip content="-0.25 Egg Value" color="red" />
+            </div>
+            <hr>
+            <p>Contract Goal: $1.00e3</p>
+            <p>Stake: 3 Prophecy Eggs | Reward: 5 Prophecy Eggs</p>
+            <button>Abandon Contract</button>
         </div>
-        <hr>
-        <p>Supermarket Shortage</p>
-        <p>Mass egg buying has lead to increased prices, produce regular eggs to stabilize the economy</p>
-        <hr>
-        <div class="flexRow">
-            <p>Egg:</p>
-            <Chip imgSrc="Images/Eggs/egg.png" content="Regular" />
-        </div>
-        <div class="flexRow">
-            <p>Debuffs:</p>
-            <Chip content="-0.25 Egg Value" color="red" />
-            <Chip content="-0.25 Chicken Gain" color="red" />
-            <Chip content="-0.25 Egg Value" color="red" />
-        </div>
-        <hr>
-        <p>Contract Goal: $1.00e3</p>
-        <p>Stake: 3 Prophecy Eggs | Reward: 5 Prophecy Eggs</p>
-        <button>Abandon Contract</button>
-    </div>
+    {:else}
+        <h4>No Contract Active {":("}</h4>
+    {/if}
 {/if}
 
 <style lang="scss">
