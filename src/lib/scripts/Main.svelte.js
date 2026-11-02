@@ -17,12 +17,16 @@ export function updateGameData(timeStamp) {
         timeDiff = Math.max(0,timeStamp-lastFrameTimestamp) / 1000
     }
     lastFrameTimestamp = timeStamp
-    
+    gameState.data.stats.timePlayed = gameState.data.stats.timePlayed.plus(timeDiff)
     // Update Function Calls
     updateChickens(timeDiff)
     updateMoney(timeDiff)
 
+    // Non time sensitive
     unlockAchievements()
+    updateStats()
+
+
     gameState.data.time = now
 }
 
@@ -43,5 +47,17 @@ function updateChickens(diff) {
 }
 
 function updateStats() {
-    
+    if(gameState.data.currency.soulEggs.gt(gameState.data.stats.bestSoulEggs))
+        gameState.data.stats.bestSoulEggs = gameState.data.currency.soulEggs
+    if(gameState.data.currency.money.gt(gameState.data.stats.bestMoney))
+        gameState.data.stats.bestMoney = gameState.data.currency.money
+    if(gameState.data.currency.chickens.gt(gameState.data.stats.bestChickens))
+        gameState.data.stats.bestChickens = gameState.data.currency.chickens
+}
+
+function progressionUpdates() {
+    if(!gameState.data.progression.unlockedContracts && gameState.data.progression.hasPrestiged && gameState.data.indexValues.currentEgg >= 5) {
+        //Need to have Prestiged + Reach Fusion Eggs for Contracts to Appear
+        gameState.data.progression.unlockedContracts = true        
+    }
 }

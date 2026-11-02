@@ -1,5 +1,6 @@
 import Decimal from "break_eternity.js"
 import { gameState } from "./DataManager.svelte"
+import { generateNotification } from "./NotificationManager.svelte"
 
 const planetCount = 6
 const artifactTiers = 4
@@ -185,7 +186,7 @@ export const achievements = [
         hidden: false,
         group: 'contracts',
         img: 'Achievements/D-Rating.png',
-        unlockCondition: () => {return false}
+        unlockCondition: () => {return gameState.data.gradeIndex >= 0 && gameState.data.progression.unlockedContracts}
     },
     {
         name: "70% is fine I guess",
@@ -193,7 +194,7 @@ export const achievements = [
         hidden: false,
         group: 'contracts',
         img: 'Achievements/C-Rating.png',
-        unlockCondition: () => {return false}
+        unlockCondition: () => {return gameState.data.gradeIndex >= 1}
     },
     {
         name: "The B stands for better",
@@ -201,7 +202,7 @@ export const achievements = [
         hidden: false,
         group: 'contracts',
         img: 'Achievements/B-Rating.png',
-        unlockCondition: () => {return false}
+        unlockCondition: () => {return gameState.data.gradeIndex >= 2}
     },
     {
         name: "Acceptable Standards",
@@ -209,7 +210,7 @@ export const achievements = [
         hidden: false,
         group: 'contracts',
         img: 'Achievements/A-Rating.png',
-        unlockCondition: () => {return false}
+        unlockCondition: () => {return gameState.data.gradeIndex >= 3}
     },
     {
         name: "Okay that's just a battery",
@@ -217,7 +218,7 @@ export const achievements = [
         hidden: false,
         group: 'contracts',
         img: 'Achievements/AA-Rating.png',
-        unlockCondition: () => {return false}
+        unlockCondition: () => {return gameState.data.gradeIndex >= 4}
     },
     {
         name: "Ascended Bureaucracy",
@@ -225,7 +226,7 @@ export const achievements = [
         hidden: false,
         group: 'contracts',
         img: 'Achievements/AAA-Rating.png',
-        unlockCondition: () => {return false}
+        unlockCondition: () => {return gameState.data.gradeIndex >= 5}
     },
     // Prestige (Soul Eggs & Prophecy Eggs)
     {
@@ -396,6 +397,7 @@ export function unlockAchievements() {
         const achievement = achievements[i]
         if(!gameState.data.progression.achievements[i] && achievement.unlockCondition()) {
             gameState.data.progression.achievements[i] = true
+            generateNotification(`${achievement.name} Unlocked!`,'success')
         }
     }
 }

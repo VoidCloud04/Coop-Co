@@ -55,6 +55,7 @@ function DefaultDataObject() {
         },
         stats: {
             bestMoney: Decimal.dZero,
+            bestChickens: Decimal.dZero,
             bestSoulEggs: Decimal.dZero,
             bestKnowleggs: Decimal.dZero,
             contractsComplete: Decimal.dZero,
@@ -64,7 +65,7 @@ function DefaultDataObject() {
         },
         settings: {
             buyAmounts: new Array(3).fill(0),
-            toggles: [false, true, false, false, false, false, false]
+            toggles: new Array(7).fill(true)
 
         },
         saveVersion: 'v3.0.0',

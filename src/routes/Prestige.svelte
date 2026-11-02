@@ -2,12 +2,14 @@
     import Chip from "$lib/components/Chip.svelte";
     import { buyAmountLabels, gameState, toggleAutomator, updateBA } from "$lib/scripts/DataManager.svelte";
     import { toPlaces } from "$lib/scripts/Formatting";
+    import { calculateSoulEggBoost } from "$lib/scripts/Prestige.svelte";
     import { epicResearch } from "$lib/scripts/ResearchManager";
     import { format } from "$lib/scripts/Utilities";
     let data = $derived(gameState.data)
     const automationSplitIndex = 6
     const normalResearch = epicResearch.slice(0,automationSplitIndex)
     const automation = epicResearch.slice(automationSplitIndex)
+    let soulEggBoost = $derived(calculateSoulEggBoost())
 </script>
 <div class="flexRow">
     <button class="button-purple" onclick={() => {updateBA(1)}}>Buy Amount: {buyAmountLabels[data.settings.buyAmounts[1]]}</button>
@@ -30,7 +32,7 @@
             color="gray"/>
         <div class="flexRow">
             
-            <Chip content={`Earnings Boost: x${format(0.00)}`} color="purple"/>
+            <Chip content={`Earnings Boost: x${format(soulEggBoost)}`} color="purple"/>
         </div>
         <Chip imgSrc={`Images/Eggs/prophecy.png`}
             content={`Prophecy Eggs: ${format(data.currency.prophecyEggs)}`}
