@@ -1,8 +1,9 @@
 <script>
     import ButtonGroup from "$lib/components/ButtonGroup.svelte";
     import Chip from "$lib/components/Chip.svelte";
-    import { gradeNames } from "$lib/scripts/ContractsManager";
+    import { contracts, gradeNames, gradeWalls } from "$lib/scripts/ContractsManager";
     import { gameState } from "$lib/scripts/DataManager.svelte";
+    import { eggs, regularEggImgIds } from "$lib/scripts/EggManager";
     import { format } from "$lib/scripts/Utilities";
     
     let gradeIndex = $derived(gameState.data.contracts.gradeIndex)
@@ -16,6 +17,9 @@
         if(subTab >= tabs.length)
             subTab = 0
     }
+
+    const firstHalf = $derived(gameState.data.contracts.contractPool.slice(0,2))
+    const secondHalf = $derived(gameState.data.contracts.contractPool.slice(2,4))
 </script>
 
 
@@ -34,93 +38,67 @@
                     aria-valuenow=10
                 ></span>
             {/if}
-            <p>{format(gameState.data.contracts.totalReputation)}/1,000 Reputation</p>
+            <p>{format(gameState.data.contracts.totalReputation)}/{format(gradeWalls[gradeIndex])} Reputation</p>
             {#if gradeIndex < gradeNames.length - 2 || (gradeIndex === gradeNames.length - 1 && gameState.data.research.legendaryResearch[1].gte(1))}
                 <Chip content="USDE Class {gradeNames[gradeIndex+1]}" color={gradeNames[gradeIndex+1]}/>
             {/if}
         </div>
-        <p>Prophecy Eggs: <span class="yellow">{format(gameState.data.currency.prophecyEggs)}</span> | Reroll Available!</p>
+        <p>Prophecy Eggs: <span class="yellow">{format(gameState.data.currency.prophecyEggs)}</span> | <button class="button-red">Reroll on Cooldown</button></p>
     </div>
     <div class="flexRow">
         <div class="flexCol">
-            <div class="flexCol contract">
-                <div class="flexRow"> 
-                    <Chip content="D" color="D"/>
-                    <Chip content="Delivery Contract"/>
-                    <Chip content="24h left"/>
+            {#each firstHalf as item, i}
+                <div class="flexCol contract">
+                    {#if item === null}
+                        <h3>No Contract Generated</h3>
+                    {:else}
+                        <div class="flexRow"> 
+                        <Chip content={gradeNames[item.grade]} color={gradeNames[item.grade]}/>
+                        <Chip content="Delivery Contract"/>
+                        <Chip content="24h left"/>
+                    </div>
+                    <div class="flexRow">
+                        <p>{contracts[item.contractIndex].name}</p>
+                        <Chip imgSrc="Images/Eggs/{regularEggImgIds[contracts[item.contractIndex].eggIndex]}" content={eggs[contracts[item.contractIndex].eggIndex].name} />
+                    </div>
+                    <div class="flexRow">
+                        {#each item.modifiers as modifier}
+                            <Chip content="This is a debuff modifier" color="red" />
+                        {/each}
+                    </div>
+                    <p>Contract Goal: $1.00e3</p>
+                    <p>Stake: 3 Prophecy Eggs | Reward: 5 Prophecy Eggs</p>
+                    <button>Start Contract</button>
+                    {/if}
                 </div>
-                <div class="flexRow">
-                    <p>Supermarket Shortage</p>
-                    <Chip imgSrc="Images/Eggs/egg.png" content="Regular" />
-                </div>
-                <div class="flexRow">
-                    <Chip content="-0.25 Egg Value" color="red" />
-                    <Chip content="-0.25 Chicken Gain" color="red" />
-                    <Chip content="-0.25 Egg Value" color="red" />
-                </div>
-                <p>Contract Goal: $1.00e3</p>
-                <p>Stake: 3 Prophecy Eggs | Reward: 5 Prophecy Eggs</p>
-                <button>Start Contract</button>
-            </div>
-            <div class="flexCol contract">
-                <div class="flexRow"> 
-                    <Chip content="C" color="C"/>
-                    <Chip content="Delivery Contract"/>
-                    <Chip content="24h left"/>
-                </div>
-                <div class="flexRow">
-                    <p>Supermarket Shortage</p>
-                    <Chip imgSrc="Images/Eggs/egg.png" content="Regular" />
-                </div>
-                <div class="flexRow">
-                    <Chip content="-0.25 Egg Value" color="red" />
-                    <Chip content="-0.25 Chicken Gain" color="red" />
-                    <Chip content="-0.25 Egg Value" color="red" />
-                </div>
-                <p>Contract Goal: $1.00e3</p>
-                <p>Stake: 3 Prophecy Eggs | Reward: 5 Prophecy Eggs</p>
-                <button>Start Contract</button>
-            </div>
+            {/each}
         </div>
         <div class="flexCol">
-            <div class="flexCol contract">
-                <div class="flexRow"> 
-                    <Chip content="B" color="B"/>
-                    <Chip content="Delivery Contract"/>
-                    <Chip content="24h left"/>
+            {#each secondHalf as item, i}
+                <div class="flexCol contract">
+                    {#if item === null}
+                        <h3>No Contract Generated</h3>
+                    {:else}
+                        <div class="flexRow"> 
+                        <Chip content={gradeNames[item.grade]} color={gradeNames[item.grade]}/>
+                        <Chip content="Delivery Contract"/>
+                        <Chip content="24h left"/>
+                    </div>
+                    <div class="flexRow">
+                        <p>{contracts[item.contractIndex].name}</p>
+                        <Chip imgSrc="Images/Eggs/{regularEggImgIds[contracts[item.contractIndex].eggIndex]}" content={eggs[contracts[item.contractIndex].eggIndex].name} />
+                    </div>
+                    <div class="flexRow">
+                        {#each item.modifiers as modifier}
+                            <Chip content="This is a debuff modifier" color="red" />
+                        {/each}
+                    </div>
+                    <p>Contract Goal: $1.00e3</p>
+                    <p>Stake: 3 Prophecy Eggs | Reward: 5 Prophecy Eggs</p>
+                    <button>Start Contract</button>
+                    {/if}
                 </div>
-                <div class="flexRow">
-                    <p>Supermarket Shortage</p>
-                    <Chip imgSrc="Images/Eggs/egg.png" content="Regular" />
-                </div>
-                <div class="flexRow">
-                    <Chip content="-0.25 Egg Value" color="red" />
-                    <Chip content="-0.25 Chicken Gain" color="red" />
-                    <Chip content="-0.25 Egg Value" color="red" />
-                </div>
-                <p>Contract Goal: $1.00e3</p>
-                <p>Stake: 3 Prophecy Eggs | Reward: 5 Prophecy Eggs</p>
-                <button>Start Contract</button>
-            </div>
-            <div class="flexCol contract">
-                <div class="flexRow"> 
-                    <Chip content="A" color="A"/>
-                    <Chip content="Delivery Contract"/>
-                    <Chip content="24h left"/>
-                </div>
-                <div class="flexRow">
-                    <p>Supermarket Shortage</p>
-                    <Chip imgSrc="Images/Eggs/egg.png" content="Regular" />
-                </div>
-                <div class="flexRow">
-                    <Chip content="-0.25 Egg Value" color="red" />
-                    <Chip content="-0.25 Chicken Gain" color="red" />
-                    <Chip content="-0.25 Egg Value" color="red" />
-                </div>
-                <p>Contract Goal: $1.00e3</p>
-                <p>Stake: 3 Prophecy Eggs | Reward: 5 Prophecy Eggs</p>
-                <button>Start Contract</button>
-            </div>
+            {/each}
         </div>
     </div>
 {:else if subTab === 1}

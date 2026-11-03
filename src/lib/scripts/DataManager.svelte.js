@@ -30,7 +30,7 @@ function DefaultDataObject() {
             unlockedPlanet: new Array(planets.length).fill(false),
         },
         contracts: {
-            contractsPool: new Array(),
+            contractPool: new Array(4).fill(null),
             gradeIndex: 0,
             totalReputation: Decimal.dZero
         },

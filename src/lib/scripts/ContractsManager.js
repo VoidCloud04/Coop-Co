@@ -1,10 +1,12 @@
+import Decimal from "break_eternity.js"
+
 export const gradeNames = ["D","C","B","A","AA","AAA"] // AAA locked behind Ascension
 const gradePointBudgets = [1,3,5,10,15,20] // How many points can be spent on a contract per grade
-const gradeWalls = [new Decimal(1000),new Decimal(2500),new Decimal(5000),new Decimal(7500), new Decimal(10000)]
+export const gradeWalls = [new Decimal(1000),new Decimal(2500),new Decimal(5000),new Decimal(7500), new Decimal(10000)]
 const baseRepGain = [10,50,100,1000,2500]
 const expiryTimeInMinutes = 180 // 3 Hours from creation to expiration
 
-const modifiers = [ // All available debuffs to be rolled by a contract
+export const modifiers = [ // All available debuffs to be rolled by a contract
     {
         name: "Egg Value", // Debuff Chip Name/Effect
         type: "mul", // Type of Effect (mul,sub,exp)
@@ -27,7 +29,7 @@ const modifiers = [ // All available debuffs to be rolled by a contract
     }
 ]
 
-const contracts = [ // All available contracts on specific eggs
+export const contracts = [ // All available contracts on specific eggs
     {
         name: 'Supermarket Shortage',
         desc: 'A mad rush for Regular eggs has left store shelves empty, rectify this as quickly as possible',
@@ -80,3 +82,12 @@ const contracts = [ // All available contracts on specific eggs
     },
 ]
 
+/**
+ * Contract Object Structure:
+ * {
+ *  grade: Integer 0-gradeNames.length-1
+ *  contractIndex: Integer 0-contracts.length-1
+ *  modifiers: Array(Array(2)) -> [modifierIndex,debuffIndex]
+ *  repGain: baseRep[gradeIndex] * (Grade Penalty/Bonus - 0.25 per level below or 0.25 per level above) * 
+ * }
+ */
