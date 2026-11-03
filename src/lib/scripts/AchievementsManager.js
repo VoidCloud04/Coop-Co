@@ -186,7 +186,7 @@ export const achievements = [
         hidden: false,
         group: 'contracts',
         img: 'Achievements/D-Rating.png',
-        unlockCondition: () => {return gameState.data.gradeIndex >= 0 && gameState.data.progression.unlockedContracts}
+        unlockCondition: () => {return gameState.data.contracts.gradeIndex >= 0 && gameState.data.progression.unlockedContracts === true}
     },
     {
         name: "70% is fine I guess",
@@ -194,7 +194,7 @@ export const achievements = [
         hidden: false,
         group: 'contracts',
         img: 'Achievements/C-Rating.png',
-        unlockCondition: () => {return gameState.data.gradeIndex >= 1}
+        unlockCondition: () => {return gameState.data.contracts.gradeIndex >= 1}
     },
     {
         name: "The B stands for better",
@@ -202,7 +202,7 @@ export const achievements = [
         hidden: false,
         group: 'contracts',
         img: 'Achievements/B-Rating.png',
-        unlockCondition: () => {return gameState.data.gradeIndex >= 2}
+        unlockCondition: () => {return gameState.data.contracts.gradeIndex >= 2}
     },
     {
         name: "Acceptable Standards",
@@ -210,7 +210,7 @@ export const achievements = [
         hidden: false,
         group: 'contracts',
         img: 'Achievements/A-Rating.png',
-        unlockCondition: () => {return gameState.data.gradeIndex >= 3}
+        unlockCondition: () => {return gameState.data.contracts.gradeIndex >= 3}
     },
     {
         name: "Okay that's just a battery",
@@ -218,7 +218,7 @@ export const achievements = [
         hidden: false,
         group: 'contracts',
         img: 'Achievements/AA-Rating.png',
-        unlockCondition: () => {return gameState.data.gradeIndex >= 4}
+        unlockCondition: () => {return gameState.data.contracts.gradeIndex >= 4}
     },
     {
         name: "Ascended Bureaucracy",
@@ -226,7 +226,7 @@ export const achievements = [
         hidden: false,
         group: 'contracts',
         img: 'Achievements/AAA-Rating.png',
-        unlockCondition: () => {return gameState.data.gradeIndex >= 5}
+        unlockCondition: () => {return gameState.data.contracts.gradeIndex >= 5}
     },
     // Prestige (Soul Eggs & Prophecy Eggs)
     {
@@ -265,7 +265,7 @@ export const achievements = [
         name: 'Elijah',
         description: 'Get 10 Prophecy Eggs',
         hidden: false,
-        group: 'prestige',
+        group: 'contracts',
         img: 'Eggs/prophecy.png',
         unlockCondition: () => {return gameState.data.currency.prophecyEggs.gte(10)}
     },
@@ -273,7 +273,7 @@ export const achievements = [
         name: 'Elisha',
         description: 'Get 100 Prophecy Eggs',
         hidden: false,
-        group: 'prestige',
+        group: 'contracts',
         img: 'Eggs/prophecy.png',
         unlockCondition: () => {return gameState.data.currency.prophecyEggs.gte(100)}
     },
@@ -281,7 +281,7 @@ export const achievements = [
         name: 'Daniel',
         description: 'Get 1 Thousand Prophecy Eggs',
         hidden: false,
-        group: 'prestige',
+        group: 'contracts',
         img: 'Eggs/prophecy.png',
         unlockCondition: () => {return gameState.data.currency.prophecyEggs.gte(1e3)}
     },
@@ -289,7 +289,7 @@ export const achievements = [
         name: 'Isaiah',
         description: 'Get 10 Thousand Prophecy Eggs',
         hidden: false,
-        group: 'prestige',
+        group: 'contracts',
         img: 'Eggs/prophecy.png',
         unlockCondition: () => {return gameState.data.currency.prophecyEggs.gte(1e4)}
     },

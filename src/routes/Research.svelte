@@ -4,6 +4,7 @@
     import {
         commonByTier,
         commonResearch,
+        epicResearch,
         getCommonResearch,
         purchaseCommonResearch
     } from "$lib/scripts/ResearchManager";
@@ -71,9 +72,15 @@
 </script>
 <div class="flexRow">
     <button onclick={() => {updateBA(0)}}>Buy Amount: {buyAmountLabels[data.settings.buyAmounts[0]]}</button>
-    <button onclick={() => {toggleAutomator(0,0)}} class={data.automation.commonAutomatorActive[0] ? 'button-green' : 'button-red'}>Tier I-V Auto: {data.automation.commonAutomatorActive[0] ? 'On' : 'Off'}</button>
-    <button onclick={() => {toggleAutomator(0,1)}} class={data.automation.commonAutomatorActive[1] ? 'button-green' : 'button-red'}>Tier VI-X Auto: {data.automation.commonAutomatorActive[1] ? 'On' : 'Off'}</button>
-    <button onclick={() => {toggleAutomator(0,2)}} class={data.automation.commonAutomatorActive[2] ? 'button-green' : 'button-red'}>Tier XI-XIV Auto: {data.automation.commonAutomatorActive[2] ? 'On' : 'Off'}</button>
+    {#if gameState.data.research.epicResearch[6] >= 1}
+        <button onclick={() => {toggleAutomator(0,0)}} class={data.automation.commonAutomatorActive[0] ? 'button-green' : 'button-red'}>Tier I-V Auto: {data.automation.commonAutomatorActive[0] ? 'On' : 'Off'}</button>
+    {/if}
+    {#if gameState.data.research.epicResearch[7] >= 1}
+        <button onclick={() => {toggleAutomator(0,1)}} class={data.automation.commonAutomatorActive[1] ? 'button-green' : 'button-red'}>Tier VI-X Auto: {data.automation.commonAutomatorActive[1] ? 'On' : 'Off'}</button>
+    {/if}
+    {#if gameState.data.research.epicResearch[10] >= 1}
+        <button onclick={() => {toggleAutomator(0,2)}} class={data.automation.commonAutomatorActive[2] ? 'button-green' : 'button-red'}>Tier XI-XIV Auto: {data.automation.commonAutomatorActive[2] ? 'On' : 'Off'}</button>
+    {/if}
     <button onclick={() => {collapsed = tiers.map(() => true)}} class={collapsed.find((element) => element === false) !== undefined ? 'button-green' : ''}>Collapse All Items</button>
 </div>
 <div class="tier-grid">

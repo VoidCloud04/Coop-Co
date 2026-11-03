@@ -25,7 +25,7 @@ export function updateGameData(timeStamp) {
     // Non time sensitive
     unlockAchievements()
     updateStats()
-
+    progressionUpdates()
 
     gameState.data.time = now
 }
@@ -56,8 +56,13 @@ function updateStats() {
 }
 
 function progressionUpdates() {
-    if(!gameState.data.progression.unlockedContracts && gameState.data.progression.hasPrestiged && gameState.data.indexValues.currentEgg >= 5) {
-        //Need to have Prestiged + Reach Fusion Eggs for Contracts to Appear
+    if(!gameState.data.progression.unlockedContracts && gameState.data.progression.hasPrestiged) {
+        //Need to have Prestiged to Unlock
         gameState.data.progression.unlockedContracts = true        
+    }
+    
+    if(!gameState.data.progression.unlockedEggspeditions && gameState.data.progression.hasPrestiged && gameState.data.indexValues.currentEgg >= 5) {
+        // Need to have Prestiged + Reach Fusion Eggs for Eggspeditions to Appear
+        gameState.data.progression.unlockedEggspeditions = true
     }
 }

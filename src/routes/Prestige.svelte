@@ -3,13 +3,31 @@
     import { buyAmountLabels, gameState, toggleAutomator, updateBA } from "$lib/scripts/DataManager.svelte";
     import { toPlaces } from "$lib/scripts/Formatting";
     import { calculateSoulEggBoost } from "$lib/scripts/Prestige.svelte";
-    import { epicResearch } from "$lib/scripts/ResearchManager";
+    import { epicResearch, getEpicResearch, purchaseEpicResearch } from "$lib/scripts/ResearchManager";
     import { format } from "$lib/scripts/Utilities";
     let data = $derived(gameState.data)
     const automationSplitIndex = 6
-    const normalResearch = epicResearch.slice(0,automationSplitIndex)
-    const automation = epicResearch.slice(automationSplitIndex)
+    let rows = $derived.by(() =>
+        epicResearch.map((item, index) => ({
+            item,
+            index,
+            info: getEpicResearch(index, { data })
+        }))
+    )
+    let normalResearch = $derived(rows.slice(0, automationSplitIndex))
+    let automation = $derived(rows.slice(automationSplitIndex))
     let soulEggBoost = $derived(calculateSoulEggBoost())
+
+    function currencyLabel(info) {
+        return info.currencyKey === 'soulEggs' ? 'Soul Eggs' : 'Prophecy Eggs'
+    }
+
+    function researchClass(info) {
+        if (info.isMaxed) return 'button-blue'
+        if (info.currency.gte(info.cost)) return 'button-green'
+        if (info.currency.gte(info.nextCost)) return 'button-yellow'
+        return 'button-red'
+    }
 </script>
 <div class="flexRow">
     <button class="button-purple" onclick={() => {updateBA(1)}}>Buy Amount: {buyAmountLabels[data.settings.buyAmounts[1]]}</button>
@@ -18,12 +36,20 @@
 <div class="flexRow" style="gap:0.25vw">
     <div class="flexCol">
         <h3>Boosts</h3>
-        {#each normalResearch as item, i}
-            <button class="button-purple">{item.title} | {item.description}<br>Level: 0/{toPlaces(item.maxLevels,0,item.maxLevels+1)} | Cost: {format(item.baseCost)} Soul Eggs</button>
+        {#each normalResearch as { item, index, info }}
+            <button
+                class={researchClass(info)}
+                disabled={info.isMaxed}
+                onclick={() => purchaseEpicResearch(index, { data })}
+            >{item.title} | {item.description}<br>Level: {info.level}/{toPlaces(info.maxLevel,0,info.maxLevel+1)} | Cost: {info.isMaxed ? "[MAXED]" : `${format(info.cost)} ${currencyLabel(info)}`}</button>
         {/each}
         <h3>Automation</h3>
-        {#each automation as item, i}
-            <button class="button-yellow">{item.title} | {item.description}<br>Level: 0/{toPlaces(item.maxLevels,0,item.maxLevels+1)} | Cost: {format(item.baseCost)} Prophecy Eggs</button>
+        {#each automation as { item, index, info }}
+            <button
+                class={researchClass(info)}
+                disabled={info.isMaxed}
+                onclick={() => purchaseEpicResearch(index, { data })}
+            >{item.title} | {item.description}<br>Level: {info.level}/{toPlaces(info.maxLevel,0,info.maxLevel+1)} | Cost: {info.isMaxed ? "[MAXED]" : `${format(info.cost)} ${currencyLabel(info)}`}</button>
         {/each}
     </div>
     <div class="flexCol">

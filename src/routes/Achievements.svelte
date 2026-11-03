@@ -1,5 +1,7 @@
 <script>
     import { achievements } from "$lib/scripts/AchievementsManager";
+    import { gameState } from "$lib/scripts/DataManager.svelte";
+    import { toPlaces } from "$lib/scripts/Formatting";
 
     const columnSize = 8
 
@@ -28,6 +30,7 @@
     const columns = buildColumns(achievements)
     let hoveredIndex = $state(-1)
     const hovered = $derived(hoveredIndex >= 0 ? achievements[hoveredIndex] : null)
+    let achCompletedCount = $derived(gameState.data.progression.achievements.filter(element => element === true).length-1)
 </script>
 <h3>Achievements</h3>
 <div class="flexRow">
@@ -60,7 +63,7 @@
         </p>
     {/if}
 {/if}
-
+<p>Current Progression: {achCompletedCount}/{achievements.length} [{toPlaces((achCompletedCount/achievements.length)*100,2,(achCompletedCount/achievements.length)*100+1)}%]</p>
 <style lang="scss">
     @use '$lib/styles/variables' as *;
     p {

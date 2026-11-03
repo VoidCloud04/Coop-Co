@@ -11,6 +11,7 @@
     {title: "Stats", class: ""},
     {title: "Help"}
     ])
+    let avgSoulEggGain = $derived(data.stats.last3Prestiges[0].plus(data.stats.last3Prestiges[1].plus(data.stats.last3Prestiges[2])).dividedBy(3))
     let highestEgg = $derived(data.progression.achievements.slice(0,19).findLastIndex((element) => element))
     let subTab = $state(0)
     function changeTab(i) {
@@ -99,9 +100,9 @@
             <h3>Prestige Stats</h3>
             <h4>Last 3 Prestiges</h4>
             {#each data.stats.last3Prestiges as item, i}
-                <p>#{i+1} - <span class="purple">{format(item)} Soul Eggs</span></p>
+                <p>#{3-i} - <span class="purple">{format(item)} Soul Eggs</span></p>
             {/each}
-            <p>Average Gain: <span class="purple">{format((data.stats.last3Prestiges[0].plus(data.stats.last3Prestiges[1]).plus(data.stats.last3Prestiges[2])).div(3))} Soul Eggs</span></p>
+            <p>Average Gain: <span class="purple">{format(avgSoulEggGain)} Soul Eggs</span></p>
             <h4>Other Stats</h4>
             <p>Best Soul Eggs: <span class="purple">{format(data.stats.bestSoulEggs)}</span></p>
             <p>Time in Current Prestige: 1s</p>
@@ -112,7 +113,7 @@
             <h3>Ascension Stats</h3>
             <h4>Last 3 Ascensions</h4>
             {#each data.stats.last3Ascensions as item, i}
-                <p>#{i+1} - <span class="yellow">{format(item)} Knowleggs</span></p>
+                <p>#{3-i} - <span class="yellow">{format(item)} Knowleggs</span></p>
             {/each}
             <p>Average Gain: <span class="yellow">{format((data.stats.last3Ascensions[0].plus(data.stats.last3Ascensions[1]).plus(data.stats.last3Ascensions[2])).div(3))} Knowleggs</span></p>
             <h4>Other Stats</h4>

@@ -1,13 +1,18 @@
 <script>
     let {buttonArr, baseId, onclick = null} = $props()
+
+    function isVisible(button) {
+        if (typeof button.condition === 'function') return button.condition()
+        return button.condition ?? true
+    }
 </script>
 
 <div>
     {#each buttonArr as button, i}
         {#if onclick === null}
-            <button id="{baseId}-{i}" class={button.class} title={button.title}>{button.title}</button>
+            <button id="{baseId}-{i}" class={button.class} title={button.title} hidden={!isVisible(button)}>{button.title}</button>
         {:else}
-            <button id="{baseId}-{i}" class={button.class} title={button.title} onclick={() => onclick(i)}>{button.title}</button>
+            <button id="{baseId}-{i}" class={button.class} title={button.title} hidden={!isVisible(button)} onclick={() => onclick(i)}>{button.title}</button>
         {/if}
     {/each}
 </div>

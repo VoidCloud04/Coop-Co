@@ -1,4 +1,5 @@
 <script>
+    import { gradeNames } from "$lib/scripts/ContractsManager";
     import { gameState } from "$lib/scripts/DataManager.svelte";
     import { eggs, promoteEgg, regularEggImgIds } from "$lib/scripts/EggManager";
     import { calculateSoulEggGain, prestige } from "$lib/scripts/Prestige.svelte";
@@ -15,7 +16,7 @@
 
 <div>
     {#if data.progression.unlockedContracts}
-        <Chip content="USDE AA" color="gray"/>
+        <Chip content="USDE {gradeNames[data.contracts.gradeIndex]}" color={gradeNames[data.contracts.gradeIndex]}/>
     {/if}
     <img src="/Images/Eggs/{regularEggImgIds[data.indexValues.currentEgg]}.png" alt="{eggs[data.indexValues.currentEgg].name} Egg">
     {#if data.indexValues.currentEgg < data.progression.unlockedEgg.length - 1}

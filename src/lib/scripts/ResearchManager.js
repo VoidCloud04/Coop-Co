@@ -458,8 +458,64 @@ export function purchaseCommonResearch(index, options = {}) {
     data.research.commonResearch[index] = info.level + info.buyCount;
 }
 
-export function purchaseEpicResearch(index) {
+export function getEpicResearch(index, options = {}) {
+    const data = options.data ?? gameState.data;
+    const item = epicResearch[index];
+    const scale = new Decimal(options.costScale ?? item.costScale ?? 1.25);
+    const baseCost = new Decimal(options.baseCost ?? item.baseCost);
 
+    const level = Math.min(data.research.epicResearch[index] ?? 0, item.maxLevels);
+    const remaining = item.maxLevels - level;
+
+    const labLevel = Math.min(10, Math.max(0, data.research.epicResearch[1] ?? 0));
+    const discount = new Decimal(labLevel).times(0.05);
+    const base = baseCost.times(Decimal.dOne.sub(discount));
+
+    const soulEggSplit = options.soulEggSplit ?? 6;
+    const currencyKey = options.currencyKey ?? (index < soulEggSplit ? 'soulEggs' : 'prophecyEggs');
+    const currency = new Decimal(data.currency[currencyKey] ?? 0);
+
+    const nextCost = base.times(Decimal.pow(scale, level));
+    const buyAmount = Math.min(
+        BUY_AMOUNTS[data.settings.buyAmounts[1]] ?? 1,
+        remaining
+    );
+    const cost = totalCost(base, scale, level, buyAmount);
+    const maxBuyAmount = maxAffordable(
+        base,
+        scale,
+        level,
+        remaining,
+        currency
+    );
+    const buyCount = Math.min(buyAmount, maxBuyAmount);
+    const charge = totalCost(base, scale, level, buyCount);
+
+    return {
+        level,
+        maxLevel: item.maxLevels,
+        nextCost,
+        cost,
+        buyAmount,
+        maxBuyAmount,
+        buyCount,
+        charge,
+        currencyKey,
+        currency,
+        isMaxed: remaining <= 0
+    };
+}
+
+export function purchaseEpicResearch(index, options = {}) {
+    const data = options.data ?? gameState.data;
+    const info = getEpicResearch(index, { ...options, data });
+
+    if (info.buyCount <= 0) return;
+
+    data.currency[info.currencyKey] = new Decimal(
+        data.currency[info.currencyKey] ?? 0
+    ).sub(info.charge);
+    data.research.epicResearch[index] = info.level + info.buyCount;
 }
 
 export function purchaseLegendaryResearch(index) {

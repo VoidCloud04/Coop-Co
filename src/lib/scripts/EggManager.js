@@ -199,7 +199,7 @@ export function calculateInternalHatchery() {
     // Epic Research Chicken Gain Multipliers
     chickenGain = chickenGain.times(Decimal.max(Decimal.dOne, Decimal.dOne.plus(new Decimal(0.05).times(epicResearch[0])))) // Epic Internal Hatcheries
 
-    // TODO: Planet, Artifact and Gem Chicken Gain Boosts
+    // TODO: Planet Boosts
 
     return chickenGain.div(60) // Convert Chickens/min to Chickens/sec
 }
@@ -218,7 +218,7 @@ export function calculateLayRate() {
     // Epic Research Lay Rate Multipliers
     layRate = layRate.times(Decimal.max(Decimal.dOne, Decimal.dOne.plus(new Decimal(0.05).times(epicResearch[4])))) // Epic Comfy Nests
 
-    // TODO: Planet, Artifact and Gem Lay Rate Boosts
+    // TODO: Planet Boosts
 
     return layRate
 }

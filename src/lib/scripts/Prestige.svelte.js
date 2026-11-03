@@ -10,7 +10,8 @@ export function calculateSoulEggGain() {
 }
 
 export function calculateSoulEggBoost() {
-    let boost = Decimal.dOne.plus(gameState.data.currency.soulEggs.times(new Decimal(0.01).plus(new Decimal(0.01).times(gameState.data.research.epicResearch[2]))))
+    const soulAvg = (gameState.data.currency.soulEggs.plus(gameState.data.stats.bestSoulEggs)).dividedBy(2)
+    let boost = Decimal.dOne.plus(soulAvg.times(new Decimal(0.01).plus(new Decimal(0.01).times(gameState.data.research.epicResearch[2]))))
     return boost
 }
 
@@ -28,6 +29,8 @@ export async function prestige() {
     if(confirmed) {
         const soulEggGain = calculateSoulEggGain()
         if(!gameState.data.progression.hasPrestiged) gameState.data.progression.hasPrestiged = true
+        gameState.data.stats.last3Prestiges.push(soulEggGain)
+        if(gameState.data.stats.last3Prestiges.length > 3) gameState.data.stats.last3Prestiges.shift()
         gameState.data.currency.soulEggs = gameState.data.currency.soulEggs.plus(soulEggGain)
 
         // Reset Values

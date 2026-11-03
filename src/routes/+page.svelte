@@ -22,14 +22,14 @@
     let data = $derived(gameState.data)
     let tabIndex = $state(0)
     let tabs = $state([
-        {title: "Eggs", class: ""},
-        {title: "Research"},
-        {title: "Contracts"},
-        {title: "Eggspeditions", class: "button-blue"},
-        {title: "Prestige", class: "button-purple"},
-        {title: "Ascension", class: "button-orange"},
-        {title: "Achievements"},
-        {title: "Settings"}
+        {title: "Eggs", class: "", condition: () => {return true}},
+        {title: "Research", class: "", condition: () => {return true}},
+        {title: "Contracts", class: "", condition: () => {return gameState.data.progression.unlockedContracts}},
+        {title: "Eggspeditions", class: "button-blue", condition: () => {return gameState.data.progression.unlockedEggspeditions}},
+        {title: "Prestige", class: "button-purple", condition: () => {return gameState.data.progression.hasPrestiged}},
+        {title: "Ascension", class: "button-orange", condition: () => {return gameState.data.progression.hasAscended}},
+        {title: "Achievements", class: "", condition: () => {return true}},
+        {title: "Settings", condition: () => {return true}}
     ])
 
     function changeTab(i) {
