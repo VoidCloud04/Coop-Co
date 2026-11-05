@@ -38,3 +38,7 @@ class Notation {
 }
 
 export const notate = new Notation().bind()
+
+export function getRandom(min, max) {
+    return Math.floor((Math.random() * (max - min))) + min 
+}
