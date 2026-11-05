@@ -15,6 +15,16 @@ export function calculateSoulEggBoost() {
     return boost
 }
 
+export function calculateProphecyEggRewardBonus() {
+    let bonus = Decimal.dOne
+    return bonus
+}
+
+export function calculateProphecyGoalDebuff() {
+    let debuff = Decimal.dOne
+    return debuff
+}
+
 export async function prestige() {
     if(gameState.data.indexValues.currentEgg < 3) return // Unlock Rocket Fuel or Higher can Prestige
     if(gameState.data.indexValues.currentContract !== -1 || 

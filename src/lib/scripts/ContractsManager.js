@@ -18,6 +18,7 @@ export const baseGoalPerGrade = [ // Traversed by [gradeIndex][contractGoalIndex
     [Decimal.dZero, Decimal.dZero, Decimal.dZero],
     [Decimal.dZero, Decimal.dZero, Decimal.dZero]
 ]
+export const baseProphecyStakePerGrade = [Decimal.dZero,new Decimal(5), new Decimal(10), new Decimal(50), new Decimal(100), new Decimal(250)] // D contracts will always cost nothing to start, but provide very little reward
 
 export const modifiers = [ // All available debuffs to be rolled by a contract
     {
@@ -102,8 +103,9 @@ export const contracts = [ // All available contracts on specific eggs
  *  contractIndex: Integer 0-contracts.length-1
  *  modifiers: Array(Array(2)) -> [modifierIndex,debuffIndex],
  *  goal: Array(2) -> [goalIndex,goalValue], // Goal Calculation done by baseValueAtGrade * baseEggValue * Prophecy Egg Debuff
+ *  prophecy: Array(2) -> [stakeValue,rewardValue] // reward will be Round((stake+1) * 1.5 * Prophecy Egg Gain Reward)
  *  repGain: baseRep[gradeIndex] * (Grade Penalty/Bonus - 0.25 per level below or 0.25 per level above) * Prophecy Egg Bonus
- *  expiration: Date timestamp that determines when the contract is regenerated
+ *  expiration: simple seconds based counter that is decremented to 0, will be paused when the contract is active
  * }
  */
 
@@ -116,6 +118,7 @@ export function generateContract(desiredGrade) {
         grade: desiredGrade,
         contractIndex: null,
         modifiers: new Array(),
+        prophecy: new Array(2).fill(null),
         goal: new Array(2).fill(null), 
         repGain: null,
         expiration: null
@@ -128,7 +131,9 @@ export function generateContract(desiredGrade) {
     // Select Goal Type and Calculate Value
     contractObject.goal[0] = getRandom(0,contractGoals.length - 1)
     contractObject.goal[1] = baseGoalPerGrade[desiredGrade][contractObject.goal[0]].times(eggs[contracts[contractObject.contractIndex].eggIndex].baseValue).times(Decimal.dOne) // Replace Decimal Constant with Calculated Prophecy Egg Debuff
-    
+    // Generate Prophecy Egg Stake + Reward
+    contractObject.prophecy[0] = baseProphecyStakePerGrade[desiredGrade]
+    contractObject.prophecy[1] = Decimal.round(Decimal.max(baseProphecyStakePerGrade[desiredGrade],Decimal.dOne).times(new Decimal(1.5)).times(Decimal.dOne)) // Replace Decimal Constant with Calculated Prophecy Egg Buff
     // "Purchase" modifiers from the pool using points
     // Each loop will pick a modifier at random if it already isn't in the pool
     // Then greedily pick the most value for that modifier it can afford
@@ -158,6 +163,12 @@ export function generateContract(desiredGrade) {
 
     console.log(contractObject)
     return contractObject
+}
+
+export function updateContractPool(diff) {
+    // Check if any contracts have been set to null and auto generate
+    // Update All contract expiration counters
+    // Check if a contract expired and regenerate
 }
 
 export function runContract(diff) {
