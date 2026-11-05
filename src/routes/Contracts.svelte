@@ -24,7 +24,9 @@
 
     const activeContract = $derived(gameState.data.indexValues.currentContract !== -1 ? gameState.data.contracts.contractPool[gameState.data.indexValues.currentContract] : null)
 
-    
+    onMount(() => {
+        gameState.data.contracts.contractPool[0] = generateContract(0)
+    })
 </script>
 
 
@@ -81,7 +83,7 @@
                         {/each}
                     </div>
                     <p>Contract Goal: {format(item.goal[1])} {contractGoalCurrencies[item.goal[0]]}</p>
-                    <p>Stake: 3 Prophecy Eggs | Reward: 5 Prophecy Eggs</p>
+                    <p>Stake: {format(item.prophecy[0])} Prophecy Eggs | Reward: {format(item.prophecy[1])} Prophecy Eggs</p>
                     <p>Reputation Gain: {item.repGain == null ? "—" : format(item.repGain)}</p>
                     {#if item.grade > gradeIndex}
                         <button disabled>Locked — Grade {gradeNames[item.grade]} Required</button>

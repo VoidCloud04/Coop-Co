@@ -134,6 +134,16 @@ export function generateContract(desiredGrade) {
     // Generate Prophecy Egg Stake + Reward
     contractObject.prophecy[0] = baseProphecyStakePerGrade[desiredGrade]
     contractObject.prophecy[1] = Decimal.round(Decimal.max(baseProphecyStakePerGrade[desiredGrade],Decimal.dOne).times(new Decimal(1.5)).times(Decimal.dOne)) // Replace Decimal Constant with Calculated Prophecy Egg Buff
+    // Generate repGain = baseRepGain * gradeIncreaseModifier (*0.25 less or greater depending on if contract is lower or higher than current grade and depending on how many levels lower)
+    const gradeDiff = gameState.data.contracts.gradeIndex - desiredGrade
+    let repMul = Decimal.dOne
+    if(gradeDiff < 0) { // desiredGrade is higher
+        repMul = new Decimal(0.2).times(gradeDiff)
+    }
+    else if(gradeDiff > 0) { // desiredGrade is lower
+        repMul = new Decimal(0.2).times(gradeDiff).times(-1)
+    }
+    contractObject.repGain = baseRepGain[desiredGrade].times(repMul)
     // "Purchase" modifiers from the pool using points
     // Each loop will pick a modifier at random if it already isn't in the pool
     // Then greedily pick the most value for that modifier it can afford
