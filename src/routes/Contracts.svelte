@@ -1,9 +1,10 @@
 <script>
     import ButtonGroup from "$lib/components/ButtonGroup.svelte";
     import Chip from "$lib/components/Chip.svelte";
-    import { contractGoalCurrencies, contractGoals, contracts, generateContract, gradeNames, gradeWalls, modifiers } from "$lib/scripts/ContractsManager";
+    import { contractGoalCurrencies, contractGoals, contracts, generateContract, gradeNames, gradeWalls, modifiers, startContract } from "$lib/scripts/ContractsManager";
     import { gameState } from "$lib/scripts/DataManager.svelte";
     import { eggs, regularEggImgIds } from "$lib/scripts/EggManager";
+    import { formatTime } from "$lib/scripts/Formatting";
     import { format } from "$lib/scripts/Utilities";
     import { onMount } from "svelte";
     
@@ -19,14 +20,22 @@
             subTab = 0
     }
 
+    function contractButtonState(index, item) {
+        const activeIndex = gameState.data.indexValues.currentContract
+        if(activeIndex === index)
+            return { disabled: true, class: "button-blue", text: "In Progress" }
+        if(activeIndex !== -1)
+            return { disabled: true, class: "button-red", text: "Another Contract is Active" }
+        if(gameState.data.currency.prophecyEggs.lt(item.prophecy[0]))
+            return { disabled: true, class: "button-red", text: "Not Enough Prophecy Eggs" }
+        return { disabled: false, class: "button-green", text: "Start Contract" }
+    }
+
     const firstHalf = $derived(gameState.data.contracts.contractPool.slice(0,2))
     const secondHalf = $derived(gameState.data.contracts.contractPool.slice(2,4))
 
     const activeContract = $derived(gameState.data.indexValues.currentContract !== -1 ? gameState.data.contracts.contractPool[gameState.data.indexValues.currentContract] : null)
 
-    onMount(() => {
-        gameState.data.contracts.contractPool[0] = generateContract(0)
-    })
 </script>
 
 
@@ -55,6 +64,7 @@
     <div class="flexRow">
         <div class="flexCol">
             {#each firstHalf as item, i}
+                {@const button = item === null ? null : contractButtonState(i, item)}
                 <div class="flexCol contract" class:locked={item !== null && item.grade > gradeIndex}>
                     {#if item === null}
                         <h3>No Contract Generated</h3>
@@ -62,7 +72,7 @@
                         <div class="flexRow"> 
                         <Chip content={gradeNames[item.grade]} color={gradeNames[item.grade]}/>
                         <Chip content="{contractGoals[item.goal[0]]} Contract"/>
-                        <Chip content="24h left"/>
+                        <Chip content="{formatTime(item.expiration)} left"/>
                         {#if item.grade > gradeIndex}
                             <Chip content="Requires Grade {gradeNames[item.grade]}" color="red"/>
                         {/if}
@@ -88,7 +98,12 @@
                     {#if item.grade > gradeIndex}
                         <button disabled>Locked — Grade {gradeNames[item.grade]} Required</button>
                     {:else}
-                        <button>Start Contract</button>
+                        <button 
+                        disabled={button.disabled}
+                        onclick={() => startContract(i)}
+                        class={button.class}>
+                        {button.text}
+                        </button>
                     {/if}
                     {/if}
                 </div>
@@ -96,34 +111,46 @@
         </div>
         <div class="flexCol">
             {#each secondHalf as item, i}
+                {@const button = item === null ? null : contractButtonState(i+2, item)}
                 <div class="flexCol contract" class:locked={item !== null && item.grade > gradeIndex}>
                     {#if item === null}
                         <h3>No Contract Generated</h3>
                     {:else}
                         <div class="flexRow"> 
                         <Chip content={gradeNames[item.grade]} color={gradeNames[item.grade]}/>
-                        <Chip content="Delivery Contract"/>
-                        <Chip content="24h left"/>
+                        <Chip content="{contractGoals[item.goal[0]]} Contract"/>
+                        <Chip content="{formatTime(item.expiration)} left"/>
                         {#if item.grade > gradeIndex}
                             <Chip content="Requires Grade {gradeNames[item.grade]}" color="red"/>
                         {/if}
                     </div>
                     <div class="flexRow">
                         <p>{contracts[item.contractIndex].name}</p>
-                        <Chip imgSrc="Images/Eggs/{regularEggImgIds[contracts[item.contractIndex].eggIndex]}" content={eggs[contracts[item.contractIndex].eggIndex].name} />
+                        <Chip imgSrc="Images/Eggs/{regularEggImgIds[contracts[item.contractIndex].eggIndex]}.png" content={eggs[contracts[item.contractIndex].eggIndex].name} />
                     </div>
                     <div class="flexRow">
-                        {#each item.modifiers as modifier}
-                            <Chip content="This is a debuff modifier" color="red" />
+                        {#each item.modifiers as debuff}
+                            {#if modifiers[debuff[0]].type === "mul"}
+                                <Chip content="*{format(modifiers[debuff[0]].debuffs[debuff[1]])} {modifiers[debuff[0]].name}" color="red" />
+                            {:else if modifiers[debuff[0]].type === 'exp'}
+                                <Chip content="^{format(modifiers[debuff[0]].debuffs[debuff[1]])} {modifiers[debuff[0]].name}" color="red" />
+                            {:else if modifiers[debuff[0]].type === 'sub'}
+                                <Chip content="-{format(modifiers[debuff[0]].debuffs[debuff[1]])} {modifiers[debuff[0]].name}" color="red" />
+                            {/if}
                         {/each}
                     </div>
-                    <p>Contract Goal: $1.00e3</p>
-                    <p>Stake: 3 Prophecy Eggs | Reward: 5 Prophecy Eggs</p>
+                    <p>Contract Goal: {format(item.goal[1])} {contractGoalCurrencies[item.goal[0]]}</p>
+                    <p>Stake: {format(item.prophecy[0])} Prophecy Eggs | Reward: {format(item.prophecy[1])} Prophecy Eggs</p>
                     <p>Reputation Gain: {item.repGain == null ? "—" : format(item.repGain)}</p>
                     {#if item.grade > gradeIndex}
                         <button disabled>Locked — Grade {gradeNames[item.grade]} Required</button>
                     {:else}
-                        <button>Start Contract</button>
+                        <button 
+                        disabled={button.disabled}
+                        onclick={() => startContract(i+2)}
+                        class={button.class}>
+                        {button.text}
+                        </button>
                     {/if}
                     {/if}
                 </div>

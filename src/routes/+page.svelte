@@ -43,7 +43,6 @@
         
         Load()
         requestAnimationFrame(updateGameData)
-
         window.setInterval(Save,30000)
     })
 </script>

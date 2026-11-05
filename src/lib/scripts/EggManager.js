@@ -189,19 +189,19 @@ export function calculateInternalHatchery() {
     const commonResearch = gameState.data.research.commonResearch
     const epicResearch = gameState.data.research.epicResearch
     // Common Research Chicken Production
-    chickenGain = chickenGain.plus(new Decimal(8).times(commonResearch[2])) // Internal Hatcheries
-    chickenGain = chickenGain.plus(new Decimal(20).times(commonResearch[5])) // Internal Hatchery Upgrades
-    chickenGain = chickenGain.plus(new Decimal(40).times(commonResearch[9])) // Internal Hatchery Expansion
-    chickenGain = chickenGain.plus(new Decimal(100).times(commonResearch[13])) // Internal Hatchery Expansion
-    chickenGain = chickenGain.plus(new Decimal(20).times(commonResearch[15])) // Machine Learning Incubators
-    chickenGain = chickenGain.plus(new Decimal(200).times(commonResearch[19])) // Neural Linking
+    chickenGain = chickenGain.plus(new Decimal(4).times(commonResearch[2])) // Internal Hatcheries
+    chickenGain = chickenGain.plus(new Decimal(10).times(commonResearch[5])) // Internal Hatchery Upgrades
+    chickenGain = chickenGain.plus(new Decimal(20).times(commonResearch[9])) // Internal Hatchery Expansion
+    chickenGain = chickenGain.plus(new Decimal(50).times(commonResearch[13])) // Internal Hatchery Expansion
+    chickenGain = chickenGain.plus(new Decimal(10).times(commonResearch[15])) // Machine Learning Incubators
+    chickenGain = chickenGain.plus(new Decimal(100).times(commonResearch[19])) // Neural Linking
 
     // Epic Research Chicken Gain Multipliers
     chickenGain = chickenGain.times(Decimal.max(Decimal.dOne, Decimal.dOne.plus(new Decimal(0.05).times(epicResearch[0])))) // Epic Internal Hatcheries
 
     // TODO: Planet Boosts
 
-    return chickenGain.div(60) // Convert Chickens/min to Chickens/sec
+    return chickenGain
 }
 
 export function calculateLayRate() {

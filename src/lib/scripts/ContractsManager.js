@@ -2,11 +2,12 @@ import Decimal from "break_eternity.js"
 import { getRandom } from "./Utilities"
 import { eggs } from "./EggManager"
 import { gameState } from "./DataManager.svelte"
+import { generateNotification } from "./NotificationManager.svelte"
 
 export const gradeNames = ["D","C","B","A","AA","AAA"] // AAA locked behind Ascension
 const gradePointBudgets = [1,3,5,10,15,20] // How many points can be spent on a contract per grade
-export const gradeWalls = [new Decimal(1000),new Decimal(2500),new Decimal(5000),new Decimal(7500), new Decimal(10000)]
-const baseRepGain = [10,50,100,1000,2500]
+export const gradeWalls = [new Decimal(100),new Decimal(500),new Decimal(1000),new Decimal(5000), new Decimal(10000)]
+const baseRepGain = [new Decimal(10),new Decimal(50),new Decimal(100),new Decimal(1000),new Decimal(2500)]
 const expiryTimeInMinutes = 180 // 3 Hours from creation to expiration
 export const contractGoals = ["Delivery","Value","Farm Density"] // Tracks Eggs Produced, Total Money, Total Chickens
 export const contractGoalCurrencies = ["Eggs", "Money", "Chickens"]
@@ -123,11 +124,19 @@ export function generateContract(desiredGrade) {
         repGain: null,
         expiration: null
     }
+    contractObject.expiration = expiryTimeInMinutes * 60
     const pointCeiling = gradePointBudgets[desiredGrade]
     let pointsUsed = 0
     
+    // Only consider contracts whose egg the player has already unlocked
+    const unlockedContractIndices = contracts
+        .map((_, index) => index)
+        .filter(index => gameState.data.progression.unlockedEgg[contracts[index].eggIndex])
+
+    if (unlockedContractIndices.length === 0) return null
+
     // Select Contract from Pool randomly
-    contractObject.contractIndex = getRandom(0,contracts.length - 1)
+    contractObject.contractIndex = unlockedContractIndices[getRandom(0, unlockedContractIndices.length - 1)]
     // Select Goal Type and Calculate Value
     contractObject.goal[0] = getRandom(0,contractGoals.length - 1)
     contractObject.goal[1] = baseGoalPerGrade[desiredGrade][contractObject.goal[0]].times(eggs[contracts[contractObject.contractIndex].eggIndex].baseValue).times(Decimal.dOne) // Replace Decimal Constant with Calculated Prophecy Egg Debuff
@@ -137,10 +146,10 @@ export function generateContract(desiredGrade) {
     // Generate repGain = baseRepGain * gradeIncreaseModifier (*0.25 less or greater depending on if contract is lower or higher than current grade and depending on how many levels lower)
     const gradeDiff = gameState.data.contracts.gradeIndex - desiredGrade
     let repMul = Decimal.dOne
-    if(gradeDiff < 0) { // desiredGrade is higher
+    if(gradeDiff > 0) { // desiredGrade is higher
         repMul = new Decimal(0.2).times(gradeDiff)
     }
-    else if(gradeDiff > 0) { // desiredGrade is lower
+    else if(gradeDiff < 0) { // desiredGrade is lower
         repMul = new Decimal(0.2).times(gradeDiff).times(-1)
     }
     contractObject.repGain = baseRepGain[desiredGrade].times(repMul)
@@ -171,14 +180,37 @@ export function generateContract(desiredGrade) {
         pointsUsed += cost;
     }
 
-    console.log(contractObject)
     return contractObject
 }
 
 export function updateContractPool(diff) {
+    if(!gameState.data.progression.unlockedContracts) return
     // Check if any contracts have been set to null and auto generate
     // Update All contract expiration counters
     // Check if a contract expired and regenerate
+    for(let i = 0; i < gameState.data.contracts.contractPool.length; i++) {
+        if(gameState.data.contracts.contractPool[i] === null) {
+            if(i === 0 && gameState.data.contracts.gradeIndex > 0) {
+                const desiredGrade = getRandom(0,gameState.data.contracts.gradeIndex-1)
+                gameState.data.contracts.contractPool[i] = generateContract(desiredGrade)
+            }
+            else if(i === 3 && gameState.data.contracts.gradeIndex < gradeNames.length - 1) {
+                const desiredGrade = gameState.data.contracts.gradeIndex+1
+                gameState.data.contracts.contractPool[i] = generateContract(desiredGrade)
+            }
+            else {
+                gameState.data.contracts.contractPool[i] = generateContract(gameState.data.contracts.gradeIndex)
+            }
+        }
+        else if(gameState.data.contracts.contractPool[i].expiration < 0) {
+            generateNotification("A contract expired!","error")
+            gameState.data.contracts.contractPool[i] = null
+        }
+        else if(i != gameState.data.indexValues.currentContract) {
+            gameState.data.contracts.contractPool[i].expiration -= diff
+        }
+    }
+    
 }
 
 export function runContract(diff) {

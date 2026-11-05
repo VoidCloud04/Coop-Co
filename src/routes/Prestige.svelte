@@ -34,7 +34,7 @@
     <button onclick={() => {toggleAutomator(1,0)}} class={data.automation.epicAutomatorActive[0] ? 'button-green' : 'button-red'}>Promotion Automation: {data.automation.epicAutomatorActive[0] ? 'On' : 'Off'}</button>
 </div>
 <div class="flexRow" style="gap:0.25vw">
-    <div class="flexCol">
+    <div class="flexCol border">
         <h3>Boosts</h3>
         {#each normalResearch as { item, index, info }}
             <button
@@ -52,7 +52,7 @@
             >{item.title} | {item.description}<br>Level: {info.level}/{toPlaces(info.maxLevel,0,info.maxLevel+1)} | Cost: {info.isMaxed ? "[MAXED]" : `${format(info.cost)} ${currencyLabel(info)}`}</button>
         {/each}
     </div>
-    <div class="flexCol">
+    <div class="flexCol border">
         <Chip imgSrc={`Images/Eggs/soul.png`}
             content={`Soul Eggs: ${format(data.currency.soulEggs)}`}
             color="gray"/>
@@ -63,11 +63,15 @@
         <Chip imgSrc={`Images/Eggs/prophecy.png`}
             content={`Prophecy Eggs: ${format(data.currency.prophecyEggs)}`}
             color="gray"/>
-        <div class="flexRow">
-            
-            <Chip content={`Soul Boost: x${format(0.00)}`} color="yellow"/>
-            <Chip content={`Contract Boost: x${format(0.00)}`} color="yellow"/>
-            <Chip content={`Softcap: /${format(0.00)}`} color="red"/>
+        <div class="flexCol">
+            <div class="flexRow">
+                <Chip content={`Soul Boost: x${format(0.00)}`} color="yellow"/>
+                <Chip content={`Contract Reward Boost: x${format(0.00)}`} color="yellow"/>
+            </div>
+            <div class="flexRow">
+                <Chip content={`Contract Goal Debuff: x${format(0.00)}`} color="red"/>
+                <Chip content={`Softcap: /${format(0.00)}`} color="red"/>
+            </div>
         </div>
     </div>
 </div>
@@ -78,7 +82,8 @@
         text-align: center;
         color: $purple;
     }
-    .flexCol {
+
+    .border {
         border: $borderWidth solid $purple;
         border-radius: $borderRadius;
     }

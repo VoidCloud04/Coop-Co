@@ -88,6 +88,9 @@
         {#if data.progression.unlockedContracts}
         <div class="flexCol statHolder green">
             <h3>Contract Stats</h3>
+            <p>Total Reputation Earned: {format(0.00)}</p>
+            <p>Best Prophecy Eggs: <span class="yellow">{format(0.00)}</span></p>
+            <p>Contracts Completed: {format(0.00)}</p>
         </div>
         {/if}
         {#if data.progression.unlockedEggspeditions}

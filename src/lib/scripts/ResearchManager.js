@@ -20,7 +20,7 @@ export const commonResearch = [
     },
     {
         title: 'Internal Hatcheries',
-        description: '+8 Chickens/min',
+        description: '+4 Chickens/sec',
         tier: 1,
         baseCost: new Decimal(1836),
         costScale: new Decimal(1.15),
@@ -44,7 +44,7 @@ export const commonResearch = [
     },
     {
         title: 'Internal Hatchery Upgrades',
-        description: '+20 Chickens/min',
+        description: '+10 Chickens/sec',
         tier: 2,
         baseCost: new Decimal(16029660),
         costScale: new Decimal(1.15),
@@ -76,7 +76,7 @@ export const commonResearch = [
     },
     {
         title: 'Internal Hatchery Expansion',
-        description: '+40 Chickens/min',
+        description: '+20 Chickens/sec',
         tier: 4,
         baseCost: new Decimal(2.886e12),
         costScale: new Decimal(1.15),
@@ -108,7 +108,7 @@ export const commonResearch = [
     },
     {
         title: 'Internal Hatchery Expansion',
-        description: '+100 Chickens/min',
+        description: '+50 Chickens/sec',
         tier: 6,
         baseCost: new Decimal(3.30094e17),
         costScale: new Decimal(1.15),
@@ -124,7 +124,7 @@ export const commonResearch = [
     },
     {
         title: 'Machine Learning Incubators',
-        description: '+20 Chickens/min',
+        description: '+10 Chickens/sec',
         tier: 7,
         baseCost: new Decimal(1.4517e20),
         costScale: new Decimal(1.15),
@@ -156,7 +156,7 @@ export const commonResearch = [
     },
     {
         title: 'Neural Linking',
-        description: '+200 Chickens/min',
+        description: '+100 Chickens/sec',
         tier: 9,
         baseCost: new Decimal(7.02028e29),
         costScale: new Decimal(1.15),
@@ -274,35 +274,35 @@ export const epicResearch = [
     {
         title: 'Tier I-V Automator',
         description: 'Automate Tier I-V Research',
-        baseCost: new Decimal(1e4),
+        baseCost: new Decimal(100),
         costScale: new Decimal(1.25),
         maxLevels: 1
     },
     {
         title: 'Tier VI-X Automator',
         description: 'Automate Tier VI-X Research',
-        baseCost: new Decimal(1e7),
+        baseCost: new Decimal(250),
         costScale: new Decimal(1.25),
         maxLevels: 1
     },
     {
         title: 'Start with 1 Chicken',
         description: 'Start with 1 Chicken on any Reset',
-        baseCost: new Decimal(1e6),
+        baseCost: new Decimal(1e3),
         costScale: new Decimal(1.25),
         maxLevels: 1
     },
     {
         title: 'Promotion Automator',
         description: 'Automatic Promotions',
-        baseCost: new Decimal(1e9),
+        baseCost: new Decimal(1e4),
         costScale: new Decimal(1.25),
         maxLevels: 1
     },
     {
         title: 'Tier XI-XIV Automator',
         description: 'Automated Tier XI-XIV Research',
-        baseCost: new Decimal(1e9),
+        baseCost: new Decimal(500),
         costScale: new Decimal(1.25),
         maxLevels: 1
     }
