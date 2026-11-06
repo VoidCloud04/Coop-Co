@@ -1,13 +1,9 @@
 # Remaining Migration Tasks
 ## Content Development
-- Rebuild Contracts (In Progress)
-    - UI (Mostly Complete)
-    - Contract Generation (In Progress)
-        - Reputation Gain
-        - Prophecy Egg Staking + Rewards
-    - Contract Running Logic 
-    - Contract Reward Logic
-- Rebuild Eggspeditions
+- Rebuild Contracts (Mostly Complete)
+    - Reroll System (Cooldown, Logic)
+- Rebuild Eggspeditions (Planning Phase)
+    - Planning
 - Rebuild Ascension
 ## Rebalancing
 - Rebalance Epic Research Costs
