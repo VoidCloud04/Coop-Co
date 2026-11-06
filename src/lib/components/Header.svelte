@@ -19,7 +19,7 @@
         <Chip content="USDE {gradeNames[data.contracts.gradeIndex]}" color={gradeNames[data.contracts.gradeIndex]}/>
     {/if}
     <img src="/Images/Eggs/{regularEggImgIds[data.indexValues.currentEgg]}.png" alt="{eggs[data.indexValues.currentEgg].name} Egg">
-    {#if data.indexValues.currentEgg < data.progression.unlockedEgg.length - 1}
+    {#if data.indexValues.currentEgg < data.progression.unlockedEgg.length - 1 && data.indexValues.currentContract === -1 && data.indexValues.currentPlanet === -1}
         <button id="promotion-button" 
         class="button{data.currency.money.gte(eggs[data.indexValues.currentEgg + 1].unlockReq) ? '-green' : '-red' }-header"
         onclick={promoteEgg}>Promote to Next Egg!</button>

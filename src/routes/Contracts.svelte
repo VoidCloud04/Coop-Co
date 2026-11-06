@@ -1,7 +1,7 @@
 <script>
     import ButtonGroup from "$lib/components/ButtonGroup.svelte";
     import Chip from "$lib/components/Chip.svelte";
-    import { contractGoalCurrencies, contractGoals, contracts, generateContract, gradeNames, gradeWalls, modifiers, startContract } from "$lib/scripts/ContractsManager";
+    import { contractGoalCurrencies, contractGoals, contracts, generateContract, gradeNames, gradeWalls, modifiers, startContract, stopContract } from "$lib/scripts/ContractsManager";
     import { gameState } from "$lib/scripts/DataManager.svelte";
     import { eggs, regularEggImgIds } from "$lib/scripts/EggManager";
     import { formatTime } from "$lib/scripts/Formatting";
@@ -36,6 +36,12 @@
 
     const activeContract = $derived(gameState.data.indexValues.currentContract !== -1 ? gameState.data.contracts.contractPool[gameState.data.indexValues.currentContract] : null)
 
+    const reputationProgress = $derived(
+        gradeIndex < gradeNames.length - 1
+            ? Math.min(100, gameState.data.contracts.totalReputation.div(gradeWalls[gradeIndex]).times(100).toNumber())
+            : 100
+    )
+
 </script>
 
 
@@ -47,15 +53,19 @@
             {#if gradeIndex < gradeNames.length - 1}
                 <span
                     class="progress-bar"
-                    style={`--progress: ${0}%; width: 25vw`}
+                    style={`--progress: ${reputationProgress}%; width: 25vw`}
                     role="progressbar"
                     aria-valuemin="0"
                     aria-valuemax="100"
-                    aria-valuenow=10
+                    aria-valuenow={reputationProgress}
                 ></span>
             {/if}
-            <p>{format(gameState.data.contracts.totalReputation)}/{format(gradeWalls[gradeIndex])} Reputation</p>
-            {#if gradeIndex < gradeNames.length - 2 || (gradeIndex === gradeNames.length - 1 && gameState.data.research.legendaryResearch[1].gte(1))}
+            {#if gradeIndex < gradeNames.length - 1}
+                <p>{format(gameState.data.contracts.totalReputation)}/{format(gradeWalls[gradeIndex])} Reputation</p>
+            {:else}
+                <p>{format(gameState.data.contracts.totalReputation)} Reputation</p>
+            {/if}
+            {#if gradeIndex < gradeNames.length - 1 && (gradeIndex + 1 < gradeNames.length - 1 || gameState.data.research.legendaryResearch[1] >= 1)}
                 <Chip content="USDE Class {gradeNames[gradeIndex+1]}" color={gradeNames[gradeIndex+1]}/>
             {/if}
         </div>
@@ -86,7 +96,7 @@
                             {#if modifiers[debuff[0]].type === "mul"}
                                 <Chip content="*{format(modifiers[debuff[0]].debuffs[debuff[1]])} {modifiers[debuff[0]].name}" color="red" />
                             {:else if modifiers[debuff[0]].type === 'exp'}
-                                <Chip content="^{format(modifiers[debuff[0]].debuffs[debuff[1]])} {modifiers[debuff[0]].name}" color="red" />
+                                <Chip content="^{format(1 + modifiers[debuff[0]].debuffs[debuff[1]])} {modifiers[debuff[0]].name}" color="red" />
                             {:else if modifiers[debuff[0]].type === 'sub'}
                                 <Chip content="-{format(modifiers[debuff[0]].debuffs[debuff[1]])} {modifiers[debuff[0]].name}" color="red" />
                             {/if}
@@ -133,7 +143,7 @@
                             {#if modifiers[debuff[0]].type === "mul"}
                                 <Chip content="*{format(modifiers[debuff[0]].debuffs[debuff[1]])} {modifiers[debuff[0]].name}" color="red" />
                             {:else if modifiers[debuff[0]].type === 'exp'}
-                                <Chip content="^{format(modifiers[debuff[0]].debuffs[debuff[1]])} {modifiers[debuff[0]].name}" color="red" />
+                                <Chip content="^{format(1 + modifiers[debuff[0]].debuffs[debuff[1]])} {modifiers[debuff[0]].name}" color="red" />
                             {:else if modifiers[debuff[0]].type === 'sub'}
                                 <Chip content="-{format(modifiers[debuff[0]].debuffs[debuff[1]])} {modifiers[debuff[0]].name}" color="red" />
                             {/if}
@@ -163,7 +173,7 @@
         <div class="flexCol contract">
             <div class="flexRow"> 
                 <Chip content={gradeNames[activeContract.grade]} color={gradeNames[activeContract.grade]}/>
-                <Chip content="Delivery Contract"/>
+                <Chip content="{contractGoals[activeContract.goal[0]]} Contract"/>
             </div>
             <hr>
             <p>{contracts[activeContract.contractIndex].name}</p>
@@ -179,19 +189,16 @@
                     {#if modifiers[debuff[0]].type === "mul"}
                         <Chip content="*{format(modifiers[debuff[0]].debuffs[debuff[1]])} {modifiers[debuff[0]].name}" color="red" />
                     {:else if modifiers[debuff[0]].type === 'exp'}
-                        <Chip content="^{format(modifiers[debuff[0]].debuffs[debuff[1]])} {modifiers[debuff[0]].name}" color="red" />
+                        <Chip content="^{format(1 + modifiers[debuff[0]].debuffs[debuff[1]])} {modifiers[debuff[0]].name}" color="red" />
                     {:else if modifiers[debuff[0]].type === 'sub'}
                         <Chip content="-{format(modifiers[debuff[0]].debuffs[debuff[1]])} {modifiers[debuff[0]].name}" color="red" />
                     {/if}
                 {/each}
-                <Chip content="-0.25 Egg Value" color="red" />
-                <Chip content="-0.25 Chicken Gain" color="red" />
-                <Chip content="-0.25 Egg Value" color="red" />
             </div>
             <hr>
-            <p>Contract Goal: $1.00e3</p>
-            <p>Stake: 3 Prophecy Eggs | Reward: 5 Prophecy Eggs</p>
-            <button>Abandon Contract</button>
+            <p>Progress: {format(activeContract.goal[0] === 0 ? (gameState.data.contracts.eggProgress ?? 0) : activeContract.goal[0] === 1 ? gameState.data.currency.money : gameState.data.currency.chickens)} / {format(activeContract.goal[1])} {contractGoalCurrencies[activeContract.goal[0]]}</p>
+            <p>Stake: {format(activeContract.prophecy[0])} Prophecy Eggs | Reward: {format(activeContract.prophecy[1])} Prophecy Eggs</p>
+            <button onclick={() => stopContract(gameState.data.indexValues.currentContract)}>Abandon Contract</button>
         </div>
     {:else}
         <h4>No Contract Active {":("}</h4>

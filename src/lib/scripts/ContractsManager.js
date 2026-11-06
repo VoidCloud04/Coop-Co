@@ -1,7 +1,8 @@
 import Decimal from "break_eternity.js"
-import { getRandom } from "./Utilities"
-import { eggs } from "./EggManager"
+import { format, getRandom } from "./Utilities"
+import { calculateLayRate, eggs } from "./EggManager"
 import { gameState } from "./DataManager.svelte"
+import { confirmModal } from "./ModalManager.svelte"
 import { generateNotification } from "./NotificationManager.svelte"
 import { calculateProphecyEggRewardBonus, calculateProphecyGoalDebuff } from "./Prestige.svelte"
 
@@ -13,12 +14,12 @@ const expiryTimeInMinutes = 180 // 3 Hours from creation to expiration
 export const contractGoals = ["Delivery","Value","Farm Density"] // Tracks Eggs Produced, Total Money, Total Chickens
 export const contractGoalCurrencies = ["Eggs", "Money", "Chickens"]
 export const baseGoalPerGrade = [ // Traversed by [gradeIndex][contractGoalIndex]
-    [Decimal.dZero, Decimal.dZero, Decimal.dZero],
-    [Decimal.dZero, Decimal.dZero, Decimal.dZero],
-    [Decimal.dZero, Decimal.dZero, Decimal.dZero],
-    [Decimal.dZero, Decimal.dZero, Decimal.dZero],
-    [Decimal.dZero, Decimal.dZero, Decimal.dZero],
-    [Decimal.dZero, Decimal.dZero, Decimal.dZero]
+    [new Decimal(1e6), new Decimal(1e6), new Decimal(1e4)],
+    [new Decimal(5e6), new Decimal(1e9), new Decimal(5e4)],
+    [new Decimal(1e7), new Decimal(1e12), new Decimal(1e5)],
+    [new Decimal(5e7), new Decimal(1e15), new Decimal(5e5)],
+    [new Decimal(1e8), new Decimal(1e18), new Decimal(1e6)],
+    [new Decimal(1e9), new Decimal(1e21), new Decimal(1e7)]
 ]
 export const baseProphecyStakePerGrade = [Decimal.dZero,new Decimal(5), new Decimal(10), new Decimal(50), new Decimal(100), new Decimal(250)] // D contracts will always cost nothing to start, but provide very little reward
 
@@ -35,7 +36,7 @@ export const modifiers = [ // All available debuffs to be rolled by a contract
     },
     {
         name: "Research Cost",
-        type: "exp",
+        type: "exp", // Adds the debuff value to the research cost exponent (cost^(1 + value))
         debuffs: [0.15,0.3,0.45,0.6]
     },
     {
@@ -106,14 +107,69 @@ export const contracts = [ // All available contracts on specific eggs
  *  modifiers: Array(Array(2)) -> [modifierIndex,debuffIndex],
  *  goal: Array(2) -> [goalIndex,goalValue], // Goal Calculation done by baseValueAtGrade * baseEggValue * Prophecy Egg Debuff
  *  prophecy: Array(2) -> [stakeValue,rewardValue] // reward will be Round((stake+1) * 1.5 * Prophecy Egg Gain Reward)
- *  repGain: baseRep[gradeIndex] * (Grade Penalty/Bonus - 0.25 per level below or 0.25 per level above) * Prophecy Egg Bonus
+ *  repGain: baseRep[gradeIndex] adjusted by the difference between the contract grade and the player's grade
  *  expiration: simple seconds based counter that is decremented to 0, will be paused when the contract is active
  * }
+ *
+ * Goal Progress:
+ *  Delivery (goalIndex 0) uses contracts.eggProgress, which accumulates eggs laid while the contract is active.
+ *  Value (goalIndex 1) uses the player's current money.
+ *  Farm Density (goalIndex 2) uses the player's current chickens.
+ *
+ * A contract is active when indexValues.currentContract points at its index in contracts.contractPool.
+ * Starting a contract deducts prophecy[0] from the player's Prophecy Eggs. Completing it returns
+ * prophecy[0] + prophecy[1]; abandoning it forfeits the stake and costs half of repGain.
  */
 
 // Extra Rules I keep in mind:
-// Contract[0] will be 1 grade lower than current if not at Grade D
+// Contract[0] will be a random grade below the current grade if not at Grade D
 // Contract[3] will be 1 grade higher than current if not at Grade AAA
+// Contract[1] and Contract[2] will be the current grade
+
+/**
+ * Returns the modifiers of the currently active contract as
+ * { name, type, value } objects. Returns an empty array when no contract is active.
+ */
+export function getActiveDebuffs() {
+    const activeContractIndex = gameState.data.indexValues.currentContract
+    if(activeContractIndex === -1) return []
+
+    const activeContract = gameState.data.contracts.contractPool[activeContractIndex]
+    if(!activeContract) return []
+
+    return activeContract.modifiers.map(([modifierIndex, debuffIndex]) => ({
+        name: modifiers[modifierIndex].name,
+        type: modifiers[modifierIndex].type,
+        value: modifiers[modifierIndex].debuffs[debuffIndex]
+    }))
+}
+
+/**
+ * Applies every active debuff with the given name to a value.
+ * "mul" multiplies the value, "sub" subtracts from it, and "exp" adds the
+ * debuff value to its exponent (e.g. cost^(1 + 0.15)).
+ */
+export function applyContractDebuffs(baseValue, targetName) {
+    let value = new Decimal(baseValue)
+
+    for(const debuff of getActiveDebuffs()) {
+        if(debuff.name !== targetName) continue
+
+        switch(debuff.type) {
+            case "mul":
+                value = value.times(debuff.value)
+                break
+            case "sub":
+                value = Decimal.max(Decimal.dZero, value.minus(debuff.value))
+                break
+            case "exp":
+                value = value.pow(Decimal.dOne.plus(debuff.value))
+                break
+        }
+    }
+
+    return value
+}
 
 export function generateContract(desiredGrade) {
     const contractObject = {
@@ -140,7 +196,10 @@ export function generateContract(desiredGrade) {
     contractObject.contractIndex = unlockedContractIndices[getRandom(0, unlockedContractIndices.length - 1)]
     // Select Goal Type and Calculate Value
     contractObject.goal[0] = getRandom(0,contractGoals.length - 1)
-    contractObject.goal[1] = baseGoalPerGrade[desiredGrade][contractObject.goal[0]].times(eggs[contracts[contractObject.contractIndex].eggIndex].baseValue).times(calculateProphecyGoalDebuff(contractObject.goal[0]))
+    if(contractObject.goal[0] === 1)
+        contractObject.goal[1] = baseGoalPerGrade[desiredGrade][contractObject.goal[0]].times(eggs[contracts[contractObject.contractIndex].eggIndex].baseValue).times(calculateProphecyGoalDebuff(contractObject.goal[0]))
+    else
+        contractObject.goal[1] = baseGoalPerGrade[desiredGrade][contractObject.goal[0]].times(calculateProphecyGoalDebuff(contractObject.goal[0]))
     // Prophecy Reward Calculations
     contractObject.prophecy[0] = baseProphecyStakePerGrade[desiredGrade]
     contractObject.prophecy[1] = Decimal.round(Decimal.max(baseProphecyStakePerGrade[desiredGrade],Decimal.dOne).times(new Decimal(1.5)).times(calculateProphecyEggRewardBonus()))
@@ -215,36 +274,147 @@ export function updateContractPool(diff) {
 }
 
 export function runContract(diff) {
-    if(gameState.data.indexValues.activeContract === -1) return
-    // Update Goal Tracker
-    // Check Goal Condition
-    // If Complete finish the contract
-    // If not keep going
+    const activeContractIndex = gameState.data.indexValues.currentContract
+    if(activeContractIndex === -1) return
+
+    const contract = gameState.data.contracts.contractPool[activeContractIndex]
+    if(!contract) return
+
+    // Delivery measures the total eggs laid during the contract, so keep a running counter.
+    if(contract.goal[0] === 0) {
+        const eggsProduced = gameState.data.currency.chickens.times(calculateLayRate()).times(diff)
+        const currentProgress = gameState.data.contracts.eggProgress ?? Decimal.dZero
+        gameState.data.contracts.eggProgress = currentProgress.plus(eggsProduced)
+    }
+
+    let goalReached = false
+    switch(contract.goal[0]) {
+        case 0:
+            goalReached = (gameState.data.contracts.eggProgress ?? Decimal.dZero).gte(contract.goal[1])
+            break
+        case 1:
+            goalReached = gameState.data.currency.money.gte(contract.goal[1])
+            break
+        case 2:
+            goalReached = gameState.data.currency.chickens.gte(contract.goal[1])
+            break
+    }
+
+    if(goalReached) completeContract()
 }
 
 export function startContract(index) {
-    if(gameState.data.indexValues.activeContract !== -1) return
+    if(gameState.data.indexValues.currentContract !== -1) return
+
+    const contract = gameState.data.contracts.contractPool[index]
+    if(!contract) return
+    if(contract.grade > gameState.data.contracts.gradeIndex) return
+
+    const stake = contract.prophecy[0]
+    if(gameState.data.currency.prophecyEggs.lt(stake)) return
+
     // Reset Farm Researches, Money, Chickens
-    // Stake Prophecy Eggs
+    gameState.data.currency.prophecyEggs = gameState.data.currency.prophecyEggs.minus(stake)
+    resetFarm()
+    resetContractProgress()
+
     // Set Egg Index & Active Contract Index
+    gameState.data.indexValues.currentEgg = contracts[contract.contractIndex].eggIndex
+    gameState.data.indexValues.currentContract = index
+
+    if(gameState.data.settings.toggles[2])
+        generateNotification(`Contract ${contracts[contract.contractIndex].name} Started!`, 'warn')
 }
 
-export function stopContract(index) {
-    if(gameState.data.indexValues.activeContract === -1) return
-    // Requires confirmation before doing
-    // Reset Active Contract Index
-    // Remove reputation (half of the reward)
-    // Reset Farm back to Regular just like prestige does (just without a reward)
+export async function stopContract(index = gameState.data.indexValues.currentContract) {
+    const activeContractIndex = gameState.data.indexValues.currentContract
+    if(activeContractIndex === -1) return
+    if(index !== activeContractIndex) return
 
-    
+    const contract = gameState.data.contracts.contractPool[activeContractIndex]
+    if(!contract) {
+        gameState.data.indexValues.currentContract = -1
+        resetFarm()
+        resetContractProgress()
+        return
+    }
+
+    const confirmed = await confirmModal({
+        title: 'Abandon this contract?',
+        content: `You will lose your ${format(contract.prophecy[0])} Prophecy Egg stake and ${format(contract.repGain.div(2))} Reputation.`,
+        color: 'red'
+    })
+
+    if(!confirmed) return
+    if(gameState.data.indexValues.currentContract !== activeContractIndex) return
+
+    // The stake is forfeited and half of the reputation reward is lost.
+    gameState.data.contracts.totalReputation = Decimal.max(
+        Decimal.dZero,
+        gameState.data.contracts.totalReputation.minus(contract.repGain.div(2))
+    )
+    gameState.data.indexValues.currentContract = -1
+    resetFarm()
+    resetContractProgress()
+
+    if(gameState.data.settings.toggles[2])
+        generateNotification(`Contract ${contracts[contract.contractIndex].name} Abandoned!`, 'error')
 }
 
 function completeContract() {
-    if(gameState.data.indexValues.activeContract === -1) return
-    // Return Prophecy Egg Stake + Reward
-    // Add Reputation
-    // Check if Reputation is over next gradeIndex level (+ in the case of AAA, that you have the requisite legendaryResearch) if we are at max level just ignore this step
-    // If it is, set reputation to the remainder of the current - requirement and bump up gradeIndex
-    // Reset Active Contract Index
-    // Reset farm back to Regular in the same 
-} 
+    const activeContractIndex = gameState.data.indexValues.currentContract
+    if(activeContractIndex === -1) return
+
+    const contract = gameState.data.contracts.contractPool[activeContractIndex]
+    if(!contract) {
+        gameState.data.indexValues.currentContract = -1
+        return
+    }
+
+    // Return Prophecy Egg Stake + Reward and add the reputation reward.
+    gameState.data.currency.prophecyEggs = gameState.data.currency.prophecyEggs
+        .plus(contract.prophecy[0])
+        .plus(contract.prophecy[1])
+    gameState.data.contracts.totalReputation = gameState.data.contracts.totalReputation.plus(contract.repGain)
+    gameState.data.stats.contractsComplete = gameState.data.stats.contractsComplete.plus(Decimal.dOne)
+
+    // Check if reputation is over the next grade wall. AAA also requires the
+    // legendary research, and at max grade there is nothing left to promote into.
+    promoteGrade()
+
+    // Reset Active Contract Index and let the pool generate a replacement.
+    gameState.data.indexValues.currentContract = -1
+    gameState.data.contracts.contractPool[activeContractIndex] = null
+    resetFarm()
+    resetContractProgress()
+
+    if(gameState.data.settings.toggles[2])
+        generateNotification(`Contract ${contracts[contract.contractIndex].name} Completed!\n+${format(contract.prophecy[1])} Prophecy Eggs`, 'success')
+}
+
+function resetFarm() {
+    gameState.data.research.commonResearch = new Array(gameState.data.research.commonResearch.length).fill(0)
+    gameState.data.currency.money = Decimal.dZero
+    gameState.data.currency.chickens = Decimal.dZero
+    gameState.data.indexValues.currentEgg = 0
+}
+
+function resetContractProgress() {
+    gameState.data.contracts.eggProgress = Decimal.dZero
+}
+
+function promoteGrade() {
+    const contractsData = gameState.data.contracts
+
+    while(contractsData.gradeIndex < gradeNames.length - 1) {
+        const wall = gradeWalls[contractsData.gradeIndex]
+        if(!wall || contractsData.totalReputation.lt(wall)) break
+
+        const nextGrade = contractsData.gradeIndex + 1
+        // Grade AAA additionally requires the relevant legendary research.
+        if(nextGrade === gradeNames.length - 1 && gameState.data.research.legendaryResearch[1] < 1) break
+
+        contractsData.totalReputation = contractsData.totalReputation.minus(wall)
+        contractsData.gradeIndex = nextGrade
+    }
+}

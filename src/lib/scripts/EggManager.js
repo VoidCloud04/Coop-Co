@@ -1,6 +1,7 @@
 import Decimal from "break_eternity.js";
 import { gameState } from "./DataManager.svelte";
 import { commonResearch } from "./ResearchManager";
+import { applyContractDebuffs } from "./ContractsManager";
 
 export const eggs = [
     {
@@ -181,7 +182,7 @@ export function calculateEggValueBonus() {
     // Epic Research Modifiers
     bonus = bonus.times(Decimal.max(Decimal.dOne, Decimal.dOne.plus(new Decimal(0.05).times(epicResearch[5])))) // Accounting Tricks
 
-    return bonus
+    return applyContractDebuffs(bonus, "Egg Value")
 }
 
 export function calculateInternalHatchery() {
@@ -201,7 +202,7 @@ export function calculateInternalHatchery() {
 
     // TODO: Planet Boosts
 
-    return chickenGain
+    return applyContractDebuffs(chickenGain, "Chicken Gain")
 }
 
 export function calculateLayRate() {
@@ -220,5 +221,5 @@ export function calculateLayRate() {
 
     // TODO: Planet Boosts
 
-    return layRate
+    return applyContractDebuffs(layRate, "Lay Rate")
 }

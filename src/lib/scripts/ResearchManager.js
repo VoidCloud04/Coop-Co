@@ -1,5 +1,6 @@
 import Decimal from "break_eternity.js";
 import { gameState } from "./DataManager.svelte";
+import { applyContractDebuffs } from "./ContractsManager";
 
 export const commonResearch = [
     {
@@ -367,18 +368,26 @@ const COMMON_SCALE = new Decimal(1.15);
 
 function totalCost(base, scale, level, count) {
     if (count <= 0) return Decimal.dZero;
-    if (scale.eq(Decimal.dOne)) return base.times(count);
+    if (scale.eq(Decimal.dOne)) {
+        return applyContractDebuffs(base.times(count), "Research Cost");
+    }
 
-    return base
-        .times(Decimal.pow(scale, level))
-        .times(Decimal.pow(scale, count).sub(Decimal.dOne))
-        .div(scale.sub(Decimal.dOne));
+    return applyContractDebuffs(
+        base
+            .times(Decimal.pow(scale, level))
+            .times(Decimal.pow(scale, count).sub(Decimal.dOne))
+            .div(scale.sub(Decimal.dOne)),
+        "Research Cost"
+    );
 }
 
 function maxAffordable(base, scale, level, remaining, money) {
     if (remaining <= 0) return 0;
 
-    const next = base.times(Decimal.pow(scale, level));
+    const next = applyContractDebuffs(
+        base.times(Decimal.pow(scale, level)),
+        "Research Cost"
+    );
     if (money.lt(next)) return 0;
 
     let count;
@@ -419,7 +428,10 @@ export function getCommonResearch(index, options = {}) {
     const discount = new Decimal(labLevel).times(0.05);
     const base = baseCost.times(Decimal.dOne.sub(discount));
 
-    const nextCost = base.times(Decimal.pow(scale, level));
+    const nextCost = applyContractDebuffs(
+        base.times(Decimal.pow(scale, level)),
+        "Research Cost"
+    );
     const buyAmount = Math.min(
         BUY_AMOUNTS[data.settings.buyAmounts[0]] ?? 1,
         remaining
@@ -475,7 +487,10 @@ export function getEpicResearch(index, options = {}) {
     const currencyKey = options.currencyKey ?? (index < soulEggSplit ? 'soulEggs' : 'prophecyEggs');
     const currency = new Decimal(data.currency[currencyKey] ?? 0);
 
-    const nextCost = base.times(Decimal.pow(scale, level));
+    const nextCost = applyContractDebuffs(
+        base.times(Decimal.pow(scale, level)),
+        "Research Cost"
+    );
     const buyAmount = Math.min(
         BUY_AMOUNTS[data.settings.buyAmounts[1]] ?? 1,
         remaining

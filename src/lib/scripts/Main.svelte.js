@@ -1,5 +1,5 @@
 import { unlockAchievements } from "./AchievementsManager"
-import { updateContractPool } from "./ContractsManager"
+import { runContract, updateContractPool } from "./ContractsManager"
 import { gameState } from "./DataManager.svelte"
 import { calculateEggValueBonus, calculateInternalHatchery, calculateLayRate, eggs } from "./EggManager"
 
@@ -22,6 +22,7 @@ export function updateGameData(timeStamp) {
     // Update Function Calls
     updateChickens(timeDiff)
     updateMoney(timeDiff)
+    runContract(timeDiff)
     updateContractPool(timeDiff)
     // Non time sensitive
     unlockAchievements()
