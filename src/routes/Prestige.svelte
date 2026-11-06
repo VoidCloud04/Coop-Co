@@ -2,7 +2,7 @@
     import Chip from "$lib/components/Chip.svelte";
     import { buyAmountLabels, gameState, toggleAutomator, updateBA } from "$lib/scripts/DataManager.svelte";
     import { toPlaces } from "$lib/scripts/Formatting";
-    import { calculateEffectiveProphecyEggs, calculateSoulEggBoost } from "$lib/scripts/Prestige.svelte";
+    import { calculateEffectiveProphecyEggs, calculateProphecyEggRewardBonus, calculateProphecyEggSoulBonus, calculateProphecyGoalDebuff, calculateSoulEggBoost } from "$lib/scripts/Prestige.svelte";
     import { epicResearch, getEpicResearch, purchaseEpicResearch } from "$lib/scripts/ResearchManager";
     import { format } from "$lib/scripts/Utilities";
     import Decimal from "break_eternity.js";
@@ -19,6 +19,9 @@
     let automation = $derived(rows.slice(automationSplitIndex))
     let soulEggBoost = $derived(calculateSoulEggBoost())
     let softCap = $derived(Decimal.min(0,calculateEffectiveProphecyEggs().dividedBy(data.currency.prophecyEggs)))
+    let prophecySoulBonus = $derived(calculateProphecyEggSoulBonus())
+    let prophecyRewardBonus = $derived(calculateProphecyEggRewardBonus())
+    let prophecyGoalDebuff = $derived(calculateProphecyGoalDebuff(0).add(calculateProphecyGoalDebuff(1)).add(calculateProphecyGoalDebuff(2)).divideBy(3))
 
     function currencyLabel(info) {
         return info.currencyKey === 'soulEggs' ? 'Soul Eggs' : 'Prophecy Eggs'
@@ -67,11 +70,13 @@
             color="gray"/>
         <div class="flexCol">
             <div class="flexRow">
-                <Chip content={`Soul Boost: x${format(0.00)}`} color="yellow"/>
-                <Chip content={`Contract Reward Boost: x${format(0.00)}`} color="yellow"/>
+                <Chip content={`Soul Boost: x${format(prophecySoulBonus)}`} color="yellow"/>
+                <Chip content={`Contract Reward Boost: x${format(prophecyRewardBonus)}`} color="yellow"/>
             </div>
             <div class="flexRow">
-                <Chip content={`Contract Goal Debuff: x${format(0.00)}`} color="red"/>
+                {#if prophecyGoalDebuff.gt(1)}
+                    <Chip content={`Avg Contract Goal Debuff: x${format(prophecyGoalDebuff)}`} color="red"/>
+                {/if}
                 {#if softCap.gt(0)}
                     <Chip content={`Softcap: /${format(softCap)}`} color="red"/>
                 {/if}
