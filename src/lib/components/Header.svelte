@@ -13,10 +13,6 @@
     // console.log(eggs[data.indexValues.currentEgg + 1].unlockReq)
     // console.log(data.currency.money)
     // console.log(data.indexValues.currentEgg)
-    onMount(() => {
-        console.log($state.snapshot(data.indexValues.currentContract))
-        console.log($state.snapshot(data.contracts.contractPool))
-    })
 </script>
 
 <div>

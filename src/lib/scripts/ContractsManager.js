@@ -305,19 +305,19 @@ export function runContract(diff) {
 
 export async function startContract(index) {
     if(gameState.data.indexValues.currentContract !== -1) return
-    let confirmed = true
-    if(gameState.data.settings.toggles[7]) {
-        confirmed = await confirmModal({
-            title: "Start this contract?",
-            content: `It will reset your farm, and it will cost ${format(contract.prophecy[0])} to start which will be returned on completion\nIt will cost half of the reputation gain if not completed as well`,
-            color: "green"
-        })
-    }
 
     const contract = gameState.data.contracts.contractPool[index]
     if(!contract) return
     if(contract.grade > gameState.data.contracts.gradeIndex) return
-
+    let confirmed = true
+    if(gameState.data.settings.toggles[7]) {
+        confirmed = await confirmModal({
+            title: "Start this contract?",
+            content: `It will reset your farm, and it will cost ${format(contract.prophecy[0])} Prophecy to start which will be returned on completion\nIt will also cost half of the reputation gain if not completed as well`,
+            color: "green"
+        })
+    }
+    if(!confirmed) return
     const stake = contract.prophecy[0]
     if(gameState.data.currency.prophecyEggs.lt(stake)) return
 
