@@ -198,7 +198,7 @@
             <hr>
             <p>Progress: {format(activeContract.goal[0] === 0 ? (gameState.data.contracts.eggProgress ?? 0) : activeContract.goal[0] === 1 ? gameState.data.currency.money : gameState.data.currency.chickens)} / {format(activeContract.goal[1])} {contractGoalCurrencies[activeContract.goal[0]]}</p>
             <p>Stake: {format(activeContract.prophecy[0])} Prophecy Eggs | Reward: {format(activeContract.prophecy[1])} Prophecy Eggs</p>
-            <button onclick={() => stopContract(gameState.data.indexValues.currentContract)}>Abandon Contract</button>
+            <button class="button-red" onclick={() => stopContract(gameState.data.indexValues.currentContract)}>Abandon Contract</button>
         </div>
     {:else}
         <h4>No Contract Active {":("}</h4>

@@ -66,7 +66,7 @@ function DefaultDataObject() {
         },
         settings: {
             buyAmounts: new Array(3).fill(0),
-            toggles: new Array(7).fill(true)
+            toggles: new Array(8).fill(true)
 
         },
         saveVersion: 'v3.0.0',
@@ -111,6 +111,18 @@ export function Save() {
 
 // Helpers
 
+// Contract pool slots default to null, so fixSave needs an explicit contract
+// schema to restore Decimal fields from their JSON-serialized string values.
+const contractSaveDefaults = {
+    grade: 0,
+    contractIndex: 0,
+    modifiers: [],
+    prophecy: [Decimal.dZero, Decimal.dZero],
+    goal: [0, Decimal.dZero],
+    repGain: Decimal.dZero,
+    expiration: 0
+}
+
 function fixSave(defaults, saved, path = "data") {
     if (defaults instanceof Decimal) {
         if (saved === undefined || saved === null) return defaults
@@ -123,6 +135,16 @@ function fixSave(defaults, saved, path = "data") {
             console.warn(`Invalid Decimal at ${path}; using default`)
             return defaults
         }
+    }
+
+    if (path === "data.contracts.contractPool") {
+        const savedArray = Array.isArray(saved) ? saved : []
+        return defaults.map((defaultItem, index) => {
+            const savedContract = savedArray[index]
+            return savedContract === undefined || savedContract === null
+                ? null
+                : fixSave(contractSaveDefaults, savedContract, `${path}[${index}]`)
+        })
     }
 
     if (Array.isArray(defaults)) {

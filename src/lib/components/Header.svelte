@@ -4,6 +4,7 @@
     import { eggs, promoteEgg, regularEggImgIds } from "$lib/scripts/EggManager";
     import { calculateSoulEggGain, prestige } from "$lib/scripts/Prestige.svelte";
     import { format } from "$lib/scripts/Utilities";
+    import { onMount } from "svelte";
     import Chip from "./Chip.svelte";
 
     let data = $derived(gameState.data)
@@ -12,6 +13,10 @@
     // console.log(eggs[data.indexValues.currentEgg + 1].unlockReq)
     // console.log(data.currency.money)
     // console.log(data.indexValues.currentEgg)
+    onMount(() => {
+        console.log($state.snapshot(data.indexValues.currentContract))
+        console.log($state.snapshot(data.contracts.contractPool))
+    })
 </script>
 
 <div>
@@ -24,12 +29,15 @@
         class="button{data.currency.money.gte(eggs[data.indexValues.currentEgg + 1].unlockReq) ? '-green' : '-red' }-header"
         onclick={promoteEgg}>Promote to Next Egg!</button>
     {/if}
+    {#if data.indexValues.currentContract !== -1 && data.contracts.contractPool[data.indexValues.currentContract].goal[0] === 0}
+        <p>Eggs Produced: {format(gameState.data.contracts.eggProgress)}</p>
+    {/if}
     <h2>${format(gameState.data.currency.money)}</h2>
     <p>Chickens: {format(data.currency.chickens)}</p>
-    {#if data.indexValues.currentEgg >= 3}
+    {#if data.indexValues.currentEgg >= 3 && data.indexValues.currentContract === -1 && data.indexValues.currentPlanet === -1}
         <button id="prestige-button" class="button-purple-header" onclick={prestige}>Prestige +{format(soulEggGain)} Soul Eggs</button>
     {/if}
-    {#if data.progression.hasPrestiges && data.indexValues.currentEgg === data.progression.unlockedEgg.length -1}
+    {#if data.progression.hasPrestiges && data.indexValues.currentEgg === data.progression.unlockedEgg.length -1 && data.indexValues.currentContract === -1 && data.indexValues.currentPlanet === -1}
         <button id="ascension-button" class="button-orange-header">Ascend</button>
     {/if}
 </div>

@@ -26,7 +26,7 @@ export function calculateEffectiveProphecyEggs() {
 
 
 export function calculateProphecyEggSoulBonus() {
-    return Decimal.pow(new Decimal(1.005), calculateEffectiveProphecyEggs())
+    return Decimal.pow(new Decimal(1.01), calculateEffectiveProphecyEggs())
 }
 
 

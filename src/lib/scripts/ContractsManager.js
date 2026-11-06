@@ -303,8 +303,16 @@ export function runContract(diff) {
     if(goalReached) completeContract()
 }
 
-export function startContract(index) {
+export async function startContract(index) {
     if(gameState.data.indexValues.currentContract !== -1) return
+    let confirmed = true
+    if(gameState.data.settings.toggles[7]) {
+        confirmed = await confirmModal({
+            title: "Start this contract?",
+            content: `It will reset your farm, and it will cost ${format(contract.prophecy[0])} to start which will be returned on completion\nIt will cost half of the reputation gain if not completed as well`,
+            color: "green"
+        })
+    }
 
     const contract = gameState.data.contracts.contractPool[index]
     if(!contract) return
@@ -331,6 +339,15 @@ export async function stopContract(index = gameState.data.indexValues.currentCon
     if(activeContractIndex === -1) return
     if(index !== activeContractIndex) return
 
+    let confirmed = true
+    if(gameState.data.settings.toggles[7]) {
+        confirmed = await confirmModal({
+            title: 'Abandon this contract?',
+            content: `You will lose your ${format(contract.prophecy[0])} Prophecy Egg stake and ${format(contract.repGain.div(2))} Reputation.`,
+            color: 'red'
+        })
+    }
+
     const contract = gameState.data.contracts.contractPool[activeContractIndex]
     if(!contract) {
         gameState.data.indexValues.currentContract = -1
@@ -338,12 +355,6 @@ export async function stopContract(index = gameState.data.indexValues.currentCon
         resetContractProgress()
         return
     }
-
-    const confirmed = await confirmModal({
-        title: 'Abandon this contract?',
-        content: `You will lose your ${format(contract.prophecy[0])} Prophecy Egg stake and ${format(contract.repGain.div(2))} Reputation.`,
-        color: 'red'
-    })
 
     if(!confirmed) return
     if(gameState.data.indexValues.currentContract !== activeContractIndex) return

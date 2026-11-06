@@ -73,6 +73,9 @@
         <button class={data.settings.toggles[4] ? "button-green" : 'button-red'}
         onclick={() => toggle(4)}>
         Prestige Confirmation: {data.settings.toggles[4] ? 'On' : 'Off'}</button>
+        <button class={data.settings.toggles[7] ? "button-green" : 'button-red'}
+        onclick={() => toggle(7)}>
+        Contract Confirmation: {data.settings.toggles[7] ? 'On' : 'Off'}</button>
         <button class={"button-green"}>Ascension Confirmation: On</button>
         <button class={"button-green"}>Harvester Notifications: On</button>
     </div>
