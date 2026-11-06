@@ -3,6 +3,7 @@ import { getRandom } from "./Utilities"
 import { eggs } from "./EggManager"
 import { gameState } from "./DataManager.svelte"
 import { generateNotification } from "./NotificationManager.svelte"
+import { calculateProphecyEggRewardBonus, calculateProphecyGoalDebuff } from "./Prestige.svelte"
 
 export const gradeNames = ["D","C","B","A","AA","AAA"] // AAA locked behind Ascension
 const gradePointBudgets = [1,3,5,10,15,20] // How many points can be spent on a contract per grade
@@ -139,10 +140,10 @@ export function generateContract(desiredGrade) {
     contractObject.contractIndex = unlockedContractIndices[getRandom(0, unlockedContractIndices.length - 1)]
     // Select Goal Type and Calculate Value
     contractObject.goal[0] = getRandom(0,contractGoals.length - 1)
-    contractObject.goal[1] = baseGoalPerGrade[desiredGrade][contractObject.goal[0]].times(eggs[contracts[contractObject.contractIndex].eggIndex].baseValue).times(Decimal.dOne) // Replace Decimal Constant with Calculated Prophecy Egg Debuff
-    // Generate Prophecy Egg Stake + Reward
+    contractObject.goal[1] = baseGoalPerGrade[desiredGrade][contractObject.goal[0]].times(eggs[contracts[contractObject.contractIndex].eggIndex].baseValue).times(calculateProphecyGoalDebuff(contractObject.goal[0]))
+    // Prophecy Reward Calculations
     contractObject.prophecy[0] = baseProphecyStakePerGrade[desiredGrade]
-    contractObject.prophecy[1] = Decimal.round(Decimal.max(baseProphecyStakePerGrade[desiredGrade],Decimal.dOne).times(new Decimal(1.5)).times(Decimal.dOne)) // Replace Decimal Constant with Calculated Prophecy Egg Buff
+    contractObject.prophecy[1] = Decimal.round(Decimal.max(baseProphecyStakePerGrade[desiredGrade],Decimal.dOne).times(new Decimal(1.5)).times(calculateProphecyEggRewardBonus()))
     // Generate repGain = baseRepGain * gradeIncreaseModifier (*0.25 less or greater depending on if contract is lower or higher than current grade and depending on how many levels lower)
     const gradeDiff = gameState.data.contracts.gradeIndex - desiredGrade
     let repMul = Decimal.dOne

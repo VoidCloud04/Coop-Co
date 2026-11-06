@@ -2,9 +2,10 @@
     import Chip from "$lib/components/Chip.svelte";
     import { buyAmountLabels, gameState, toggleAutomator, updateBA } from "$lib/scripts/DataManager.svelte";
     import { toPlaces } from "$lib/scripts/Formatting";
-    import { calculateSoulEggBoost } from "$lib/scripts/Prestige.svelte";
+    import { calculateEffectiveProphecyEggs, calculateSoulEggBoost } from "$lib/scripts/Prestige.svelte";
     import { epicResearch, getEpicResearch, purchaseEpicResearch } from "$lib/scripts/ResearchManager";
     import { format } from "$lib/scripts/Utilities";
+    import Decimal from "break_eternity.js";
     let data = $derived(gameState.data)
     const automationSplitIndex = 6
     let rows = $derived.by(() =>
@@ -17,6 +18,7 @@
     let normalResearch = $derived(rows.slice(0, automationSplitIndex))
     let automation = $derived(rows.slice(automationSplitIndex))
     let soulEggBoost = $derived(calculateSoulEggBoost())
+    let softCap = $derived(Decimal.min(0,calculateEffectiveProphecyEggs().dividedBy(data.currency.prophecyEggs)))
 
     function currencyLabel(info) {
         return info.currencyKey === 'soulEggs' ? 'Soul Eggs' : 'Prophecy Eggs'
@@ -70,7 +72,9 @@
             </div>
             <div class="flexRow">
                 <Chip content={`Contract Goal Debuff: x${format(0.00)}`} color="red"/>
-                <Chip content={`Softcap: /${format(0.00)}`} color="red"/>
+                {#if softCap.gt(0)}
+                    <Chip content={`Softcap: /${format(softCap)}`} color="red"/>
+                {/if}
             </div>
         </div>
     </div>
