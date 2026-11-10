@@ -28,8 +28,8 @@
 - Scale up your light's sphere of influence by feeding the "orb" your light eggs, they can be sold for money or fed to increase their value, The orb's egg cost scales, and may decay overtime
 ## Post-Ascension Harvester Challenges
 ### Base Overview
-- Acts like a Tier 4-6 Challenge, Eggspeditions are beaten, and a harvester is built (Tier 1), progress on that planet is no longer lost on Ascension
-- Standard goals are replaced by 
+- Acts like a Tier 4-6 Challenge, Eggspeditions are beaten, and a harvester is built (Tier 1), progress on that planet is no longer lost on Ascension, so for a tier 1 harvester, the first tier of challenge is preserved, for tier 3 all of the challenge tiers are preserved
+- Standard goals are replaced by a funding goal, feeding eggs, chickens and money into building out the harvester on top of the gimmick for the planet.
 ### Arcturus - Energy
 ### Ravnar - Time
 ### Xylok - Peace

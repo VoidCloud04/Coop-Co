@@ -1,4 +1,6 @@
 # Remaining Migration Tasks
+## Migration Work
+- Implement Automation Again (Mostly Complete)
 ## Content Development
 - Rebuild Contracts (Mostly Complete)
     - Reroll System (Cooldown, Logic)

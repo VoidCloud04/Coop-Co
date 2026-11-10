@@ -67,7 +67,7 @@
         onclick={() => toggle(2)}>Contract Notifications: {data.settings.toggles[2] ? 'On' : 'Off'}</button>
         <button class={data.settings.toggles[3] ? "button-blue" : 'button-yellow'}
         onclick={() => toggle(3)}>
-        Auto Promotion Stops At: {data.settings.toggles[3] ? 'Universe' : 'Enlightenment'}</button>
+        Auto Promotion Stops At: {data.settings.toggles[3] ? 'Enlightenment' : 'Universe'}</button>
     </div>
     <div class="flexRow">
         <button class={data.settings.toggles[4] ? "button-green" : 'button-red'}
@@ -78,6 +78,11 @@
         Contract Confirmation: {data.settings.toggles[7] ? 'On' : 'Off'}</button>
         <button class={"button-green"}>Ascension Confirmation: On</button>
         <button class={"button-green"}>Harvester Notifications: On</button>
+    </div>
+    <div class="flexRow" style="gap: 0.25vw">
+        <a href="https://galaxy.click/play/37">Play on Galaxy!</a>
+        <a href="/changelog">Update Changelog!</a>
+        <a href="https://github.com/VoidCloud04/Coop-Co">Code Repository</a>
     </div>
 {:else if subTab === 1}
     <div class="flexRow">
@@ -129,7 +134,7 @@
         {/if}
     </div>
 {:else if subTab === 2}
-
+    <p>Help is Coming Soon</p>
 {/if}
 
 <style lang="scss">

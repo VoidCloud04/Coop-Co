@@ -1,4 +1,5 @@
 import { unlockAchievements } from "./AchievementsManager"
+import { updateAutomation } from "./AutomationManager"
 import { runContract, updateContractPool } from "./ContractsManager"
 import { gameState } from "./DataManager.svelte"
 import { calculateEggValueBonus, calculateInternalHatchery, calculateLayRate, eggs } from "./EggManager"
@@ -19,6 +20,12 @@ export function updateGameData(timeStamp) {
     }
     lastFrameTimestamp = timeStamp
     gameState.data.stats.timePlayed = gameState.data.stats.timePlayed.plus(timeDiff)
+
+    // 1 Chicken Start + < 0 clamp check
+    if(gameState.data.currency.chickens.lte(0)) {
+        gameState.data.currency.chickens = gameState.data.research.epicResearch[8] >= 1 ? Decimal.dOne : Decimal.dZero
+    }
+
     // Update Function Calls
     updateChickens(timeDiff)
     updateMoney(timeDiff)
@@ -28,6 +35,7 @@ export function updateGameData(timeStamp) {
     unlockAchievements()
     updateStats()
     progressionUpdates()
+    updateAutomation()
 
     gameState.data.time = now
 }

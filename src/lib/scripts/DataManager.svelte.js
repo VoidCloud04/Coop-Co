@@ -4,6 +4,7 @@ import { eggs } from "./EggManager"
 import { achievements } from "./AchievementsManager"
 import { planets } from "./EggspeditionsManager"
 import { generateNotification } from "./NotificationManager.svelte"
+import { alertModal } from "./ModalManager.svelte"
 
 function DefaultDataObject() {
     return {
@@ -102,6 +103,14 @@ export function Load() {
         gameState.data.progression.unlockedEgg[0] = true
     }
     console.log("Loaded Data:", loadedData)
+
+    if(gameState.data.saveVersion != DefaultDataObject().saveVersion) {
+        alertModal({
+            title: "Welcome Back!",
+            content: `The game has been updated to ${DefaultDataObject().saveVersion} while you were gone.\nVisit the Changelog for more details.`
+        })
+        gameState.data.saveVersion = DefaultDataObject().saveVersion
+    }
 }
 
 export function Save() {

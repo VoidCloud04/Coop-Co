@@ -275,36 +275,36 @@ export const epicResearch = [
     {
         title: 'Tier I-V Automator',
         description: 'Automate Tier I-V Research',
-        baseCost: new Decimal(100),
-        costScale: new Decimal(1.25),
+        baseCost: new Decimal(10),
+        costScale: new Decimal(1),
         maxLevels: 1
     },
     {
         title: 'Tier VI-X Automator',
         description: 'Automate Tier VI-X Research',
-        baseCost: new Decimal(250),
-        costScale: new Decimal(1.25),
+        baseCost: new Decimal(100),
+        costScale: new Decimal(1),
         maxLevels: 1
     },
     {
         title: 'Start with 1 Chicken',
         description: 'Start with 1 Chicken on any Reset',
-        baseCost: new Decimal(1e3),
-        costScale: new Decimal(1.25),
+        baseCost: new Decimal(500),
+        costScale: new Decimal(1),
         maxLevels: 1
     },
     {
         title: 'Promotion Automator',
         description: 'Automatic Promotions',
         baseCost: new Decimal(1e4),
-        costScale: new Decimal(1.25),
+        costScale: new Decimal(1),
         maxLevels: 1
     },
     {
         title: 'Tier XI-XIV Automator',
         description: 'Automated Tier XI-XIV Research',
-        baseCost: new Decimal(500),
-        costScale: new Decimal(1.25),
+        baseCost: new Decimal(1e3),
+        costScale: new Decimal(1),
         maxLevels: 1
     }
 ]
@@ -432,8 +432,9 @@ export function getCommonResearch(index, options = {}) {
         base.times(Decimal.pow(scale, level)),
         "Research Cost"
     );
+    // options.buyAmount overrides the player's Buy Amount setting (used by automators)
     const buyAmount = Math.min(
-        BUY_AMOUNTS[data.settings.buyAmounts[0]] ?? 1,
+        options.buyAmount ?? BUY_AMOUNTS[data.settings.buyAmounts[0]] ?? 1,
         remaining
     );
     const cost = totalCost(base, scale, level, buyAmount);

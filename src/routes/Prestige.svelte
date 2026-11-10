@@ -36,7 +36,9 @@
 </script>
 <div class="flexRow">
     <button class="button-purple" onclick={() => {updateBA(1)}}>Buy Amount: {buyAmountLabels[data.settings.buyAmounts[1]]}</button>
+    {#if data.research.epicResearch[9] >= 1}
     <button onclick={() => {toggleAutomator(1,0)}} class={data.automation.epicAutomatorActive[0] ? 'button-green' : 'button-red'}>Promotion Automation: {data.automation.epicAutomatorActive[0] ? 'On' : 'Off'}</button>
+    {/if}
 </div>
 <div class="flexRow" style="gap:0.25vw">
     <div class="flexCol border">
