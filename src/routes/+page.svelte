@@ -17,12 +17,14 @@
     import Research from "./Research.svelte";
     import Settings from "./Settings.svelte";
     import { updateGameData } from "$lib/scripts/Main.svelte";
+    import PlanetHeader from "$lib/components/Planet-UIs/PlanetHeader.svelte";
+    import Planet from "./Planet.svelte";
 
     // Variable Definitions
     let data = $derived(gameState.data)
     let tabIndex = $state(0)
     let tabs = $state([
-        {title: "Eggs", class: "", condition: () => {return true}},
+        {title: `${gameState.data.indexValues.currentPlanet === -1 ? 'Eggs' : 'Planet'}`, class: "", condition: () => {return true}},
         {title: "Research", class: "", condition: () => {return true}},
         {title: "Contracts", class: "", condition: () => {return gameState.data.progression.unlockedContracts}},
         {title: "Eggspeditions", class: "button-blue", condition: () => {return gameState.data.progression.unlockedEggspeditions}},
@@ -46,15 +48,22 @@
         window.setInterval(Save,30000)
     })
 </script>
-<!-- Main Game Page Content / Will be not rendered during planets -->
-<Header style="margin-top: 0;"/>
+{#if gameState.data.indexValues.currentPlanet === -1}
+    <Header style="margin-top: 0;"/>
+{:else}
+    <PlanetHeader />
+{/if}
 {#if data.settings.toggles[1]}
     <Newsticker />
 {/if}
 <ButtonGroup buttonArr={tabs} onclick={changeTab} baseId="tab-button"/>
 {#if tabIndex === 0}
     <TabContentSeparator />
-    <Egg />
+    {#if gameState.data.indexValues.currentPlanet === -1}
+        <Egg />
+    {:else}
+        <Planet />
+    {/if}
 {:else if tabIndex === 1}
     <TabContentSeparator />
     <Research bind:collapsed={commonCollapsed}/>
