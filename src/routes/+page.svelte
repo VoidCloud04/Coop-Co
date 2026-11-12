@@ -24,7 +24,7 @@
     let data = $derived(gameState.data)
     let tabIndex = $state(0)
     let tabs = $state([
-        {title: `${gameState.data.indexValues.currentPlanet === -1 ? 'Eggs' : 'Planet'}`, class: "", condition: () => {return true}},
+        {title: () => gameState.data.indexValues.currentPlanet === -1 ? 'Eggs' : 'Planet', class: "", condition: () => {return true}},
         {title: "Research", class: "", condition: () => {return true}},
         {title: "Contracts", class: "", condition: () => {return gameState.data.progression.unlockedContracts}},
         {title: "Eggspeditions", class: "button-blue", condition: () => {return gameState.data.progression.unlockedEggspeditions}},
@@ -67,11 +67,10 @@
 {:else if tabIndex === 1}
     <TabContentSeparator />
     <Research bind:collapsed={commonCollapsed}/>
-{:else if tabIndex === 2}
+{:else if tabIndex === 2 && gameState.data.indexValues.currentPlanet === -1}
     <TabContentSeparator />
     <Contracts />
 {:else if tabIndex === 3}
-
     <TabContentSeparator />
     <Eggspeditions />
 {:else if tabIndex === 4}

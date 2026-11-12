@@ -33,7 +33,7 @@
     {#if data.indexValues.currentEgg >= 3 && data.indexValues.currentContract === -1 && data.indexValues.currentPlanet === -1}
         <button id="prestige-button" class="button-purple-header" onclick={prestige}>Prestige +{format(soulEggGain)} Soul Eggs</button>
     {/if}
-    {#if data.progression.hasPrestiges && data.indexValues.currentEgg === data.progression.unlockedEgg.length -1 && data.indexValues.currentContract === -1 && data.indexValues.currentPlanet === -1}
+    {#if data.progression.hasPrestiged && data.indexValues.currentEgg === data.progression.unlockedEgg.length -1 && data.indexValues.currentContract === -1 && data.indexValues.currentPlanet === -1}
         <button id="ascension-button" class="button-orange-header">Ascend</button>
     {/if}
 </div>

@@ -1,3 +1,4 @@
+import Decimal from "break_eternity.js"
 import { unlockAchievements } from "./AchievementsManager"
 import { updateAutomation } from "./AutomationManager"
 import { runContract, updateContractPool } from "./ContractsManager"

@@ -5,8 +5,6 @@ This document expands on `design/eggspeditionsDesign.md` into a high-level desig
 
 This document is intentionally implementation-agnostic: it describes behavior, structure, and player-facing flows without prescribing code or pseudocode.
 
----
-
 ## 2. Base Overview
 
 ### 2.1 Progression Structure
@@ -47,9 +45,9 @@ This document is intentionally implementation-agnostic: it describes behavior, s
    - Manages shared and planet-local resources (eggs, chickens, money, materials, special meters like flux/light/orb influence).
    - Handles conversions (e.g., burn eggs for power, sell eggs for money/materials, feed eggs into systems, contribute resources to harvester construction).
 4. **Presentation/UI Layer**
-   - During an active Eggspedition, replaces the standard global header with a **Planet-Only Header** and renders a planet-specific challenge view.
-   - Renders a consistent in-session layout (header, goal/progress, resources, gimmick module, construction/funding module when applicable, alerts).
-   - Surfaces alerts for threshold risks (collapse, devaluation, cap reached, decay warnings, construction shortfalls).
+   - During an active Eggspedition, the **Planet-Only Header replaces the standard global (farm) header**.
+   - Renders the session body below the header: goals/progress, resource details as needed, primary gimmick module, harvester construction module (in harvester mode), and alerts/feedback.
+   - Surfaces threshold risks and outcome states clearly.
 
 ### 3.2 How Planets Interact
 - **Isolation with meta links:** Each planet runs as a self-contained challenge context with its own rules and local state, but interacts with the meta layer through:
@@ -57,30 +55,36 @@ This document is intentionally implementation-agnostic: it describes behavior, s
   - **Tier completion outputs** (rewards and progression flags).
   - **Harvester persistence** (post-ascension state retained according to harvester tier/build progress).
   - **Starting foothold** granted after Tier 1 to ease re-entry/further tiers.
-- **No direct cross-planet simulation dependency:** Planet gimmick systems (flux, light balance, market indices, orb decay, etc.) operate within the active planet session and do not require simultaneous simulation of other planets.
-- **Shared player understanding, distinct mechanics:** A common UI grammar (planet header, goals, tier tracker, resource bar, status alerts) helps players transfer knowledge while each planet's central mechanic remains unique.
+- **No direct cross-planet simulation dependency:** Planet gimmick systems operate within the active planet session and do not require simultaneous simulation of other planets.
+- **Shared player understanding, distinct mechanics:** A common UI grammar (planet-only header, goal/progress area, resource displays, gimmick module, alerts) helps players transfer knowledge while each planet's central mechanic remains unique.
 
 ### 3.3 Content Rendering and UI Composition
-- **Planet-Only Header (replaces standard global header during Eggspeditions):**
-  - Planet identity and theming (name, theme, visual motif context).
-  - Core navigation/context actions (return to Eggspeditions/planet map, session info/help).
-  - Current mode and tier (Regular Tier 1–3 or Harvester Tier 4–6).
-  - High-priority status indicator(s) relevant to the planet state (e.g., stable/at risk, vent charges, decay warning, market health).
-- **Session body (planet view):**
-  - **Goal/Progress panel:** Regular tier objective progress, or Harvester funding/build objective progress.
-  - **Resource summary:** Eggs, chickens, money, and planet-specific currencies/meters.
-  - **Primary planet module:** Planet-specific gimmick visualization and controls.
-  - **Harvester Construction module (Harvester mode):** Funding inputs, build milestones, construction progress, and persistence summary.
-  - **Alert and feedback strip/panel:** Contextual warnings, thresholds, and outcome messaging.
-- **State-driven rendering:**
-  - UI reflects current mode, goal progress, resource changes, risk states, and construction state.
-  - On completion/failure transitions, the view presents results and next-step options (retry, advance tier, continue/build harvester, return to map) within mode rules.
+
+#### Planet-Only Header (replaces standard global header)
+The planet-only header occupies the same top-of-screen header region and follows the same compact, horizontal, centered layout conventions as the current global farm header component. It is a **single header bar** (not a multi-panel container) that may include:
+- **Planet identity:** Planet image/icon and/or planet name/theme label.
+- **Session context:** Current mode and tier (e.g., Regular T1–T3, Harvester T4–T6).
+- **Key values/status:** Compact display of the most critical session currencies/states (as appropriate for the planet/mode).
+- **Context actions:** Session-relevant actions (e.g., return to Eggspeditions/planet map, help/info). No standard farm actions (promote/prestige/ascend) appear here.
+
+The standard global header is not shown concurrently during an Eggspedition.
+
+#### Session Body (below header)
+- **Goal/Progress panel:** Regular tier objective or Harvester construction/funding objective with progress visualization.
+- **Resource summary/details:** Eggs, chickens, money, and planet-specific currencies/meters needed for the current mode.
+- **Primary Gimmick module:** Planet-specific visualization and controls driven by session state.
+- **Harvester Construction module (Harvester mode only):** Contribution controls (eggs, chickens, money), milestone/build progress, and persistence summary.
+- **Alerts & feedback:** Contextual warnings, thresholds, completion/failure messaging, and next actions.
+
+#### State-driven rendering
+- UI reflects current mode/tier, goal progress, resource changes, gimmick risk states, and construction state.
+- On completion/failure transitions, the view presents results and valid next steps (retry, advance tier/milestone, continue/build harvester, return to map) per mode rules.
 
 ### 3.4 Regular vs. Harvester Mode Relationship
 - **Regular:** Focused on mastering the planet gimmick to meet tiered challenge goals and earn tiered rewards.
 - **Harvester:** Preserves a foundation of planetary progress and shifts emphasis to long-term buildout/funding while retaining the core gimmick as an ongoing constraint/opportunity.
 - **Harvester construction model:**
-  - Standard goals are replaced/augmented by **funding goals**.
+  - Standard goals are replaced/augmented by **funding and construction goals**.
   - Players feed **eggs, chickens, and money** into harvester construction alongside managing the planet gimmick.
   - Construction milestones define build progress and persistence outcomes.
 - **Persistence rule (high level):** Harvester construction milestones determine how much planetary challenge progress is retained through Ascension (Tier 1 harvester preserves Tier 1 challenge progress; Tier 3 preserves all challenge tiers, etc., as specified).
@@ -94,27 +98,27 @@ This document is intentionally implementation-agnostic: it describes behavior, s
 
 ### UI Wireframe — Regular Eggspedition
 ```text
+PLANET-ONLY HEADER (replaces global farm header; compact horizontal bar)
 +----------------------------------------------------------------------------------+
-| PLANET-ONLY HEADER (replaces global header)                                      |
-| [< Planet Map]  ARCTURUS // ENERGY        Regular Tier 1        Status: STABLE   |
-| [Gimmick Help] [Session Info]                                                    |
+| [Planet Img]  Arcturus (Energy)  |  Regular T1  |  Eggs: ####  Money: $####    |
+| Power: ####  +$##/s  |  [Back to Map] [Help]                                     |
 +----------------------------------------------------------------------------------+
-| Resources: Dark Energy Eggs: #### | Stored Power: #### | Money: #### | +$##/s    |
+
+SESSION BODY
 +----------------------------------------------------------------------------------+
 | Goal / Progress                                                                  |
 | Tier Objective: Earn $X total / Sustain Y output                                 |
 | [=====================>---------------------] 62%                                 |
 +----------------------------------------------------------------------------------+
-| Primary Gimmick Module: Power Generation & Burn Control                          |
-|  +---------------------------+   +---------------------------+                   |
-|  | FUEL INPUT                |   | PRODUCTION EQUIPMENT      |                   |
-|  | Eggs to burn: [ - ][##][+] |   | Generator A  [ONLINE]    |                   |
-|  | Burn rate:  [ Low|Med|High] |   | Output: +$##/s           |                   |
-|  | [BURN EGGS]               |   | Efficiency: ##%          |                   |
-|  | Reserve: [ ] keep minimum  |   | Upgrades: [View/Buy]     |                   |
-|  +---------------------------+   +---------------------------+                   |
-|  Power Flow: [Eggs] -> [Burn Chamber] -> [Power] -> [Money Output]              |
-|  State: Stable / Low Fuel / Overcapacity / Idle                                   |
+| Primary Gimmick: Power Generation & Burn Control                                  |
+| +-------------------------------+  +-------------------------------------------+  |
+| | Fuel Input                    |  | Production Equipment                      |  |
+| | Dark Energy Eggs available:## |  | Status: Online / Idle / Low Fuel          |  |
+| | Burn amount: [ - ][##][ + ]   |  | Output: +$##/s    Efficiency: ##%         |  |
+| | Burn rate: [Low|Med|High]     |  | Equipment options: [View/Adjust]          |  |
+| | [Burn Eggs]  Reserve: [ ] min |  |                                           |  |
+| +-------------------------------+  +-------------------------------------------+  |
+| Power Flow: [Eggs] -> [Burn/Power] -> [Money Output]                             |
 +----------------------------------------------------------------------------------+
 | Alerts & Tips: "Money is generated from powered equipment, not eggs directly."   |
 +----------------------------------------------------------------------------------+
@@ -122,29 +126,31 @@ This document is intentionally implementation-agnostic: it describes behavior, s
 
 ### UI Wireframe — Harvester Construction Challenge
 ```text
+PLANET-ONLY HEADER (replaces global farm header; compact horizontal bar)
 +----------------------------------------------------------------------------------+
-| PLANET-ONLY HEADER (replaces global header)                                      |
-| [< Planet Map]  ARCTURUS // ENERGY   Harvester Build T4 (Tier 1)  Power: ONLINE  |
-| [Gimmick Help] [Build Details] [Persistence: T1 Regular retained on completion]  |
+| [Planet Img]  Arcturus (Energy)  |  Harvester T4 (Build 1)  |  Eggs: ####        |
+| Chickens: ####  Money: $####  Power: ####  |  [Back to Map] [Help]               |
 +----------------------------------------------------------------------------------+
-| Resources: Dark Energy Eggs: #### | Chickens: #### | Money: #### | Power: ####  |
+
+SESSION BODY
 +----------------------------------------------------------------------------------+
-| Construction / Funding Goal                                                       |
-| Milestone: Foundational Harvester Core                          Build: 38%       |
+| Harvester Construction / Funding Goal                                             |
+| Milestone: Foundational Harvester Core                 Build Progress: 38%       |
 | [==============>-------------------------------]                                  |
-| Required this milestone: Eggs #### | Chickens #### | Money ####                   |
+| Milestone Needs: Eggs ####  Chickens ####  Money $####                           |
+| Persistence on completion: Regular Tier 1 progress retained                      |
 +----------------------------------------------------------------------------------+
-| Harvester Construction Module              | Primary Gimmick Module              |
-| +----------------------------------------+ | +----------------------------------+ |
-| | CONTRIBUTIONS                          | | | POWER GENERATION                 | |
-| | Feed Eggs:     [ - ][##][ + ] [FEED]   | | | Eggs to burn: [ - ][##][ + ]     | |
-| | Feed Chickens: [ - ][##][ + ] [FEED]   | | | [BURN EGGS]  Output: +$##/s      | |
-| | Fund Money:    [ - ][##][ + ] [FUND]   | | | Equipment: Stable / Low Fuel     | |
-| |----------------------------------------| | | Reserve mgmt affects build pace   | |
-| | MILESTONES                             | | +----------------------------------+ |
-| | [x] Site Prep   [>] Core Assembly      | |                                      |
-| | [ ] Grid Link   [ ] Activation         | |                                      |
-| +----------------------------------------+                                      |
+| Harvester Construction                          | Primary Gimmick (active)       |
+| +---------------------------------------------+ | +--------------------------+  |
+| | Contribute Resources                        | | | Power Generation         |  |
+| | Eggs:     [ - ][##][ + ] [Contribute]       | | | Burn: [ - ][##][ + ]     |  |
+| | Chickens: [ - ][##][ + ] [Contribute]       | | | [Burn Eggs] +$##/s       |  |
+| | Money:    [ - ][##][ + ] [Fund]             | | | Status: Online/Low Fuel  |  |
+| |---------------------------------------------| | | Fuel supports income for |  |
+| | Milestones                                  | | | ongoing construction     |  |
+| | [x] Site Prep      [>] Core Assembly        | | +--------------------------+  |
+| | [ ] Grid Link      [ ] Activation           | |                               |
+| +---------------------------------------------+                                |
 +----------------------------------------------------------------------------------+
 | Alerts & Tips: "Balance fuel burn for income with contributions to construction."|
 +----------------------------------------------------------------------------------+
@@ -152,29 +158,22 @@ This document is intentionally implementation-agnostic: it describes behavior, s
 
 ### Regular Eggspedition (Tiers 1–3)
 - **Objective focus:** Build and operate an energy-to-money pipeline by burning Dark Energy Eggs to power production equipment.
-- **Core loop:**
-  1. Produce/accumulate Dark Energy Eggs.
-  2. Allocate eggs to burn for power (balancing reserve vs. throughput).
-  3. Powered equipment generates money/output toward tier goals.
-  4. Reinvest/adjust to meet higher tier targets.
+- **Core loop:** Accumulate Dark Energy Eggs -> allocate/burn eggs for power -> powered equipment generates money/output -> reinvest/adjust to meet tier targets.
 - **Tier progression (high level):**
-  - **Tier 1:** Establish a basic burn-to-power-to-money chain and reach an initial output/funding threshold; grants base foothold materials/resources.
-  - **Tier 2:** Higher output or efficiency targets requiring better allocation and sustained operation.
+  - **Tier 1:** Establish a basic burn-to-power-to-money chain and reach an initial threshold; grants base foothold materials/resources.
+  - **Tier 2:** Higher output/efficiency targets requiring better allocation and sustained operation.
   - **Tier 3:** Most demanding targets emphasizing optimized fuel management and production stability.
-- **Key player decisions:** Burn rate, fuel reserves, timing of spending/allocation, and prioritizing throughput vs. stability.
-- **Failure/pressure framing:** Insufficient fueling stalls progress; poor allocation can slow goal completion even without a hard collapse mechanic stated.
+- **Key player decisions:** Burn amount/rate, fuel reserves, timing of allocation, and throughput vs. stability.
+- **Pressure:** Insufficient fueling stalls progress; poor allocation slows goal completion.
 
 ### Harvester Eggspedition (Tiers 4–6)
-- **Mode shift:** Standard completion goals are replaced/augmented by a **funding and construction goal** to build out the Arcturus harvester.
-- **Core loop extension:**
-  1. Continue burning Dark Energy Eggs to generate money and operational capacity.
-  2. Feed **eggs, chickens, and money** into harvester construction/funding milestones.
-  3. Maintain energy production while diverting resources to build progress.
-- **Harvester design intent:** A planetary energy-extraction installation that scales with investment and preserves Arcturus progress across Ascension based on harvester tier.
+- **Mode shift:** Goals become **harvester funding and construction** goals while the energy gimmick remains active.
+- **Core loop extension:** Burn eggs to generate money/capacity -> contribute **eggs, chickens, and money** to milestones -> maintain production while building.
+- **Harvester intent:** A planetary energy-extraction installation that scales with investment and preserves Arcturus progress across Ascension based on harvester tier.
 - **Tier progression (high level):**
-  - **Tier 4 (Harvester Tier 1 build):** Establish foundational harvester infrastructure; preserves Tier 1 Regular challenge progress across Ascension.
-  - **Tier 5:** Expand capacity/funding requirements; improves persistence/buildout depth.
-  - **Tier 6 (Harvester Tier 3 build):** Complete full harvester challenge scope; preserves all Regular challenge tiers on Arcturus across Ascension.
+  - **Tier 4 (Build 1):** Foundational infrastructure; preserves Tier 1 Regular progress.
+  - **Tier 5:** Expanded capacity/funding; deeper persistence/buildout.
+  - **Tier 6 (Build 3):** Full harvester completion; preserves all Regular tiers on Arcturus.
 - **Key tension:** Short-term power/money efficiency vs. long-term harvester investment.
 
 ---
@@ -184,26 +183,27 @@ This document is intentionally implementation-agnostic: it describes behavior, s
 
 ### UI Wireframe — Regular Eggspedition
 ```text
+PLANET-ONLY HEADER (replaces global farm header; compact horizontal bar)
 +----------------------------------------------------------------------------------+
-| PLANET-ONLY HEADER (replaces global header)                                      |
-| [< Planet Map]  RAVNAR // TIME            Regular Tier 2       Flux: 71% RISING  |
-| [Gimmick Help] [Vent Status: ● ● ○]                                              |
+| [Planet Img]  Ravnar (Time)  |  Regular T2  |  Eggs: ####  Chickens: ####       |
+| Flux: 71% (Rising)  Vents: ● ● ○  |  [Back to Map] [Help]                        |
 +----------------------------------------------------------------------------------+
-| Resources: Time Eggs: #### | Chickens: #### | Prod Mult: ##% | Gain Mult: ##%    |
+
+SESSION BODY
 +----------------------------------------------------------------------------------+
 | Goal / Progress                                                                  |
 | Tier Objective: Reach target output/progress before instability lockup            |
 | [==================>-------------------------] 54%                               |
 +----------------------------------------------------------------------------------+
-| Primary Gimmick Module: Temporal Flux Management                                 |
-|  +----------------------------------+   +------------------------------------+  |
-|  | TEMPORAL FLUX METER              |   | VENTING / CONTROL ACTIONS          |  |
-|  | Capacity: [##########-----] 71%  |   | Vent Charges: ● ● ○  (limited)     |  |
-|  | Effect: Egg prod ↓  Chicken ↓    |   | [VENT METHOD A]  [VENT METHOD B]   |  |
-|  | At 100%: production/gain -> 0    |   | Effect preview: -##% flux          |  |
-|  | Trend: Rising / Falling / Stable |   | Availability/Cooldown: ...         |  |
-|  +----------------------------------+   +------------------------------------+  |
-|  Production Panel: Time Egg rate, projected flux growth, safe operating window    |
+| Primary Gimmick: Temporal Flux Management                                        |
+| +------------------------------------+  +-------------------------------------+  |
+| | Temporal Flux                      |  | Venting / Control                   |  |
+| | Capacity: [##########-----] 71%    |  | Vent Charges: ● ● ○ (limited)       |  |
+| | Effect: Prod ##%  Chicken Gain ##% |  | [Vent Method A]  [Vent Method B]    |  |
+| | At 100%: production/gain -> 0      |  | Effect preview: -##% flux           |  |
+| | Trend: Rising / Falling / Stable   |  | Availability/Cooldown: ...          |  |
+| +------------------------------------+  +-------------------------------------+  |
+| Production context: Time Egg rate, projected flux growth, safe operating window  |
 +----------------------------------------------------------------------------------+
 | Alerts & Tips: "Higher Time Egg output increases Temporal Flux pressure."         |
 +----------------------------------------------------------------------------------+
@@ -211,29 +211,31 @@ This document is intentionally implementation-agnostic: it describes behavior, s
 
 ### UI Wireframe — Harvester Construction Challenge
 ```text
+PLANET-ONLY HEADER (replaces global farm header; compact horizontal bar)
 +----------------------------------------------------------------------------------+
-| PLANET-ONLY HEADER (replaces global header)                                      |
-| [< Planet Map]  RAVNAR // TIME      Harvester Build T5 (Tier 2)  Flux: 48% STABLE|
-| [Gimmick Help] [Build Details] [Vent: ● ○ ○] [Persistence: T1+ progress track]   |
+| [Planet Img]  Ravnar (Time)  |  Harvester T5 (Build 2)  |  Eggs: ####           |
+| Chickens: ####  Money: $####  Flux: 48%  Vents: ● ○ ○  |  [Back to Map] [Help]  |
 +----------------------------------------------------------------------------------+
-| Resources: Time Eggs: #### | Chickens: #### | Money: #### | Flux Capacity: 48%   |
+
+SESSION BODY
 +----------------------------------------------------------------------------------+
-| Construction / Funding Goal                                                       |
-| Milestone: Stabilization Array Expansion                        Build: 51%       |
+| Harvester Construction / Funding Goal                                             |
+| Milestone: Stabilization Array Expansion               Build Progress: 51%       |
 | [====================>-------------------------]                                  |
-| Required this milestone: Eggs #### | Chickens #### | Money ####                   |
+| Milestone Needs: Eggs ####  Chickens ####  Money $####                           |
+| Persistence track: advanced harvester build progress retained by build tier       |
 +----------------------------------------------------------------------------------+
-| Harvester Construction Module              | Primary Gimmick Module              |
-| +----------------------------------------+ | +----------------------------------+ |
-| | CONTRIBUTIONS                          | | | TEMPORAL FLUX                    | |
-| | Feed Eggs:     [ - ][##][ + ] [FEED]   | | | [########-----------] 48%        | |
-| | Feed Chickens: [ - ][##][ + ] [FEED]   | | | Prod/Gain impact: Moderate       | |
-| | Fund Money:    [ - ][##][ + ] [FUND]   | | | [VENT A] [VENT B] Charges: ●○○   | |
-| |----------------------------------------| | | Plan vents to protect build pace  | |
-| | MILESTONES                             | | +----------------------------------+ |
-| | [x] Anchor Frame [x] Core Sync         | |                                      |
-| | [>] Stabilizer Array [ ] Activation    | |                                      |
-| +----------------------------------------+                                      |
+| Harvester Construction                          | Primary Gimmick (active)       |
+| +---------------------------------------------+ | +--------------------------+  |
+| | Contribute Resources                        | | | Temporal Flux            |  |
+| | Eggs:     [ - ][##][ + ] [Contribute]       | | | [########-----------] 48%|  |
+| | Chickens: [ - ][##][ + ] [Contribute]       | | | Prod/Gain impact: ##%    |  |
+| | Money:    [ - ][##][ + ] [Fund]             | | | [Vent A] [Vent B] ● ○ ○  |  |
+| |---------------------------------------------| | | Protect output + build   |  |
+| | Milestones                                  | | +--------------------------+  |
+| | [x] Anchor Frame   [x] Core Sync            | |                               |
+| | [>] Stabilizer     [ ] Activation           | |                               |
+| +---------------------------------------------+                                |
 +----------------------------------------------------------------------------------+
 | Alerts & Tips: "Use vent capacity to sustain output and construction momentum."   |
 +----------------------------------------------------------------------------------+
@@ -241,33 +243,17 @@ This document is intentionally implementation-agnostic: it describes behavior, s
 
 ### Regular Eggspedition (Tiers 1–3)
 - **Objective focus:** Achieve tier goals while managing Temporal Flux generated by Time Egg production.
-- **Core loop:**
-  1. Increase Time Egg production to progress goals.
-  2. Monitor Temporal Flux accumulation and its suppressive effects.
-  3. Use limited venting opportunities/methods to reduce pressure at key moments.
-  4. Balance growth against the risk of hitting flux capacity.
-- **Gimmick behavior:**
-  - More Time Egg production increases flux buildup.
-  - Flux reduces egg production and chicken gain progressively toward zero as capacity is approached/reached.
-  - A limited number of vents per run (methods not fully specified) provide critical relief.
-- **Tier progression (high level):**
-  - **Tier 1:** Learn the production-vs-flux tradeoff and complete a manageable goal with limited venting needs.
-  - **Tier 2:** Tighter margins requiring planned vent timing and controlled growth.
-  - **Tier 3:** High-pressure optimization where mistimed production spikes can stall the run.
+- **Core loop:** Increase Time Egg production -> monitor flux accumulation/suppression -> use limited vents at key moments -> balance growth vs. capacity risk.
+- **Gimmick behavior:** Flux rises with Time Egg production; reduces egg production and chicken gain progressively toward zero near/at capacity. Limited vents per run provide critical relief (methods unspecified).
+- **Tier progression (high level):** T1 learn tradeoff; T2 tighter planned vent timing; T3 high-pressure optimization.
 - **Key player decisions:** When to push production, when to hold back, and when to spend scarce vent actions.
 
 ### Harvester Eggspedition (Tiers 4–6)
-- **Mode shift:** Build/fund a Ravnar harvester while the flux mechanic remains active.
-- **Core loop extension:**
-  1. Generate progress/resources under flux constraints.
-  2. Allocate **eggs, chickens, and money** to harvester funding/construction goals.
-  3. Use venting strategically to protect both operational output and build momentum.
-- **Harvester design intent:** A temporal stabilization/extraction structure that benefits from sustained operation despite flux pressure, with persistence across Ascension tied to harvester tier.
-- **Tier progression (high level):**
-  - **Tier 4:** Establish baseline harvester systems; preserves Tier 1 Regular progress.
-  - **Tier 5:** Expanded build requiring longer stability windows and better flux planning.
-  - **Tier 6:** Full harvester completion preserving all Regular tiers; demands mastery of flux-limited throughput.
-- **Key tension:** Spending vent capacity/resources for immediate throughput vs. securing long-term harvester milestones.
+- **Mode shift:** Build/fund a Ravnar harvester while flux remains active.
+- **Core loop extension:** Generate resources under flux constraints -> contribute **eggs, chickens, and money** -> vent strategically to protect output and build momentum.
+- **Harvester intent:** Temporal stabilization/extraction structure benefiting from sustained operation, with persistence tied to harvester tier.
+- **Tier progression (high level):** T4 baseline (preserves T1 Regular); T5 longer stability windows; T6 full completion (preserves all Regular tiers).
+- **Key tension:** Vent/resource use for immediate throughput vs. long-term harvester milestones.
 
 ---
 
@@ -276,27 +262,27 @@ This document is intentionally implementation-agnostic: it describes behavior, s
 
 ### UI Wireframe — Regular Eggspedition
 ```text
+PLANET-ONLY HEADER (replaces global farm header; compact horizontal bar)
 +----------------------------------------------------------------------------------+
-| PLANET-ONLY HEADER (replaces global header)                                      |
-| [< Planet Map]  XYLOK // PEACE            Regular Tier 1        Pace: SLOW/STEADY|
-| [Gimmick Help] [No Automation Active]                                            |
+| [Planet Img]  Xylok (Peace)  |  Regular T1  |  Eggs: ####  Chickens: ####       |
+| Money: $####  Pace: Slow  (No Automation)  |  [Back to Map] [Help]               |
 +----------------------------------------------------------------------------------+
-| Resources: Peace Eggs: #### | Chickens: #### | Money: #### | Prices: Low         |
+
+SESSION BODY
 +----------------------------------------------------------------------------------+
 | Goal / Progress                                                                  |
 | Tier Objective: Reach peaceful growth target / sustain hatch strategy             |
 | [==============>-----------------------------] 41%                               |
 +----------------------------------------------------------------------------------+
-| Primary Gimmick Module: Deliberate Hatching                                      |
-|  +----------------------------------+   +------------------------------------+  |
-|  | EGG INVENTORY                    |   | HATCHING DECISION                  |  |
-|  | Available Peace Eggs: ####       |   | Choose eggs to hatch now:          |  |
-|  | Egg Value: Low / Stable          |   | [ - ][##][ + ]                     |  |
-|  | Purchase costs: Low              |   | Outcome preview: +## chickens      |  |
-|  +----------------------------------+   | [HATCH SELECTED EGGS]              |  |
-|                                         | No auto/internal/click hatch       |  |
-|                                         +------------------------------------+  |
-|  Pace Indicator: Slow & steady | Guidance: plan batches, avoid waste              |
+| Primary Gimmick: Deliberate Hatching                                             |
+| +------------------------------------+  +-------------------------------------+  |
+| | Egg Inventory                      |  | Hatching Decision                   |  |
+| | Available Peace Eggs: ####         |  | Hatch now: [ - ][##][ + ]           |  |
+| | Egg value: Low / Stable            |  | Outcome preview: +## chickens       |  |
+| | Costs: Low                         |  | [Hatch Selected Eggs]               |  |
+| |                                    |  | No auto/internal/click hatch        |  |
+| +------------------------------------+  +-------------------------------------+  |
+| Pace guidance: Slow & steady; plan batches and avoid waste                       |
 +----------------------------------------------------------------------------------+
 | Alerts & Tips: "Chickens are produced only by choosing to hatch eggs."           |
 +----------------------------------------------------------------------------------+
@@ -304,29 +290,31 @@ This document is intentionally implementation-agnostic: it describes behavior, s
 
 ### UI Wireframe — Harvester Construction Challenge
 ```text
+PLANET-ONLY HEADER (replaces global farm header; compact horizontal bar)
 +----------------------------------------------------------------------------------+
-| PLANET-ONLY HEADER (replaces global header)                                      |
-| [< Planet Map]  XYLOK // PEACE      Harvester Build T4 (Tier 1)  Pace: SLOW      |
-| [Gimmick Help] [Build Details] [No Automation] [Persistence: T1 on completion]   |
+| [Planet Img]  Xylok (Peace)  |  Harvester T4 (Build 1)  |  Eggs: ####           |
+| Chickens: ####  Money: $####  Pace: Slow (No Automation)  |  [Back to Map] [Help]|
 +----------------------------------------------------------------------------------+
-| Resources: Peace Eggs: #### | Chickens: #### | Money: #### | Prices: Low         |
+
+SESSION BODY
 +----------------------------------------------------------------------------------+
-| Construction / Funding Goal                                                       |
-| Milestone: Sanctuary Foundation                                 Build: 29%       |
+| Harvester Construction / Funding Goal                                             |
+| Milestone: Sanctuary Foundation                        Build Progress: 29%       |
 | [===========>----------------------------------]                                  |
-| Required this milestone: Eggs #### | Chickens #### | Money ####                   |
+| Milestone Needs: Eggs ####  Chickens ####  Money $####                           |
+| Persistence on completion: Regular Tier 1 progress retained                      |
 +----------------------------------------------------------------------------------+
-| Harvester Construction Module              | Primary Gimmick Module              |
-| +----------------------------------------+ | +----------------------------------+ |
-| | CONTRIBUTIONS                          | | | DELIBERATE HATCHING              | |
-| | Feed Eggs:     [ - ][##][ + ] [FEED]   | | | Available Eggs: ####             | |
-| | Feed Chickens: [ - ][##][ + ] [FEED]   | | | Hatch now: [ - ][##][ + ]        | |
-| | Fund Money:    [ - ][##][ + ] [FUND]   | | | [HATCH SELECTED EGGS]            | |
-| |----------------------------------------| | | Manual choice only               | |
-| | MILESTONES                             | | +----------------------------------+ |
-| | [>] Foundation  [ ] Grove Frame        | |                                      |
-| | [ ] Canopy Link [ ] Activation         | |                                      |
-| +----------------------------------------+                                      |
+| Harvester Construction                          | Primary Gimmick (active)       |
+| +---------------------------------------------+ | +--------------------------+  |
+| | Contribute Resources                        | | | Deliberate Hatching      |  |
+| | Eggs:     [ - ][##][ + ] [Contribute]       | | | Available Eggs: ####     |  |
+| | Chickens: [ - ][##][ + ] [Contribute]       | | | Hatch: [ - ][##][ + ]    |  |
+| | Money:    [ - ][##][ + ] [Fund]             | | | [Hatch Selected Eggs]    |  |
+| |---------------------------------------------| | | Manual choice only       |  |
+| | Milestones                                  | | +--------------------------+  |
+| | [>] Foundation     [ ] Grove Frame          | |                               |
+| | [ ] Canopy Link    [ ] Activation           | |                               |
+| +---------------------------------------------+                                |
 +----------------------------------------------------------------------------------+
 | Alerts & Tips: "Reserve enough eggs/chickens for steady contributions over time."|
 +----------------------------------------------------------------------------------+
@@ -334,31 +322,17 @@ This document is intentionally implementation-agnostic: it describes behavior, s
 
 ### Regular Eggspedition (Tiers 1–3)
 - **Objective focus:** Progress through deliberate, slower-paced planning centered on manual hatch decisions.
-- **Core loop:**
-  1. Accumulate Peace Eggs in a low-price, low-pressure economy.
-  2. Decide when and how many eggs to convert into chickens via explicit hatch actions.
-  3. Use resulting growth to meet tier goals without relying on automatic hatching systems.
-- **Gimmick behavior:**
-  - Peace Eggs have low prices; overall pace is intentionally slower.
-  - Chickens are produced only by player-chosen hatching actions (not internal hatcheries or click-to-hatch mechanics).
-- **Tier progression (high level):**
-  - **Tier 1:** Establish a stable hatch rhythm and meet a foundational goal; grants base foothold.
-  - **Tier 2:** Larger goals requiring better batching/timing and resource patience.
-  - **Tier 3:** Highest planning demand, rewarding consistent, efficient hatch choices over burst tactics.
-- **Key player decisions:** Batch size, timing of hatches, and balancing egg retention vs. chicken growth.
+- **Core loop:** Accumulate Peace Eggs -> choose when/how many to hatch -> convert to chickens by explicit action -> meet tier goals without automation.
+- **Gimmick behavior:** Low prices, intentionally slow pace; chickens come only from player-chosen hatching actions.
+- **Tier progression (high level):** T1 stable rhythm; T2 better batching/timing; T3 consistent efficient hatch planning.
+- **Key player decisions:** Batch size, timing, and egg retention vs. chicken growth.
 
 ### Harvester Eggspedition (Tiers 4–6)
 - **Mode shift:** Fund/build a Xylok harvester while preserving the deliberate hatching constraint.
-- **Core loop extension:**
-  1. Continue intentional hatch planning to sustain chickens/resources.
-  2. Contribute **eggs, chickens, and money** to harvester construction/funding goals.
-  3. Balance peaceful growth cadence with long-term build investment.
-- **Harvester design intent:** A cultivation/sanctuary-style harvester that grows through steady contributions rather than rapid automation, with Ascension persistence by harvester tier.
-- **Tier progression (high level):**
-  - **Tier 4:** Foundational harvester build; preserves Tier 1 Regular progress.
-  - **Tier 5:** Increased funding/build demands requiring sustained planning over longer horizons.
-  - **Tier 6:** Full harvester completion preserving all Regular tiers.
-- **Key tension:** Immediate progression from hatching choices vs. reserving resources for harvester milestones.
+- **Core loop extension:** Continue intentional hatching -> contribute **eggs, chickens, and money** -> balance peaceful cadence with long-term build investment.
+- **Harvester intent:** Cultivation/sanctuary-style harvester built through steady contributions, with persistence by harvester tier.
+- **Tier progression (high level):** T4 foundation (preserves T1); T5 sustained planning demands; T6 full completion (preserves all Regular tiers).
+- **Key tension:** Immediate progression from hatches vs. reserving resources for milestones.
 
 ---
 
@@ -367,25 +341,27 @@ This document is intentionally implementation-agnostic: it describes behavior, s
 
 ### UI Wireframe — Regular Eggspedition
 ```text
+PLANET-ONLY HEADER (replaces global farm header; compact horizontal bar)
 +----------------------------------------------------------------------------------+
-| PLANET-ONLY HEADER (replaces global header)                                      |
-| [< Planet Map]  TRITON // DARKNESS        Regular Tier 3       Balance: STABLE   |
-| [Gimmick Help] [Risk: Low]                                                       |
+| [Planet Img]  Triton (Darkness)  |  Regular T3  |  Eggs: ####  Chickens: ####  |
+| Egg Value: ####  Light: ##%  Balance: Stable  |  [Back to Map] [Help]            |
 +----------------------------------------------------------------------------------+
-| Resources: Abyssal Eggs: #### | Chickens: #### | Egg Value: #### | Light: ##%    |
+
+SESSION BODY
 +----------------------------------------------------------------------------------+
 | Goal / Progress                                                                  |
 | Tier Objective: Maintain stability and reach value/production target             |
 | [=======================>--------------------] 68%                               |
 +----------------------------------------------------------------------------------+
-| Primary Gimmick Module: Darkness Balance                                         |
-|  +----------------------------------+   +------------------------------------+  |
-|  | LIGHT BALANCE METER              |   | CONTROL LEVERS                     |  |
-|  | Too Dark < [====|====] > Too Bright|  | Use Abyssal Eggs to balance light: |  |
-|  | Current zone: STABLE             |   | [ - ][##][ + ]  [APPLY BALANCE]    |  |
-|  | Light output: ##                 |   | Adjustment options: ...            |  |
-|  +----------------------------------+   +------------------------------------+  |
-|  Status: Too bright -> collapse/chicken loss | Too dark -> egg value crash       |
+| Primary Gimmick: Darkness Balance                                                |
+| +------------------------------------+  +-------------------------------------+  |
+| | Light Balance Meter                |  | Control Levers                      |  |
+| | Too Dark < [====|====] > Too Bright|  | Abyssal Eggs to balance:            |  |
+| | Current zone: Stable               |  | [ - ][##][ + ]  [Apply Balance]     |  |
+| | Light output: ##                   |  | Adjustment options: ...             |  |
+| +------------------------------------+  +-------------------------------------+  |
+| Risk states: Too bright -> collapse/chicken loss | Too dark -> egg value crash   |
+| Balanced -> stable production and egg value                                       |
 +----------------------------------------------------------------------------------+
 | Alerts & Tips: "Balance preserves both flock survival and egg value."             |
 +----------------------------------------------------------------------------------+
@@ -393,29 +369,31 @@ This document is intentionally implementation-agnostic: it describes behavior, s
 
 ### UI Wireframe — Harvester Construction Challenge
 ```text
+PLANET-ONLY HEADER (replaces global farm header; compact horizontal bar)
 +----------------------------------------------------------------------------------+
-| PLANET-ONLY HEADER (replaces global header)                                      |
-| [< Planet Map]  TRITON // DARKNESS  Harvester Build T6 (Tier 3)  Balance: WATCH  |
-| [Gimmick Help] [Build Details] [Risk: Moderate] [Persistence: All Regular tiers] |
+| [Planet Img]  Triton (Darkness)  |  Harvester T6 (Build 3)  |  Eggs: ####      |
+| Chickens: ####  Money: $####  Light: ##%  Balance: Watch  |  [Back to Map] [Help]|
 +----------------------------------------------------------------------------------+
-| Resources: Abyssal Eggs: #### | Chickens: #### | Money: #### | Light: ##%        |
+
+SESSION BODY
 +----------------------------------------------------------------------------------+
-| Construction / Funding Goal                                                       |
-| Milestone: Containment Core Activation                          Build: 76%       |
+| Harvester Construction / Funding Goal                                             |
+| Milestone: Containment Core Activation                 Build Progress: 76%       |
 | [==============================>-----------]                                      |
-| Required this milestone: Eggs #### | Chickens #### | Money ####                   |
+| Milestone Needs: Eggs ####  Chickens ####  Money $####                           |
+| Persistence on completion: All Regular tier progress retained                    |
 +----------------------------------------------------------------------------------+
-| Harvester Construction Module              | Primary Gimmick Module              |
-| +----------------------------------------+ | +----------------------------------+ |
-| | CONTRIBUTIONS                          | | | DARKNESS BALANCE                 | |
-| | Feed Eggs:     [ - ][##][ + ] [FEED]   | | | Too Dark < [===|=====] > Bright  | |
-| | Feed Chickens: [ - ][##][ + ] [FEED]   | | | Zone: WATCH   Light: ##%         | |
-| | Fund Money:    [ - ][##][ + ] [FUND]   | | | [APPLY BALANCE] Eggs: [##]       | |
-| |----------------------------------------| | | Protect flock/value during build  | |
-| | MILESTONES                             | | +----------------------------------+ |
-| | [x] Shell  [x] Conduits [>] Core       | |                                      |
-| | [ ] Seal & Activation                  | |                                      |
-| +----------------------------------------+                                      |
+| Harvester Construction                          | Primary Gimmick (active)       |
+| +---------------------------------------------+ | +--------------------------+  |
+| | Contribute Resources                        | | | Darkness Balance         |  |
+| | Eggs:     [ - ][##][ + ] [Contribute]       | | | Too Dark<[===|=====]>Bright| |
+| | Chickens: [ - ][##][ + ] [Contribute]       | | | Zone: Watch  Light: ##%  |  |
+| | Money:    [ - ][##][ + ] [Fund]             | | | [Apply Balance]          |  |
+| |---------------------------------------------| | | Protect flock & value    |  |
+| | Milestones                                  | | +--------------------------+  |
+| | [x] Shell    [x] Conduits   [>] Core        | |                               |
+| | [ ] Seal & Activation                       | |                               |
+| +---------------------------------------------+                                |
 +----------------------------------------------------------------------------------+
 | Alerts & Tips: "Do not starve balance controls while funding construction."       |
 +----------------------------------------------------------------------------------+
@@ -423,33 +401,17 @@ This document is intentionally implementation-agnostic: it describes behavior, s
 
 ### Regular Eggspedition (Tiers 1–3)
 - **Objective focus:** Keep the system in a viable balance band while progressing tier goals.
-- **Core loop:**
-  1. Produce/manage Abyssal Eggs and related outputs.
-  2. Use Abyssal Eggs to balance light output.
-  3. Maintain stability to protect chickens and preserve egg value.
-  4. Push toward tier targets without tipping into collapse or devaluation.
-- **Gimmick behavior:**
-  - **Too much light:** Run collapses; abyssal chickens die/are lost in proportion to light level.
-  - **Too little light:** Abyssal egg value drops sharply.
-  - **Balanced:** Production and egg value remain stable.
-- **Tier progression (high level):**
-  - **Tier 1:** Learn safe balance range and complete a basic stability goal.
-  - **Tier 2:** Higher targets with narrower tolerance for imbalance.
-  - **Tier 3:** Sustained high performance under continuous balance pressure.
-- **Key player decisions:** How aggressively to spend/use eggs for balancing, and when to prioritize stability over growth.
+- **Core loop:** Produce/manage Abyssal Eggs -> use eggs to balance light output -> maintain stability to protect chickens and egg value -> push toward targets.
+- **Gimmick behavior:** Too much light causes collapse/chicken losses scaling with light; too little collapses egg value; balanced state preserves production and value.
+- **Tier progression (high level):** T1 learn safe range; T2 narrower tolerance; T3 sustained high performance under pressure.
+- **Key player decisions:** How aggressively to spend eggs on balancing vs. prioritizing growth.
 
 ### Harvester Eggspedition (Tiers 4–6)
 - **Mode shift:** Construct/fund a Triton harvester while maintaining darkness-light equilibrium.
-- **Core loop extension:**
-  1. Operate within balance constraints to avoid losses/value crashes.
-  2. Allocate **eggs, chickens, and money** to harvester funding/build goals.
-  3. Invest in sustained stability that supports both ongoing output and harvester progress.
-- **Harvester design intent:** A containment/extraction harvester engineered to operate in controlled darkness, with persistence across Ascension tied to harvester tier.
-- **Tier progression (high level):**
-  - **Tier 4:** Establish core harvester structure; preserves Tier 1 Regular progress.
-  - **Tier 5:** Expanded build requiring longer periods of stable balance.
-  - **Tier 6:** Full harvester completion preserving all Regular tiers.
-- **Key tension:** Using abyssal resources for immediate balance/survival vs. committing them to harvester construction.
+- **Core loop extension:** Operate within balance constraints -> contribute **eggs, chickens, and money** -> sustain stability to support output and harvester progress.
+- **Harvester intent:** Containment/extraction harvester engineered for controlled darkness, with persistence tied to harvester tier.
+- **Tier progression (high level):** T4 core structure (preserves T1); T5 longer stability periods; T6 full completion (preserves all Regular tiers).
+- **Key tension:** Resources for immediate balance/survival vs. harvester construction.
 
 ---
 
@@ -458,27 +420,28 @@ This document is intentionally implementation-agnostic: it describes behavior, s
 
 ### UI Wireframe — Regular Eggspedition
 ```text
+PLANET-ONLY HEADER (replaces global farm header; compact horizontal bar)
 +----------------------------------------------------------------------------------+
-| PLANET-ONLY HEADER (replaces global header)                                      |
-| [< Planet Map]  HERETH // LAVA            Regular Tier 2      Market: VOLATILE   |
-| [Gimmick Help] [Devaluation Risk: Medium]                                        |
+| [Planet Img]  Hereth (Lava)  |  Regular T2  |  Eggs: ####  Money: $####        |
+| Materials: A/B/C  Market Health: ## (Volatile)  |  [Back to Map] [Help]          |
 +----------------------------------------------------------------------------------+
-| Resources: Lava Eggs: #### | Money: #### | Materials: A/B/C... | Market Health: ##|
+
+SESSION BODY
 +----------------------------------------------------------------------------------+
 | Goal / Progress                                                                  |
 | Tier Objective: Reach portfolio/funding target without monetary devaluation       |
 | [================>---------------------------] 49%                               |
 +----------------------------------------------------------------------------------+
-| Primary Gimmick Module: Materials & Market Board                                 |
-|  +-----------------------------+   +-------------------------------------------+  |
-|  | CONVERSION / PRODUCTION     |   | MARKET INDICES                            |  |
-|  | Convert Lava Eggs ->        |   | Index A: [^^^^^-----] Price ##  Vol ##    |  |
-|  | [Material A] [Material B]   |   | Index B: [^^^-------] Price ##  Vol ##    |  |
-|  | Output preview: +##         |   | Index C: [^^^^^^----] Price ##  Vol ##    |  |
-|  | [CONVERT]                   |   | [SELL EGGS] [BUY/STOCK]                   |  |
-|  +-----------------------------+   | Influence: saturate / desaturate indices  |  |
-|                                    +-------------------------------------------+  |
-|  Warning: Bottomed market => monetary devaluation                                 |
+| Primary Gimmick: Materials & Market Board                                        |
+| +--------------------------------+  +-----------------------------------------+  |
+| | Conversion / Production        |  | Market Indices                          |  |
+| | Convert Lava Eggs -> Materials |  | Index A: [^^^^^-----] Price ## Vol ##   |  |
+| | [Material A] [Material B] ...  |  | Index B: [^^^-------] Price ## Vol ##   |  |
+| | Output preview: +##            |  | Index C: [^^^^^^----] Price ## Vol ##   |  |
+| | [Convert]                      |  | [Sell Eggs] [Buy/Stock]                 |  |
+| |                                |  | Influence: saturate / desaturate        |  |
+| +--------------------------------+  +-----------------------------------------+  |
+| Warning: Bottomed market => monetary devaluation                                 |
 +----------------------------------------------------------------------------------+
 | Alerts & Tips: "Manipulate indices carefully; crashing value undermines progress."|
 +----------------------------------------------------------------------------------+
@@ -486,29 +449,31 @@ This document is intentionally implementation-agnostic: it describes behavior, s
 
 ### UI Wireframe — Harvester Construction Challenge
 ```text
+PLANET-ONLY HEADER (replaces global farm header; compact horizontal bar)
 +----------------------------------------------------------------------------------+
-| PLANET-ONLY HEADER (replaces global header)                                      |
-| [< Planet Map]  HERETH // LAVA      Harvester Build T5 (Tier 2)  Market: CAUTION |
-| [Gimmick Help] [Build Details] [Devaluation Risk: High] [Persistence track]      |
+| [Planet Img]  Hereth (Lava)  |  Harvester T5 (Build 2)  |  Eggs: ####          |
+| Chickens: ####  Money: $####  Market Health: ## (Caution)  |  [Back to Map] [Help]|
 +----------------------------------------------------------------------------------+
-| Resources: Lava Eggs: #### | Chickens: #### | Money: #### | Market Health: ##   |
+
+SESSION BODY
 +----------------------------------------------------------------------------------+
-| Construction / Funding Goal                                                       |
-| Milestone: Processing Rig & Smelter Link                        Build: 44%       |
+| Harvester Construction / Funding Goal                                             |
+| Milestone: Processing Rig & Smelter Link               Build Progress: 44%       |
 | [=================>----------------------------]                                  |
-| Required this milestone: Eggs #### | Chickens #### | Money ####                   |
+| Milestone Needs: Eggs ####  Chickens ####  Money $####                           |
+| Persistence track: harvester build progress retained by build tier               |
 +----------------------------------------------------------------------------------+
-| Harvester Construction Module              | Primary Gimmick Module              |
-| +----------------------------------------+ | +----------------------------------+ |
-| | CONTRIBUTIONS                          | | | MATERIALS & MARKET               | |
-| | Feed Eggs:     [ - ][##][ + ] [FEED]   | | | Convert -> Materials [CONVERT]   | |
-| | Feed Chickens: [ - ][##][ + ] [FEED]   | | | Indices A/B/C: price & volume    | |
-| | Fund Money:    [ - ][##][ + ] [FUND]   | | | [SELL EGGS] [BUY/STOCK]          | |
-| |----------------------------------------| | | Avoid devaluation while funding   | |
-| | MILESTONES                             | | +----------------------------------+ |
-| | [x] Excavation [>] Rig Assembly        | |                                      |
-| | [ ] Smelter Link [ ] Activation        | |                                      |
-| +----------------------------------------+                                      |
+| Harvester Construction                          | Primary Gimmick (active)       |
+| +---------------------------------------------+ | +--------------------------+  |
+| | Contribute Resources                        | | | Materials & Market       |  |
+| | Eggs:     [ - ][##][ + ] [Contribute]       | | | Convert -> Materials     |  |
+| | Chickens: [ - ][##][ + ] [Contribute]       | | | Indices A/B/C: prices    |  |
+| | Money:    [ - ][##][ + ] [Fund]             | | | [Sell Eggs] [Buy/Stock]  |  |
+| |---------------------------------------------| | | Avoid devaluation risk   |  |
+| | Milestones                                  | | +--------------------------+  |
+| | [x] Excavation     [>] Rig Assembly         | |                               |
+| | [ ] Smelter Link   [ ] Activation           | |                               |
+| +---------------------------------------------+                                |
 +----------------------------------------------------------------------------------+
 | Alerts & Tips: "Market crashes can drain funding capacity needed for milestones." |
 +----------------------------------------------------------------------------------+
@@ -516,32 +481,17 @@ This document is intentionally implementation-agnostic: it describes behavior, s
 
 ### Regular Eggspedition (Tiers 1–3)
 - **Objective focus:** Convert Lava Eggs into materials and manipulate resource-linked indices to achieve tier goals while avoiding economic collapse.
-- **Core loop:**
-  1. Produce Lava Eggs and convert them into different raw materials.
-  2. Sell Lava Eggs for money and purchase/position stock/resources.
-  3. Influence a simulated market by oversaturating or desaturating resource-based indices.
-  4. Extract value/progress toward goals without bottoming out the market.
-- **Gimmick behavior:**
-  - Market manipulation is a core tool, but excessive imbalance can bottom out the market.
-  - Bottoming out results in **monetary devaluation**, harming progress/economy.
-- **Tier progression (high level):**
-  - **Tier 1:** Learn conversion and basic market influence; reach an initial target safely.
-  - **Tier 2:** More complex targets requiring multi-index awareness and timing.
-  - **Tier 3:** High-stakes optimization where aggressive manipulation can backfire into devaluation.
-- **Key player decisions:** What to convert, when to sell/buy, which indices to influence, and how hard to push before instability.
+- **Core loop:** Produce/convert Lava Eggs -> sell/buy/position via market -> influence indices by saturation/desaturation -> extract progress without bottoming out.
+- **Gimmick behavior:** Market manipulation is powerful but risky; bottoming out causes **monetary devaluation**.
+- **Tier progression (high level):** T1 basic conversion/influence; T2 multi-index timing; T3 high-stakes optimization.
+- **Key player decisions:** What to convert, when to sell/buy, which indices to influence, and risk tolerance.
 
 ### Harvester Eggspedition (Tiers 4–6)
 - **Mode shift:** Build/fund a Hereth harvester on top of ongoing industrial-market gameplay.
-- **Core loop extension:**
-  1. Run conversion and market operations to generate resources/money.
-  2. Feed **eggs, chickens, and money** into harvester funding/construction.
-  3. Manage market health so funding pipelines remain viable over time.
-- **Harvester design intent:** An industrial extraction and processing harvester financed through volatile market operations, with persistence across Ascension tied to harvester tier.
-- **Tier progression (high level):**
-  - **Tier 4:** Establish harvester base infrastructure; preserves Tier 1 Regular progress.
-  - **Tier 5:** Larger capital/build requirements, increasing exposure to market risk.
-  - **Tier 6:** Full harvester completion preserving all Regular tiers; requires robust economic management.
-- **Key tension:** Maximizing short-term market gains for funding vs. preserving long-term monetary stability.
+- **Core loop extension:** Run conversions/market operations -> contribute **eggs, chickens, and money** -> maintain market health to sustain funding.
+- **Harvester intent:** Industrial extraction/processing harvester financed through volatile operations, with persistence tied to harvester tier.
+- **Tier progression (high level):** T4 base infrastructure (preserves T1); T5 larger capital exposure; T6 full completion (preserves all Regular tiers).
+- **Key tension:** Short-term market gains for funding vs. long-term monetary stability.
 
 ---
 
@@ -550,28 +500,27 @@ This document is intentionally implementation-agnostic: it describes behavior, s
 
 ### UI Wireframe — Regular Eggspedition
 ```text
+PLANET-ONLY HEADER (replaces global farm header; compact horizontal bar)
 +----------------------------------------------------------------------------------+
-| PLANET-ONLY HEADER (replaces global header)                                      |
-| [< Planet Map]  MALAK // LIGHT            Regular Tier 2       Orb: RISING       |
-| [Gimmick Help] [Decay: None / Warning]                                           |
+| [Planet Img]  Malak (Light)  |  Regular T2  |  Eggs: ####  Money: $####        |
+| Orb Influence: ##  Value: ####  Decay: None/Warn  |  [Back to Map] [Help]        |
 +----------------------------------------------------------------------------------+
-| Resources: Light Eggs: #### | Money: #### | Orb Influence: ## | Orb Value: ####  |
+
+SESSION BODY
 +----------------------------------------------------------------------------------+
 | Goal / Progress                                                                  |
 | Tier Objective: Expand Orb influence/value to target threshold                   |
 | [====================>-----------------------] 58%                               |
 +----------------------------------------------------------------------------------+
-| Primary Gimmick Module: Orb Growth & Decay                                       |
-|  +----------------------------------+   +------------------------------------+  |
-|  | THE ORB                          |   | FEED / SELL DECISIONS              |  |
-|  |        .-""""-.                  |   | Feed Light Eggs to Orb:            |  |
-|  |       /  ORB   \   Influence: ## |   | [ - ][##][ + ]  [FEED ORB]         |  |
-|  |      |  Value ## |  Radius:  ##  |   | Feed cost (scales): ## eggs        |  |
-|  |       \        /   Decay: warn   |   |                                    |  |
-|  |        '-....-'                  |   | Sell Light Eggs for money:         |  |
-|  +----------------------------------+   | [SELL ##]  Gain: $##               |  |
-|                                         +------------------------------------+  |
-|  Trend: Influence rising/falling | Scaling cost indicator | Decay state/timer     |
+| Primary Gimmick: Orb Growth & Decay                                              |
+| +------------------------------------+  +-------------------------------------+  |
+| | The Orb                            |  | Feed / Sell Decisions               |  |
+| | Influence: ##   Value: ####        |  | Feed Orb: [ - ][##][ + ] [Feed]     |  |
+| | Radius/State: ##                   |  | Feed cost (scales): ## eggs         |  |
+| | Trend: Rising/Falling              |  | Sell Eggs: [ - ][##][ + ] [Sell]    |  |
+| | Decay: None / Warning              |  | Sell gain: $##                      |  |
+| +------------------------------------+  +-------------------------------------+  |
+| Indicators: scaling cost, decay state/timer, influence trend                     |
 +----------------------------------------------------------------------------------+
 | Alerts & Tips: "Feeding increases influence/value; neglect may allow decay."      |
 +----------------------------------------------------------------------------------+
@@ -579,72 +528,58 @@ This document is intentionally implementation-agnostic: it describes behavior, s
 
 ### UI Wireframe — Harvester Construction Challenge
 ```text
+PLANET-ONLY HEADER (replaces global farm header; compact horizontal bar)
 +----------------------------------------------------------------------------------+
-| PLANET-ONLY HEADER (replaces global header)                                      |
-| [< Planet Map]  MALAK // LIGHT      Harvester Build T4 (Tier 1)  Orb: STABLE     |
-| [Gimmick Help] [Build Details] [Decay: Warning] [Persistence: T1 on completion]  |
+| [Planet Img]  Malak (Light)  |  Harvester T4 (Build 1)  |  Eggs: ####          |
+| Chickens: ####  Money: $####  Orb Influence: ##  Decay: Warn  |  [Back to Map]   |
 +----------------------------------------------------------------------------------+
-| Resources: Light Eggs: #### | Chickens: #### | Money: #### | Orb Influence: ##   |
+
+SESSION BODY
 +----------------------------------------------------------------------------------+
-| Construction / Funding Goal                                                       |
-| Milestone: Radiant Collector Frame                              Build: 33%       |
+| Harvester Construction / Funding Goal                                             |
+| Milestone: Radiant Collector Frame                     Build Progress: 33%       |
 | [============>---------------------------------]                                  |
-| Required this milestone: Eggs #### | Chickens #### | Money ####                   |
+| Milestone Needs: Eggs ####  Chickens ####  Money $####                           |
+| Persistence on completion: Regular Tier 1 progress retained                      |
 +----------------------------------------------------------------------------------+
-| Harvester Construction Module              | Primary Gimmick Module              |
-| +----------------------------------------+ | +----------------------------------+ |
-| | CONTRIBUTIONS                          | | | ORB GROWTH & DECAY               | |
-| | Feed Eggs:     [ - ][##][ + ] [FEED]   | | | Influence: ##  Value: ####       | |
-| | Feed Chickens: [ - ][##][ + ] [FEED]   | | | Feed Orb: [ - ][##][ + ] [FEED]  | |
-| | Fund Money:    [ - ][##][ + ] [FUND]   | | | Sell Eggs: [SELL ##] -> $##      | |
-| |----------------------------------------| | | Scaling cost / Decay warning     | |
-| | MILESTONES                             | | +----------------------------------+ |
-| | [>] Collector Frame [ ] Lens Array     | |                                      |
-| | [ ] Amplifier Core  [ ] Activation     | |                                      |
-| +----------------------------------------+                                      |
+| Harvester Construction                          | Primary Gimmick (active)       |
+| +---------------------------------------------+ | +--------------------------+  |
+| | Contribute Resources                        | | | Orb Growth & Decay       |  |
+| | Eggs:     [ - ][##][ + ] [Contribute]       | | | Influence: ## Value: ####|  |
+| | Chickens: [ - ][##][ + ] [Contribute]       | | | Feed Orb: [##] [Feed]    |  |
+| | Money:    [ - ][##][ + ] [Fund]             | | | Sell Eggs: [##] [Sell]   |  |
+| |---------------------------------------------| | | Scaling cost / Decay     |  |
+| | Milestones                                  | | +--------------------------+  |
+| | [>] Collector Frame   [ ] Lens Array        | |                               |
+| | [ ] Amplifier Core    [ ] Activation        | |                               |
+| +---------------------------------------------+                                |
 +----------------------------------------------------------------------------------+
 | Alerts & Tips: "Sustain the Orb to support output while funding construction."    |
 +----------------------------------------------------------------------------------+
 ```
 
 ### Regular Eggspedition (Tiers 1–3)
-- **Objective focus:** Scale the Orb's sphere of influence and/or value to meet tier goals by choosing between feeding and selling Light Eggs.
-- **Core loop:**
-  1. Produce/acquire Light Eggs.
-  2. Choose to **feed** eggs to the Orb (grow influence/value) or **sell** eggs for money.
-  3. Manage increasing feed costs and potential decay over time.
-  4. Reach tier thresholds before efficiency is lost.
-- **Gimmick behavior:**
-  - Feeding Light Eggs expands the Orb's sphere of influence and can increase its value.
-  - Orb feed/egg cost scales upward.
-  - The Orb may decay over time, pressuring sustained engagement/investment.
-- **Tier progression (high level):**
-  - **Tier 1:** Establish initial Orb growth and understand feed-vs-sell tradeoffs.
-  - **Tier 2:** Higher influence/value targets with more pronounced scaling/decay pressure.
-  - **Tier 3:** Demanding sustainment challenge requiring efficient long-term Orb upkeep.
-- **Key player decisions:** Feed amount/timing, cash-out (sell) timing, and how to respond to scaling costs and decay.
+- **Objective focus:** Scale the Orb's influence/value to meet tier goals by choosing between feeding and selling Light Eggs.
+- **Core loop:** Acquire Light Eggs -> feed Orb (grow influence/value) or sell for money -> manage scaling feed costs and potential decay -> reach thresholds.
+- **Gimmick behavior:** Feeding expands influence and can increase value; feed cost scales upward; Orb may decay over time.
+- **Tier progression (high level):** T1 establish growth/tradeoffs; T2 stronger scaling/decay pressure; T3 sustained efficient upkeep.
+- **Key player decisions:** Feed amount/timing, sell timing, and response to scaling/decay.
 
 ### Harvester Eggspedition (Tiers 4–6)
 - **Mode shift:** Build/fund a Malak harvester while maintaining Orb growth dynamics.
-- **Core loop extension:**
-  1. Continue feeding/selling decisions to sustain economy and Orb state.
-  2. Contribute **eggs, chickens, and money** to harvester funding/construction goals.
-  3. Prevent decay/setbacks from undermining long-term harvester investment.
-- **Harvester design intent:** A light-harvesting construct amplified by the Orb, where sustained radiance/influence supports buildout and persists across Ascension by harvester tier.
-- **Tier progression (high level):**
-  - **Tier 4:** Establish foundational harvester build; preserves Tier 1 Regular progress.
-  - **Tier 5:** Expanded build requiring consistent Orb upkeep and funding throughput.
-  - **Tier 6:** Full harvester completion preserving all Regular tiers.
-- **Key tension:** Investing eggs into Orb growth for performance vs. diverting resources into harvester construction and guarding against decay.
+- **Core loop extension:** Continue feed/sell decisions -> contribute **eggs, chickens, and money** -> prevent decay/setbacks from undermining build investment.
+- **Harvester intent:** Light-harvesting construct amplified by the Orb, with persistence tied to harvester tier.
+- **Tier progression (high level):** T4 foundation (preserves T1); T5 consistent upkeep/funding; T6 full completion (preserves all Regular tiers).
+- **Key tension:** Investing eggs into Orb performance vs. diverting resources to construction while guarding against decay.
 
 ---
 
 ## 5. Cross-Cutting UI and Player Feedback Requirements
 
-### 5.1 Planet-Only Header (During Eggspeditions)
-- Replaces the standard global header for the duration of an active Eggspedition session.
-- Must always communicate: return-to-map navigation, planet identity/theme, current mode and tier, and a compact high-priority planet status.
-- May include quick access to gimmick help/build details without reintroducing the full global header.
+### 5.1 Planet-Only Header Alignment
+- The Planet-Only Header **replaces** the standard global (farm) header during Eggspeditions and must align with the existing header component's placement and compact horizontal layout conventions.
+- It is a header bar, not a content panel: identity, mode/tier, key values/status, and minimal session actions belong in the header; goals, detailed resources, gimmick controls, and construction modules belong in the session body below.
+- Standard farm-specific actions and displays (e.g., promote/prestige/ascend flows) are not part of the Eggspedition header.
 
 ### 5.2 Consistent Information Across All Planets
 - Clear primary objective and progress visualization (tier goal or construction/funding goal).
@@ -661,9 +596,9 @@ This document is intentionally implementation-agnostic: it describes behavior, s
 - **Malak:** Orb growth state, scaling cost visibility, and decay warnings.
 
 ### 5.4 Completion, Persistence, and Return Flow
-- On tier or milestone completion: show rewards/unlocks/build progress, updated progression state, and next available action (next tier, next milestone, harvester build, or return to map).
+- On tier/milestone completion: show rewards/unlocks/build progress, updated progression state, and next available action (next tier, next milestone, harvester build, or return to map).
 - On failure/collapse states (where applicable): clearly communicate cause, losses/impact scope, and retry options within mode rules.
-- In Harvester mode: surface current build tier, funded milestones, contribution totals by resource type, and what progress will persist through Ascension.
+- In Harvester mode: surface current build tier, funded milestones, contribution context, and what progress will persist through Ascension.
 
 ---
 
@@ -671,4 +606,4 @@ This document is intentionally implementation-agnostic: it describes behavior, s
 - Each planet should feel mechanically distinct while sharing a common challenge structure and UI language.
 - Regular Eggspeditions teach and test mastery of a planet's gimmick in bounded tiers.
 - Harvester Eggspeditions transform mastered gimmicks into longer-horizon investment problems with persistent payoff, combining construction/funding pressure with the planet's core system.
-- Where source details are unspecified (e.g., exact vent methods, precise formulas, specific reward types, exact material/index names), this document defines the intended player-facing behavior and design role, leaving numerical tuning and implementation details to development.
+- Where source details are unspecified (e.g., exact vent methods, formulas, reward types, material/index names), this document defines intended player-facing behavior and design role, leaving numerical tuning and implementation details to development.

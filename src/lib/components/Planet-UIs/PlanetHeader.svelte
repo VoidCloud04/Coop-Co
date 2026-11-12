@@ -7,6 +7,7 @@
 
 <div>
     <img src={planets[gameState.data.indexValues.currentPlanet].imgSrc} alt={planets[gameState.data.indexValues.currentPlanet].name}/>
+    <p>{planets[gameState.data.indexValues.currentPlanet].name}</p>
 </div>
 
 <style lang="scss">

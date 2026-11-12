@@ -1,13 +1,13 @@
 <script>
     import { gameState } from "$lib/scripts/DataManager.svelte";
     import { format } from "$lib/scripts/Utilities";
-    import { planets, hiddenPlanetImg } from "$lib/scripts/EggspeditionsManager";
+    import { planets, hiddenPlanetImg, calculateDiscoveryCost, discoverPlanet } from "$lib/scripts/EggspeditionsManager";
     import Chip from "$lib/components/Chip.svelte";
     let data = $derived(gameState.data)
     const planetRowCount = planets.length / 3
-    const planetsSilced = new Array(planetRowCount)
+    const planetsSliced = new Array(planetRowCount)
     for(let i = 0; i < planetRowCount; i++) {
-        planetsSilced[i] = planets.slice(i + (i*2),3+(i*3))
+        planetsSliced[i] = planets.slice(i + (i*2),3+(i*3))
     }
     let selectIndex = $state(-1)
 </script>
@@ -15,7 +15,7 @@
 <div class="flexRow">
     <div class="flexCol border">
         <h3>Planetary System</h3>
-        {#each planetsSilced as planet, i}
+        {#each planetsSliced as planet, i}
             <div class="flexRow">
                 {#each planet as item, j}
                     <button
@@ -37,25 +37,28 @@
         <Chip imgSrc={data.progression.unlockedPlanet[selectIndex] ? planets[selectIndex].imgSrc : hiddenPlanetImg} 
         content={data.progression.unlockedPlanet[selectIndex] ? planets[selectIndex].name : '???'} 
         color={data.progression.unlockedPlanet[selectIndex] ? "blue" : "gray"}/>
-        <Chip color={"green"} content={"Planetary Value: $0.00"} />
-        <Chip color={"blue"} content={"Bonus: x0.00"} />
+        <Chip color="blue" content="Challenge Tier 0" />
+        <Chip color="green" content="{planets[selectIndex].bonusName} x0.00" />
         
 
-            {#if data.progression.unlockedPlanet[selectIndex]}
-                <button class={"button-green"}>Travel to {planets[selectIndex].name}</button>
-            {:else}
-                <Chip color={"red"} content={"Discovery Cost: ???"} />
-                <button class={"button-red"}>Discover ???</button>
-            {/if}
-            {#if data.progression.hasAscended}
-                <Chip color={"orange"} content={"Harvester Level: 0"} />
-                <button class={"button-red"}>Infrastructure Permit Required</button>
-            {/if}
-            {:else}
+        {#if data.progression.unlockedPlanet[selectIndex]}
+            <button class={"button-green"}>Travel to {planets[selectIndex].name}</button>
+        {:else}
+            <Chip color={"red"} content="Discovery Cost: {format(calculateDiscoveryCost())} Soul Eggs" />
+            <button class={gameState.data.currency.soulEggs.lt(calculateDiscoveryCost()) ? 'button-red' : 'button-green'}
+            disabled={gameState.data.currency.soulEggs.lt(calculateDiscoveryCost())}
+            onclick={() => {discoverPlanet(selectIndex)}}>Discover</button>
+        {/if}
+        {#if data.progression.hasAscended}
+            <Chip color={"orange"} content="Harvester Level: 0" />
+            <button class={"button-red"}>Infrastructure Permit Required</button>
+        {/if}
+        {:else}
         <h3>No Planet Selected</h3>
         {/if}
     </div>
 </div>
+<button class="button-blue" onclick={() => {gameState.data.indexValues.currentPlanet = 0}}>Debug Button to Activate Planet</button>
 
 <style lang="scss">
     @use '$lib/styles/variables' as *;

@@ -295,12 +295,12 @@ export const achievements = [
     },
     // Eggspeditions (Planets)
     {
-        name: 'Energy Too',
+        name: 'Power Idle',
         description: 'Discover Arcturus',
         hidden: true,
         group: 'eggspeditions',
         img: 'planet1.png',
-        unlockCondition: () => {return gameState.data.progression.planets[0]},
+        unlockCondition: () => {return gameState.data.progression.unlockedPlanet[0]},
         hiddenImg: 'questionplanet.png'
     },
     {
@@ -309,25 +309,25 @@ export const achievements = [
         hidden: true,
         group: 'eggspeditions',
         img: 'planet2.png',
-        unlockCondition: () => {return gameState.data.progression.planets[1]},
+        unlockCondition: () => {return gameState.data.progression.unlockedPlanet[1]},
         hiddenImg: 'questionplanet.png'
     },
     {
-        name: 'At last. Peace',
+        name: 'At last... Peace',
         description: 'Discover Xylok',
         hidden: true,
         group: 'eggspeditions',
         img: 'planet3.png',
-        unlockCondition: () => {return gameState.data.progression.planets[2]},
+        unlockCondition: () => {return gameState.data.progression.unlockedPlanet[2]},
         hiddenImg: 'questionplanet.png'
     },
     {
-        name: 'The Void',
+        name: 'Descending to the Abyss',
         description: 'Discover Triton',
         hidden: true,
         group: 'eggspeditions',
         img: 'planet4.png',
-        unlockCondition: () => {return gameState.data.progression.planets[3]},
+        unlockCondition: () => {return gameState.data.progression.unlockedPlanet[3]},
         hiddenImg: 'questionplanet.png'
     },
     {
@@ -336,7 +336,7 @@ export const achievements = [
         hidden: true,
         group: 'eggspeditions',
         img: 'planet5.png',
-        unlockCondition: () => {return gameState.data.progression.planets[4]},
+        unlockCondition: () => {return gameState.data.progression.unlockedPlanet[4]},
         hiddenImg: 'questionplanet.png'
     },
     {
@@ -345,7 +345,7 @@ export const achievements = [
         hidden: true,
         group: 'eggspeditions',
         img: 'planet6.png',
-        unlockCondition: () => {return gameState.data.progression.planets[5]},
+        unlockCondition: () => {return gameState.data.progression.unlockedPlanet[5]},
         hiddenImg: 'questionplanet.png'
     },
     // Ascension
