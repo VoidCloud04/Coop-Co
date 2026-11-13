@@ -1,7 +1,7 @@
 <script>
     import ButtonGroup from "$lib/components/ButtonGroup.svelte";
     import Chip from "$lib/components/Chip.svelte";
-    import { contractGoalCurrencies, contractGoals, contracts, generateContract, gradeNames, gradeWalls, modifiers, startContract, stopContract } from "$lib/scripts/ContractsManager";
+    import { contractGoalCurrencies, contractGoals, contracts, expiryTimeInMinutes, generateContract, gradeNames, gradeWalls, modifiers, startContract, stopContract } from "$lib/scripts/ContractsManager";
     import { gameState } from "$lib/scripts/DataManager.svelte";
     import { eggs, regularEggImgIds } from "$lib/scripts/EggManager";
     import { formatTime } from "$lib/scripts/Formatting";
@@ -82,7 +82,8 @@
                         <div class="flexRow"> 
                         <Chip content={gradeNames[item.grade]} color={gradeNames[item.grade]}/>
                         <Chip content="{contractGoals[item.goal[0]]} Contract"/>
-                        <Chip content="{formatTime(item.expiration)} left"/>
+                        <Chip content="{formatTime(item.expiration)} left"
+                        color={item.expiration <= (expiryTimeInMinutes*60)/2 ? `${item.expiration <= (expiryTimeInMinutes*60/10) ? 'red' : 'yellow'}` : 'green'}/>
                         {#if item.grade > gradeIndex}
                             <Chip content="Requires Grade {gradeNames[item.grade]}" color="red"/>
                         {/if}
@@ -129,7 +130,8 @@
                         <div class="flexRow"> 
                         <Chip content={gradeNames[item.grade]} color={gradeNames[item.grade]}/>
                         <Chip content="{contractGoals[item.goal[0]]} Contract"/>
-                        <Chip content="{formatTime(item.expiration)} left"/>
+                        <Chip content="{formatTime(item.expiration)} left"
+                        color={item.expiration <= (expiryTimeInMinutes*60)/2 ? `${item.expiration <= (expiryTimeInMinutes*60/10) ? 'red' : 'yellow'}` : 'green'}/>
                         {#if item.grade > gradeIndex}
                             <Chip content="Requires Grade {gradeNames[item.grade]}" color="red"/>
                         {/if}

@@ -34,7 +34,8 @@ function DefaultDataObject() {
             contractPool: new Array(4).fill(null),
             gradeIndex: 0,
             totalReputation: Decimal.dZero,
-            eggProgress: Decimal.dZero
+            eggProgress: Decimal.dZero,
+            rerollCooldown: 0
         },
         ascension: {
             harvesters: new Array(), // {level: 0, timeRemaining: 0}
@@ -59,6 +60,7 @@ function DefaultDataObject() {
             bestMoney: Decimal.dZero,
             bestChickens: Decimal.dZero,
             bestSoulEggs: Decimal.dZero,
+            bestProphecyEggs: Decimal.dZero,
             bestKnowleggs: Decimal.dZero,
             contractsComplete: Decimal.dZero,
             timePlayed: Decimal.dZero,

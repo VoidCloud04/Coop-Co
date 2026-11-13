@@ -10,7 +10,8 @@ export const gradeNames = ["D","C","B","A","AA","AAA"] // AAA locked behind Asce
 const gradePointBudgets = [1,3,5,10,15,20] // How many points can be spent on a contract per grade
 export const gradeWalls = [new Decimal(100),new Decimal(500),new Decimal(1000),new Decimal(5000), new Decimal(10000)]
 const baseRepGain = [new Decimal(10),new Decimal(50),new Decimal(100),new Decimal(1000),new Decimal(2500)]
-const expiryTimeInMinutes = 180 // 3 Hours from creation to expiration
+export const expiryTimeInMinutes = 60
+const rerollTimeInMinutes = 30
 export const contractGoals = ["Delivery","Value","Farm Density"] // Tracks Eggs Produced, Total Money, Total Chickens
 export const contractGoalCurrencies = ["Eggs", "Money", "Chickens"]
 export const baseGoalPerGrade = [ // Traversed by [gradeIndex][contractGoalIndex]
@@ -27,7 +28,7 @@ export const modifiers = [ // All available debuffs to be rolled by a contract
     {
         name: "Egg Value", // Debuff Chip Name/Effect
         type: "mul", // Type of Effect (mul,sub,exp)
-        debuffs: [0.1,0.25,0.35,0.5] // Debuff Scalar Array costs the generation function 1-4 points, limit of points for debuffs depends on contract grade
+        debuffs: [0.5,0.35,0.25,0.1] // Debuff Scalar Array costs the generation function 1-4 points, limit of points for debuffs depends on contract grade
     },
     {
         name: "Chicken Gain",
@@ -118,7 +119,9 @@ export const contracts = [ // All available contracts on specific eggs
  *
  * A contract is active when indexValues.currentContract points at its index in contracts.contractPool.
  * Starting a contract deducts prophecy[0] from the player's Prophecy Eggs. Completing it returns
- * prophecy[0] + prophecy[1]; abandoning it forfeits the stake and costs half of repGain.
+ * prophecy[0] + prophecy[1]; abandoning it forfeits the stake and costs half of repGain. If that
+ * loss would push reputation below zero, the player drops one grade and their reputation is set
+ * to that grade's wall minus the lost reputation.
  */
 
 // Extra Rules I keep in mind:
@@ -339,6 +342,14 @@ export async function stopContract(index = gameState.data.indexValues.currentCon
     if(activeContractIndex === -1) return
     if(index !== activeContractIndex) return
 
+    const contract = gameState.data.contracts.contractPool[activeContractIndex]
+    if(!contract) {
+        gameState.data.indexValues.currentContract = -1
+        resetFarm()
+        resetContractProgress()
+        return
+    }
+
     let confirmed = true
     if(gameState.data.settings.toggles[7]) {
         confirmed = await confirmModal({
@@ -348,22 +359,30 @@ export async function stopContract(index = gameState.data.indexValues.currentCon
         })
     }
 
-    const contract = gameState.data.contracts.contractPool[activeContractIndex]
-    if(!contract) {
-        gameState.data.indexValues.currentContract = -1
-        resetFarm()
-        resetContractProgress()
-        return
-    }
-
     if(!confirmed) return
     if(gameState.data.indexValues.currentContract !== activeContractIndex) return
 
     // The stake is forfeited and half of the reputation reward is lost.
-    gameState.data.contracts.totalReputation = Decimal.max(
-        Decimal.dZero,
-        gameState.data.contracts.totalReputation.minus(contract.repGain.div(2))
-    )
+    const contractsData = gameState.data.contracts
+    const reputationLoss = contract.repGain.div(2)
+    contractsData.totalReputation = contractsData.totalReputation.minus(reputationLoss)
+
+    // If the loss pushes reputation below zero (for example right after a
+    // promotion, where the grade wall has just been paid and little reputation
+    // remains), drop one grade and carry the lost reputation over from that
+    // grade's wall rather than allowing reputation to go negative.
+    if(contractsData.totalReputation.lt(Decimal.dZero)) {
+        if(contractsData.gradeIndex > 0) {
+            contractsData.gradeIndex -= 1
+            contractsData.totalReputation = Decimal.max(
+                Decimal.dZero,
+                gradeWalls[contractsData.gradeIndex].minus(reputationLoss)
+            )
+        }
+        else {
+            contractsData.totalReputation = Decimal.dZero
+        }
+    }
     gameState.data.indexValues.currentContract = -1
     resetFarm()
     resetContractProgress()
@@ -428,4 +447,9 @@ function promoteGrade() {
         contractsData.totalReputation = contractsData.totalReputation.minus(wall)
         contractsData.gradeIndex = nextGrade
     }
+}
+
+function rerollContracts() {
+    if(gameState.data.contracts.rerollCooldown > 0) return
+
 }

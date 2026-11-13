@@ -56,30 +56,32 @@
             color={eggChipColor(nextDisplayIndex)}></Chip>
         <button onclick={() => {unlockDisplayIndex += 1}} disabled={nextDisplayIndex === (eggs.length - 1)} class={nextDisplayIndex === (eggs.length - 1) ? "button-gray" : ""}>{">>>"}</button>
     </div>
-    <div class="flexCol holder">
-        {#if data.indexValues.currentEgg < eggs.length-1}
-            <p>Next: {data.indexValues.currentEgg < eggs.length-1 && data.progression.unlockedEgg[data.indexValues.currentEgg+1] || data.currency.money.gte(nextEgg.discoveryReq) ? `${nextEgg.name} Egg` : '???'}</p>
-            <div class="flexRow progress-row">
-                <span
-                    class="progress-bar"
-                    style={`--progress: ${progressPercent}%; --tick-position: ${tickPercent}%`}
-                    role="progressbar"
-                    aria-valuemin="0"
-                    aria-valuemax="100"
-                    aria-valuenow={progressPercent}
-                ></span>
-            </div>
-        {/if}
-        <p>Value: ${format(nextEgg.baseValue)}, {format(nextEgg.baseValue.div(currentEgg.baseValue))}x over current egg</p>
-        <div class="flexRow">
-            {#if data.indexValues.currentEgg < eggs.length - 1}
-                {#if !data.progression.unlockedEgg[data.indexValues.currentEgg+1]}
-                <Chip content={`Discover At: $${format(nextEgg.discoveryReq)}`} color={"yellow"}/>
-                {/if}
-                <Chip content={`Unlock At: $${format(nextEgg.unlockReq)}`} color={"green"}/>
+    {#if gameState.data.indexValues.currentContract === -1}
+        <div class="flexCol holder">
+            {#if data.indexValues.currentEgg < eggs.length-1}
+                <p>Next: {data.indexValues.currentEgg < eggs.length-1 && data.progression.unlockedEgg[data.indexValues.currentEgg+1] || data.currency.money.gte(nextEgg.discoveryReq) ? `${nextEgg.name} Egg` : '???'}</p>
+                <div class="flexRow progress-row">
+                    <span
+                        class="progress-bar"
+                        style={`--progress: ${progressPercent}%; --tick-position: ${tickPercent}%`}
+                        role="progressbar"
+                        aria-valuemin="0"
+                        aria-valuemax="100"
+                        aria-valuenow={progressPercent}
+                    ></span>
+                </div>
             {/if}
+            <p>Value: ${format(nextEgg.baseValue)}, {format(nextEgg.baseValue.div(currentEgg.baseValue))}x over current egg</p>
+            <div class="flexRow">
+                {#if data.indexValues.currentEgg < eggs.length - 1}
+                    {#if !data.progression.unlockedEgg[data.indexValues.currentEgg+1]}
+                    <Chip content={`Discover At: $${format(nextEgg.discoveryReq)}`} color={"yellow"}/>
+                    {/if}
+                    <Chip content={`Unlock At: $${format(nextEgg.unlockReq)}`} color={"green"}/>
+                {/if}
+            </div>
         </div>
-    </div>
+    {/if}
 </div>
 
 <button id="hatch-button" class="button-red" onclick={() => {data.currency.chickens = data.currency.chickens.plus(1)}}>
