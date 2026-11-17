@@ -59,7 +59,7 @@
     </div>
 </div>
 <button class="button-blue" onclick={() => {gameState.data.indexValues.currentPlanet = 0}}>Debug Button to Activate Planet</button>
-
+<button class="button-blue" onclick={() => {gameState.data.indexValues.currentPlanet = -1}}>Debug Button to Disable Planet</button>
 <style lang="scss">
     @use '$lib/styles/variables' as *;
 
