@@ -6,19 +6,20 @@
 
 <h1>Arcturus Moment</h1>
 <div class="flexCol">
-    <div class="flexRow bordered">
+    <div class="flexRow">
         <Chip content="Dark Energy" imgSrc={planets[0].eggImgSrc} color="blue"/>
         <Chip content="Production Rate: +1.00/s" color="green" />
     </div>
-    <div class="flexCol bordered">
+    <div class="flexCol">
         <h4>Generators</h4>
         <div class="flexRow">
             <div class="flexCol bordered">
                 <p>Generator 1</p>
                 <p>Power Output: 1.00 kW/s</p>
-                <p>Burn Rate: 1.00 Dark Energy Eggs/s</p>
+                <p>Burn Rate: 1.00 => 2.00 Eggs/s</p>
                 <p>Upgrade Cost: $1.00</p>
                 <p>Maintenance Cost: $1.00/s</p>
+                <button>Upgrade Generator: $1.00e3</button>
             </div>
             <div>
                 Generator 2
@@ -29,8 +30,8 @@
         </div>
         
     </div>
-    <div class="flexRow bordered">
-        <Chip content="Output: 1.00 MW/s" color="yellow" />
+    <div class="flexRow">
+        <Chip content="Output: 1.00 MW/s" color="yellow"/>
         <Chip content="Cash Flow: 1.00e3/s" color="green" />
     </div>
 </div>

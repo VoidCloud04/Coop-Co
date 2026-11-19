@@ -8,7 +8,41 @@ export const planets = [
         eggName: "Dark Energy",
         eggImgSrc: "Images/Eggs/darkenergy.png",
         bonusName: "Egg Value",
-        bonusValues: []
+        bonusValues: [],
+        extraData: {
+            generatorBaseCost: [],
+            generatorBaseMaintenanceRate: [],
+            generatorBaseBurnRate: [],
+            generatorBaseOutputRate: [Decimal.dOne,new Decimal(1e3),new Decimal(1e6)], // In Watts
+            generatorCostScale: new Decimal(1),
+            wattToMoneyValue: new Decimal(1)
+        },
+        research: [
+            {
+                title: 'High Voltage Transmission Lines',
+                description: 'x3 Value for Watt to $$$ conversion',
+                tier: 0,
+                baseCost: new Decimal(0.5),
+                costScale: new Decimal(1.15),
+                maxLevels: 1
+            },
+            {
+                title: 'Extra High Voltage Transmission Lines',
+                description: 'x5 Value for Watt to $$$ conversion',
+                tier: 0,
+                baseCost: new Decimal(0.5),
+                costScale: new Decimal(1.15),
+                maxLevels: 1
+            },
+            {
+                title: 'Ultra High Voltage Transmission Lines',
+                description: 'x10 Value for Watt to $$$ conversion',
+                tier: 0,
+                baseCost: new Decimal(0.5),
+                costScale: new Decimal(1.15),
+                maxLevels: 1
+            },
+        ]
     },
     {
         name: "Ravnar",
@@ -16,7 +50,8 @@ export const planets = [
         eggName: "Time",
         eggImgSrc: "Images/Eggs/time.png",
         bonusName: "Egg Laying Rate",
-        bonusValues: []
+        bonusValues: [],
+        extraData: {},
     },
         {
         name: "Xylok",
@@ -24,7 +59,8 @@ export const planets = [
         eggName: "Peace",
         eggImgSrc: "Images/Eggs/peace.png",
         bonusName: "Enlightenment Egg Value",
-        bonusValues: []
+        bonusValues: [],
+        extraData: {},
     },
     {
         name: "Triton",
@@ -32,7 +68,8 @@ export const planets = [
         eggName: "Abyss",
         eggImgSrc: "Images/Eggs/abyss.png",
         bonusName: "Chicken Gain",
-        bonusValues: []
+        bonusValues: [],
+        extraData: {},
     },
     {
         name: "Hereth",
@@ -40,7 +77,8 @@ export const planets = [
         eggName: "Lava",
         eggImgSrc: "Images/Eggs/lava.png",
         bonusName: "Research Discount",
-        bonusValues: []
+        bonusValues: [],
+        extraData: {},
     },
     {
         name: "Malak",
@@ -48,9 +86,11 @@ export const planets = [
         eggName: "Radiant",
         eggImgSrc: "Images/Eggs/radiant.png",
         bonusName: "Soul Egg Gain",
-        bonusValues: []
+        bonusValues: [],
+        extraData: {},
     },
 ]
+
 
 export const hiddenPlanetImg = 'Images/questionplanet.png'
 const basePlanetCost = new Decimal(1000)

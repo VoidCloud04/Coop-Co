@@ -37,6 +37,11 @@ function DefaultDataObject() {
             eggProgress: Decimal.dZero,
             rerollCooldown: 0
         },
+        eggspeditions: {
+            planetResearch: null, // Size is set when a planet is journeyed to
+            generatorLevels: new Array(planets[0].extraData.generatorBaseCost.length).fill(Decimal.dZero) // Arcturus Generator Levels
+            
+        },
         ascension: {
             harvesters: new Array(), // {level: 0, timeRemaining: 0}
             artifacts: new Array(), // {unlocked: bool, count: Decimal}

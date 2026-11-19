@@ -42,3 +42,30 @@ export const notate = new Notation().bind()
 export function getRandom(min, max) {
     return Math.floor((Math.random() * (max - min))) + min 
 }
+
+/**
+ * 
+ * @param {Decimal} value value to be formatted
+ * @param {String} unit base unit (Metric unit)
+ * @param {boolean} shortened should output SI prefix be shortened or full
+ * @returns {String}
+ */
+export function formatPrefix(value,unit,shortened=true) {
+    const prefixes = ['K','M','G','T','P','E','Z','Y','R','Q']
+    const prefixesLong = ['Kilo','Mega','Tera','Peta','Exa','Zetta','Yotta','Ronna','Quetta']
+    let amts = [new Decimal(1e3),new Decimal(1e6),new Decimal(1e9),new Decimal(1e12),
+        new Decimal(1e15),new Decimal(1e18),new Decimal(1e21),new Decimal(1e24),new Decimal(1e27),new Decimal(1e30)]
+    let index = -1;
+    for(let i = prefixes.length - 1; i > -1; i--) {
+        if(a.divide(amts[i]).gte(Decimal.dOne)) {
+            index = i;
+            break;
+        }
+    }
+    if(index === -1) {
+        return `${format(a)} ${b}`
+    }
+    else {
+        return `${format(a.divide(amts[index]))} ${shortened ? prefixes[index] : prefixesLong[index]}${b}`
+    }
+}

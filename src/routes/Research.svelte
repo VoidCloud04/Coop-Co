@@ -109,6 +109,9 @@
             </div>
         {/if}
     {/each}
+    {#if gameState.data.indexValues.currentPlanet != -1}
+            <!-- Planetary Research Rendered under Common Research -->
+    {/if}
 </div>
 
 <style lang="scss">
